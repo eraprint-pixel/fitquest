@@ -1,0 +1,7 @@
+/*
+  Permissions-Policy: camera=(self)
+  X-Content-Type-Options: nosniff
+/sounds/*
+  Cache-Control: public, max-age=604800
+/*.task
+  Cache-Control: public, max-age=2592000

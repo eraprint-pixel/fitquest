@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>FitQuest · Код тела</title>
+<meta name="theme-color" content="#0b0b0b">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+@font-face { font-family: "Russo One"; src: url(fonts/russo-one-cyrillic.woff2) format("woff2");
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; font-display: swap; }
+@font-face { font-family: "Russo One"; src: url(fonts/russo-one-latin.woff2) format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215; font-display: swap; }
+:root {
+  --bg: #0b0b0b; --card: #17161a; --card2: #211f24; --line: #2e2b30;
+  --gold: #d4b47a; --gold2: #f3dcaa; --gold3: #fff4d8; --gold-dim: #7a684a; --amber: #ffb547; --fire: #ff6a3d;
+  --text: #f1ece3; --muted: #9a958d; --good: #7fd18b;
+  --disp: "Russo One", -apple-system, sans-serif;
+  --safe-top: var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px));
+  --safe-bot: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text);
+  font: 16px/1.4 -apple-system, "SF Pro Text", "Segoe UI", Roboto, "PT Sans", sans-serif; overflow-x: hidden; }
+body::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background: radial-gradient(60% 40% at 50% -5%, rgba(212,180,122,.18), transparent 70%),
+              radial-gradient(40% 30% at 100% 100%, rgba(255,106,61,.07), transparent 70%); }
+button { font: inherit; color: inherit; border: 0; cursor: pointer; }
+.disp { font-family: var(--disp); letter-spacing: .02em; }
+.goldtext { background: linear-gradient(180deg, var(--gold3), var(--gold) 55%, #a8854b); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.screen { display: none; position: relative; z-index: 1; min-height: 100%; padding: calc(14px + var(--safe-top)) 16px calc(20px + var(--safe-bot)); }
+.screen.on { display: block; }
+#home, #result { max-width: 520px; margin: 0 auto; }
+
+/* --- полоса опыта: толстая, с бегущим бликом --- */
+.xpbar { position: relative; height: 14px; border-radius: 10px; background: #2a272c; overflow: hidden; box-shadow: inset 0 1px 3px #0008; }
+.xpbar > i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; border-radius: 10px;
+  background: linear-gradient(90deg, #9b7a45, var(--gold), var(--gold2)); transition: width .7s cubic-bezier(.2,.9,.3,1.15);
+  box-shadow: 0 0 14px rgba(243,220,170,.55); overflow: hidden; }
+.xpbar > i::after { content: ""; position: absolute; inset: 0; width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.65), transparent); animation: shine 2.2s linear infinite; }
+@keyframes shine { from { transform: translateX(-120%); } to { transform: translateX(320%); } }
+.xpbar.gain { animation: barflash .6s ease; }
+@keyframes barflash { 30% { box-shadow: 0 0 0 2px var(--gold2), 0 0 24px var(--gold); } }
+.bar { height: 8px; border-radius: 6px; background: #2b282d; overflow: hidden; margin-top: 8px; }
+.bar > i { display: block; height: 100%; width: 0; border-radius: 6px; background: linear-gradient(90deg, #a98a55, var(--gold), var(--gold2)); transition: width .6s ease; }
+
+/* --- эмблема уровня: шестиугольник с вращающимся ореолом --- */
+.emblem { position: relative; flex: none; width: 84px; height: 92px; }
+.emblem svg { display: block; width: 100%; height: 100%; overflow: visible; }
+.emblem .glow { position: absolute; inset: 8% 4%; border-radius: 50%; background: radial-gradient(circle, rgba(243,220,170,.32), transparent 65%);
+  filter: blur(8px); animation: pulse 3s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .45; transform: scale(.94); } }
+.emblem .prog { transition: stroke-dashoffset .9s cubic-bezier(.2,.9,.3,1.1); }
+.emblem.up { animation: embUp .8s cubic-bezier(.2,1.6,.4,1); }
+@keyframes embUp { 40% { transform: scale(1.25) rotate(-6deg); filter: brightness(1.6); } }
+
+.brand { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 2px 0 14px; }
+.brand img { width: 86px; height: auto; }
+.brand .app { font-family: var(--disp); font-size: 15px; letter-spacing: .4em; padding-left: .4em; }
+
+.hero { position: relative; background: linear-gradient(160deg, #1f1c20, #131215); border: 1px solid #3a3226;
+  border-radius: 24px; padding: 18px; overflow: hidden; box-shadow: 0 10px 40px #0007, inset 0 1px 0 #ffffff0d; }
+.hero-top { display: flex; align-items: flex-start; gap: 14px; }
+.hero-top .emblem { margin-top: -4px; }
+.hero-name { font-family: var(--disp); font-size: 22px; }
+.rank { display: inline-block; margin-top: 2px; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
+  color: #1a140b; background: linear-gradient(90deg, var(--gold2), var(--gold)); }
+.xpbig { display: flex; align-items: baseline; gap: 8px; margin: 14px 0 8px; }
+.xpbig b { font-family: var(--disp); font-size: 40px; line-height: 1; }
+.xpbig span { font-family: var(--disp); color: var(--gold); font-size: 16px; }
+.xpbig em { margin-left: auto; font-style: normal; color: var(--muted); font-size: 13px; }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+.stat { background: var(--card2); border-radius: 14px; padding: 10px; text-align: center; border: 1px solid #ffffff08; }
+.stat b { display: block; font-family: var(--disp); font-size: 22px; color: var(--gold2); }
+.stat span { font-size: 11px; color: var(--muted); }
+
+h2 { font-family: var(--disp); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin: 22px 4px 10px; font-weight: 400; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; }
+.skills { display: grid; gap: 10px; }
+.skill-row { display: flex; justify-content: space-between; align-items: baseline; }
+.skill-row b { font-size: 15px; } .skill-row span { font-family: var(--disp); color: var(--gold); font-size: 13px; }
+.quest { display: flex; gap: 12px; align-items: center; }
+.quest .ico { font-size: 30px; filter: drop-shadow(0 0 8px rgba(212,180,122,.4)); }
+.quest .q-title { font-family: var(--disp); font-size: 16px; }
+.quest .q-sub { font-size: 13px; color: var(--muted); }
+.quest.done { border-color: var(--gold); box-shadow: 0 0 22px rgba(212,180,122,.2); }
+
+.ex-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ex-list .ex:last-child:nth-child(odd) { grid-column: span 2; }
+.ex { background: var(--card); border: 1.5px solid var(--line); border-radius: 18px; padding: 16px 12px; text-align: left; }
+.ex .e-ico { font-size: 30px; } .ex .e-name { font-family: var(--disp); margin-top: 6px; } .ex .e-skill { font-size: 12px; color: var(--muted); }
+.ex.sel { border-color: var(--gold); background: linear-gradient(160deg, #2a2216, var(--card)); box-shadow: 0 0 20px rgba(212,180,122,.18); }
+
+.seg2 { grid-template-columns: 1fr 1fr !important; }
+.seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 5px; }
+.seg button { padding: 10px 4px; border-radius: 12px; font-size: 13px; font-weight: 700; color: var(--muted); background: transparent; }
+.seg button.on { color: #1a140b; background: linear-gradient(180deg, var(--gold2), var(--gold)); }
+.seg-note { font-size: 12px; color: var(--muted); margin: 6px 4px 0; }
+
+.btn { display: block; width: 100%; padding: 17px; border-radius: 18px; font-family: var(--disp); font-size: 18px; margin-top: 14px; letter-spacing: .03em; }
+.btn-gold { background: linear-gradient(180deg, var(--gold3), var(--gold) 60%, #b8935a); color: #15120d;
+  box-shadow: 0 10px 30px rgba(212,180,122,.3), inset 0 -3px 0 #0003; }
+.btn-gold:active { transform: translateY(2px) scale(.99); }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); font-size: 15px; }
+.tip { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
+.err { background: #2a1714; border: 1px solid #5a2a22; border-radius: 16px; padding: 14px; margin-top: 14px; font-size: 14px; }
+
+/* ---------- тренировка ---------- */
+#workout { padding: 0; position: fixed; inset: 0; background: #000; z-index: 5; }
+#workout.on { display: block; }
+.stage { position: absolute; inset: 0; overflow: hidden; }
+.stage video, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.stage.mirror video, .stage.mirror canvas#skel { transform: scaleX(-1); }
+canvas#fx { pointer-events: none; }
+.vignette { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 80% at 50% 45%, transparent 55%, #000c); }
+.hud { position: absolute; left: 0; right: 0; top: 0; padding: calc(10px + var(--safe-top)) 12px 40px;
+  background: linear-gradient(#000d, #0008 60%, transparent); display: flex; align-items: center; gap: 10px; }
+.hud .emblem { width: 50px; height: 56px; }
+.hud-mid { flex: 1; min-width: 0; }
+.hud-ex { font-family: var(--disp); font-size: 15px; display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-bottom: 6px; }
+.hud-ex b { font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.hud-ex span { color: var(--gold); font-size: 12px; white-space: nowrap; flex: none; }
+.sessxp { text-align: right; min-width: 92px; }
+.sessxp b { display: block; font-family: var(--disp); font-size: 30px; line-height: 1; text-shadow: 0 0 18px rgba(243,220,170,.5); }
+.sessxp span { font-size: 10px; letter-spacing: .2em; color: var(--gold); }
+.sessxp b.tick { animation: tick .35s ease; }
+@keyframes tick { 40% { transform: scale(1.25); filter: brightness(1.5); } }
+.reps { position: absolute; left: 0; right: 0; top: 22%; text-align: center; pointer-events: none; }
+.reps b { display: block; font-family: var(--disp); font-size: 136px; line-height: 1; color: #fff;
+  text-shadow: 0 0 2px var(--gold), 0 6px 30px #000c, 0 0 46px rgba(212,180,122,.45); }
+.reps b.pop { animation: pop .38s cubic-bezier(.2,1.6,.4,1); }
+@keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.32); color: var(--gold2); } 100% { transform: scale(1); } }
+.reps span { font-family: var(--disp); font-size: 13px; letter-spacing: .4em; color: #fffb; }
+.combo { position: absolute; right: 12px; top: calc(84px + var(--safe-top)); padding: 6px 12px; border-radius: 14px;
+  font-family: var(--disp); font-size: 17px; color: #fff; background: linear-gradient(90deg, var(--fire), var(--amber));
+  box-shadow: 0 0 22px rgba(255,106,61,.55); opacity: 0; transform: scale(.8); transition: .2s; }
+.combo.on { opacity: 1; transform: scale(1); }
+.combo.hot { animation: flame .5s ease-in-out infinite alternate; }
+@keyframes flame { to { box-shadow: 0 0 34px rgba(255,140,60,.9); transform: scale(1.06); } }
+.depth { position: absolute; left: 12px; top: 34%; bottom: 34%; width: 10px; border-radius: 8px; background: #ffffff1f; overflow: hidden; }
+.depth i { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(0deg, var(--gold), var(--gold2)); border-radius: 8px; height: 0; transition: height .08s; }
+.sub { position: absolute; left: 14px; right: 14px; bottom: calc(150px + var(--safe-bot)); display: flex; justify-content: center; pointer-events: none; }
+.sub div { max-width: 92%; padding: 10px 14px; border-radius: 16px 16px 16px 4px; background: #000c; border: 1px solid var(--gold-dim);
+  font-weight: 700; font-size: 16px; color: var(--gold3); opacity: 0; transform: translateY(10px); transition: .25s; }
+.sub div::before { content: "🎙 Тренер: "; color: var(--gold); font-weight: 800; }
+.sub div.on { opacity: 1; transform: none; }
+.proto { position: absolute; left: 0; right: 0; top: calc(22% + 172px); text-align: center; pointer-events: none;
+  font-family: var(--disp); font-size: 17px; color: var(--gold2); text-shadow: 0 2px 8px #000; }
+.proto .dots { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
+.proto .dots i { width: 34px; height: 8px; border-radius: 4px; background: #ffffff26; }
+.proto .dots i.done { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
+.proto .dots i.cur { background: linear-gradient(90deg, var(--gold2) var(--p, 0%), #ffffff26 var(--p, 0%)); }
+.rest { position: absolute; inset: 0; display: none; place-items: center; background: #000b; backdrop-filter: blur(3px); z-index: 3; }
+.rest.on { display: grid; }
+.rest div { text-align: center; }
+.rest small { font-family: var(--disp); letter-spacing: .3em; color: var(--gold); font-size: 15px; }
+.rest b { display: block; font-family: var(--disp); font-size: 110px; line-height: 1.05; }
+.rest span { color: var(--muted); }
+.hint { position: absolute; left: 14px; right: 14px; bottom: calc(92px + var(--safe-bot)); text-align: center;
+  background: #000b; border-radius: 14px; padding: 9px 12px; font-size: 14px; color: #fffd; }
+.hint.warn { color: var(--gold2); }
+.hud-bot { position: absolute; left: 14px; right: 14px; bottom: calc(16px + var(--safe-bot)); display: flex; gap: 10px; z-index: 4; }   /* «Завершить» доступна и на отдыхе */
+.hud-bot .btn { margin: 0; }
+.float { position: absolute; font-family: var(--disp); font-size: 46px; pointer-events: none; white-space: nowrap;
+  background: linear-gradient(180deg, #fff, var(--gold2) 40%, var(--gold) 70%, #a37d42); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 10px rgba(243,220,170,.7)) drop-shadow(0 3px 4px #000); animation: floatUp 1.25s cubic-bezier(.15,.8,.3,1) forwards; }
+.float small { font-size: 22px; }
+@keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.5) rotate(-6deg); }
+  18% { opacity: 1; transform: translate(-50%, -10px) scale(1.2) rotate(3deg); }
+  100% { opacity: 0; transform: translate(-50%, -150px) scale(1) rotate(0); } }
+.levelup { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; opacity: 0;
+  background: radial-gradient(circle, rgba(212,180,122,.35), transparent 60%); }
+.levelup.on { animation: lu 2.2s ease forwards; }
+.levelup div { text-align: center; }
+.levelup b { display: block; font-family: var(--disp); font-size: 54px; letter-spacing: .05em;
+  background: linear-gradient(180deg, #fff6df, var(--gold) 60%, #a07f45); -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 0 26px rgba(212,180,122,.8)); }
+.levelup span { font-family: var(--disp); color: #fff; font-size: 18px; }
+@keyframes lu { 0% { opacity: 0; transform: scale(.5); } 14% { opacity: 1; transform: scale(1.1); } 24% { transform: scale(1); } 82% { opacity: 1; } 100% { opacity: 0; } }
+.shake { animation: shake .45s; }
+@keyframes shake { 20% { transform: translate(-6px, 3px); } 40% { transform: translate(5px, -4px); } 60% { transform: translate(-4px, 2px); } 80% { transform: translate(3px, -2px); } }
+.loading { position: absolute; inset: 0; display: grid; place-items: center; background: var(--bg); text-align: center; padding: 30px; }
+.loading img { width: 70px; animation: breathe 1.6s ease-in-out infinite; }
+@keyframes breathe { 50% { opacity: .45; transform: scale(.94); } }
+.loading p { color: var(--muted); }
+
+/* ---------- итоги ---------- */
+.result { text-align: center; }
+.result .cap { font-family: var(--disp); color: var(--muted); letter-spacing: .15em; text-transform: uppercase; font-size: 13px; }
+.result .big { font-family: var(--disp); font-size: 72px; line-height: 1; margin-top: 8px; filter: drop-shadow(0 0 24px rgba(212,180,122,.45)); }
+.r-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 18px; }
+.r-grid .stat b { font-size: 26px; }
+.gains { margin-top: 14px; text-align: left; }
+.gains div { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; margin-top: 8px; }
+.gains div.lv { border-color: var(--gold); font-family: var(--disp); }
+</style>
+</head>
+<body>
+
+<!-- ГЛАВНЫЙ ЭКРАН -->
+<section class="screen on" id="home">
+  <div class="brand"><img src="logo.png" alt="Код тела"><div class="app goldtext">FITQUEST</div></div>
+
+  <div class="hero">
+    <div class="hero-top">
+      <div class="emblem" id="hEmb"></div>
+      <div style="flex:1;min-width:0">
+        <div class="hero-name" id="hName">Герой</div>
+        <span class="rank" id="hRank">Новичок</span>
+      </div>
+    </div>
+    <div class="xpbig"><b class="goldtext" id="hXp">0</b><span>XP</span><em id="hNext">до 2 ур.: 100</em></div>
+    <div class="xpbar" id="hBarW"><i id="hBar"></i></div>
+    <div class="stats">
+      <div class="stat"><b id="sReps">0</b><span>повторений</span></div>
+      <div class="stat"><b id="sStreak">0</b><span>дней подряд</span></div>
+      <div class="stat"><b id="sBest">0</b><span>рекорд за раз</span></div>
+    </div>
+  </div>
+
+  <h2>Квест дня</h2>
+  <div class="card quest" id="quest">
+    <div class="ico">⚔️</div>
+    <div style="flex:1">
+      <div class="q-title" id="qTitle">30 повторений</div>
+      <div class="q-sub" id="qSub">Награда: +150 XP</div>
+      <div class="bar"><i id="qBar"></i></div>
+    </div>
+  </div>
+
+  <h2>Навыки</h2>
+  <div class="skills" id="skills"></div>
+
+  <h2>Упражнение</h2>
+  <div class="ex-list" id="exList"></div>
+
+  <div id="modeBox">
+    <h2>Режим</h2>
+    <div class="seg seg2" id="modeSeg">
+      <button data-m="free">🎯 Свободный</button>
+      <button data-m="p50">🏆 Протокол 50</button>
+    </div>
+    <div class="seg-note" id="modeNote"></div>
+  </div>
+
+  <h2>Голос тренера</h2>
+  <div class="seg" id="voiceSeg">
+    <button data-v="hard">🔥 Жёсткий 18+</button>
+    <button data-v="count">🔢 Только счёт</button>
+    <button data-v="off">🔇 Без звука</button>
+  </div>
+  <div class="seg-note" id="voiceNote"></div>
+
+  <button class="btn btn-gold" id="startBtn">НАЧАТЬ ТРЕНИРОВКУ</button>
+  <button class="btn btn-ghost" id="demoBtn">Демо без камеры</button>
+  <div class="tip" id="exTip"></div>
+  <div id="camErr"></div>
+</section>
+
+<!-- ТРЕНИРОВКА -->
+<section class="screen" id="workout">
+  <div class="stage" id="stage">
+    <video id="video" playsinline muted></video>
+    <canvas id="skel"></canvas>
+    <div class="vignette"></div>
+    <canvas id="fx"></canvas>
+    <div class="hud">
+      <div class="emblem" id="wEmb"></div>
+      <div class="hud-mid">
+        <div class="hud-ex"><b id="wEx">Приседания</b><span id="wXpTxt">0 / 100 XP</span></div>
+        <div class="xpbar" id="wBarW"><i id="wBar"></i></div>
+      </div>
+      <div class="sessxp"><b class="goldtext" id="wSess">+0</b><span>XP ЗА ПОДХОД</span></div>
+    </div>
+    <div class="combo" id="combo">🔥 x1.0</div>
+    <div class="depth"><i id="depth"></i></div>
+    <div class="reps"><b id="wReps">0</b><span id="wRepsLbl">ПОВТОРЕНИЙ</span></div>
+    <div class="proto" id="proto" style="display:none"><div id="protoTxt"></div><div class="dots" id="protoDots"></div></div>
+    <div class="rest" id="rest"><div><small>ОТДЫХ</small><b class="goldtext" id="restT">30</b><span id="restNext"></span></div></div>
+    <div class="levelup" id="levelup"><div><b>LEVEL UP!</b><span id="luTxt"></span></div></div>
+    <div class="sub"><div id="sub"></div></div>
+    <div class="hint" id="hint">Встаньте так, чтобы было видно всё тело</div>
+    <div class="hud-bot"><button class="btn btn-gold" id="stopBtn">ЗАВЕРШИТЬ</button></div>
+    <div class="loading" id="loading"><div><img src="logo-mark.png" alt=""><p id="loadTxt">Загружаю распознавание движений…</p></div></div>
+  </div>
+</section>
+
+<!-- ИТОГИ -->
+<section class="screen" id="result">
+  <div class="brand"><img src="logo.png" alt="Код тела"></div>
+  <div class="result">
+    <div class="cap">Тренировка завершена</div>
+    <div class="big goldtext" id="rXp">+0 XP</div>
+    <div class="r-grid">
+      <div class="stat"><b id="rReps">0</b><span>повторений</span></div>
+      <div class="stat"><b id="rCombo">x1</b><span>лучшее комбо</span></div>
+    </div>
+    <div class="gains" id="rGains"></div>
+    <button class="btn btn-gold" id="againBtn">ЕЩЁ ПОДХОД</button>
+    <button class="btn btn-ghost" id="homeBtn">На главный экран</button>
+  </div>
+</section>
+
+<script type="module">
+import { EX, RepCounter } from "./counter.js";
+// ================= настройки игры =================
+const SKILLS = { str: "Сила", legs: "Ноги", end: "Выносливость" };
+const RANKS = [[1, "Новичок"], [3, "Ученик"], [5, "Атлет"], [8, "Боец"], [12, "Чемпион"], [16, "Мастер"], [20, "Легенда «Кода тела»"]];
+const QUEST = { reps: 30, xp: 150 };
+// «Протокол 50» из программы Паши: 50 повторений частями, отдых 30 секунд между частями
+const P50 = { sets: [15, 10, 10, 8, 7], rest: 30, xp: 100 };
+const MODE_NOTE = { free: "Сколько сделаете — столько и засчитаем.",
+                    p50: "Как у Паши в программе: 15 → 10 → 10 → 8 → 7 повторений, между частями отдых 30 секунд. За весь протокол — +100 XP." };
+const HOLD_STEP = 5000;      // планка: опыт за каждые 5 секунд
+const COMBO_WINDOW = 5000;
+const KEY = "fitquest_v1";
+const VOICE_NOTE = { hard: "Тренер считает повторения и подбадривает. Жёстко, с матом и юмором — только 18+.",
+                     count: "Тренер только считает повторения вслух.", off: "Без голоса — только звуки и вибрация." };
+
+// ================= прогресс =================
+const today = () => new Date().toLocaleDateString("sv-SE");   // ГГГГ-ММ-ДД по местному времени
+const fresh = () => ({ xp: 0, skills: { str: 0, legs: 0, end: 0 }, reps: 0, best: 0, streak: 0, lastDay: "",
+                       quest: { day: today(), reps: 0, done: false }, ex: "squat", voice: "hard", mode: "free" });
+let S = fresh();
+const tg = window.Telegram?.WebApp;
+const inTG = !!(tg && tg.initData);
+
+function load() {
+  try { const v = JSON.parse(localStorage.getItem(KEY) || "null"); if (v) S = { ...fresh(), ...v }; } catch (e) {}
+  if (inTG && tg.CloudStorage) {             // в Telegram прогресс хранится в аккаунте — не теряется на другом телефоне
+    tg.CloudStorage.getItem(KEY, (err, val) => {
+      if (err || !val) return;
+      try { const c = JSON.parse(val); if ((c.xp || 0) > (S.xp || 0)) { S = { ...fresh(), ...c }; render(); } } catch (e) {}
+    });
+  }
+}
+function save() {
+  if (sess && sess.saved) return;        // идёт демо — ничего не сохраняем
+  const v = JSON.stringify(S);
+  try { localStorage.setItem(KEY, v); } catch (e) {}
+  if (inTG && tg.CloudStorage && v.length < 4000) tg.CloudStorage.setItem(KEY, v, () => {});
+}
+function lvl(xp) {           // 100 XP на первый уровень, каждый следующий порог в 1,35 раза больше
+  let l = 1, need = 100, rest = xp;
+  while (rest >= need) { rest -= need; l++; need = Math.round(need * 1.35); }
+  return { l, rest, need };
+}
+const rankOf = l => RANKS.filter(r => l >= r[0]).pop()[1];
+const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+function rollDay() {
+  const d = today();
+  if (S.quest.day !== d) S.quest = { day: d, reps: 0, done: false };
+}
+function markStreak() {
+  const d = today();
+  if (S.lastDay === d) return;
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  S.streak = S.lastDay === y.toLocaleDateString("sv-SE") ? S.streak + 1 : 1;
+  S.lastDay = d;
+}
+
+// ================= эмблема уровня =================
+// Шестиугольник: золотая грань заполняется по мере набора опыта до следующего уровня,
+// цифра и подпись — строго внутри (viewBox считаем сами, текст не вылезает за грань).
+const HEX = (cx, cy, r) => [...Array(6)].map((_, i) => { const a = Math.PI / 180 * (60 * i - 90); return [cx + r * Math.cos(a), cy + r * Math.sin(a)]; });
+const hexPath = pts => "M" + pts.map(p => p.map(v => v.toFixed(2)).join(",")).join("L") + "Z";
+function emblem(el, level, frac, label = true) {
+  const R = 46, perim = 6 * R, outer = hexPath(HEX(50, 54, R)), inner = hexPath(HEX(50, 54, R - 9));
+  const digits = String(level).length, fs = digits > 2 ? 26 : digits > 1 ? 32 : 38;
+  const prev = el.dataset.level;
+  el.innerHTML = `<div class="glow"></div><svg viewBox="0 0 100 108">
+    <defs>
+      <linearGradient id="g1${el.id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff4d8"/><stop offset=".45" stop-color="#d4b47a"/><stop offset="1" stop-color="#8a6a39"/></linearGradient>
+      <linearGradient id="g2${el.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c251a"/><stop offset="1" stop-color="#0f0e0c"/></linearGradient>
+      <linearGradient id="g3${el.id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6df"/><stop offset=".6" stop-color="#e4c68d"/><stop offset="1" stop-color="#a8854b"/></linearGradient>
+    </defs>
+    <path d="${outer}" fill="#1b1814" stroke="#3a3226" stroke-width="7" stroke-linejoin="round"/>
+    <path class="prog" d="${outer}" fill="none" stroke="url(#g1${el.id})" stroke-width="7" stroke-linejoin="round" stroke-linecap="${frac > 0.02 ? "round" : "butt"}"
+          stroke-dasharray="${perim}" stroke-dashoffset="${perim * (1 - Math.max(0, Math.min(1, frac)))}" style="filter:drop-shadow(0 0 3px rgba(243,220,170,.7))"/>
+    <path d="${inner}" fill="url(#g2${el.id})" stroke="url(#g1${el.id})" stroke-width="1.2" stroke-opacity=".7"/>
+    ${label ? `<text x="50" y="40" text-anchor="middle" font-family="Russo One, sans-serif" font-size="6.8" letter-spacing="1.2" fill="#b89a63">УРОВЕНЬ</text>` : ""}
+    <text x="50" y="${label ? 71 : 67}" text-anchor="middle" font-family="Russo One, sans-serif" font-size="${fs}" fill="url(#g3${el.id})"
+          style="filter:drop-shadow(0 1px 2px #000)">${level}</text>
+  </svg>`;
+  el.dataset.level = level;
+  if (prev && +prev < level) retrigger(el, "up");
+}
+
+// ================= главный экран =================
+const $ = id => document.getElementById(id);
+function render() {
+  rollDay();
+  const L = lvl(S.xp);
+  emblem($("hEmb"), L.l, L.rest / L.need); $("hRank").textContent = rankOf(L.l);
+  $("hBar").style.width = (L.rest / L.need * 100) + "%";
+  $("hXp").textContent = fmt(S.xp); $("hNext").textContent = `до ${L.l + 1} ур.: ${fmt(L.need - L.rest)} XP`;
+  $("sReps").textContent = fmt(S.reps); $("sStreak").textContent = S.streak; $("sBest").textContent = S.best;
+  const q = S.quest;
+  $("qTitle").textContent = q.done ? "Квест выполнен ✓" : `${QUEST.reps} повторений за день`;
+  $("qSub").textContent = q.done ? `+${QUEST.xp} XP получено. Новый квест — завтра` : `Сделано ${q.reps} из ${QUEST.reps} · награда +${QUEST.xp} XP`;
+  $("qBar").style.width = Math.min(100, q.reps / QUEST.reps * 100) + "%";
+  $("quest").classList.toggle("done", q.done);
+  $("skills").innerHTML = Object.entries(SKILLS).map(([k, name]) => {
+    const s = lvl(S.skills[k] || 0);
+    return `<div class="card" id="sk_${k}"><div class="skill-row"><b>${name}</b><span>УР. ${s.l} · ${fmt(S.skills[k] || 0)} XP</span></div>
+            <div class="bar"><i style="width:${s.rest / s.need * 100}%"></i></div></div>`;
+  }).join("");
+  $("exList").innerHTML = Object.entries(EX).map(([k, e]) =>
+    `<button class="ex ${S.ex === k ? "sel" : ""}" data-ex="${k}"><div class="e-ico">${e.ico}</div>
+     <div class="e-name">${e.name}</div><div class="e-skill">навык: ${SKILLS[e.skill]}</div></button>`).join("");
+  $("exTip").textContent = EX[S.ex].tip;
+  document.querySelectorAll("#voiceSeg button").forEach(b => b.classList.toggle("on", b.dataset.v === S.voice));
+  const hold = EX[S.ex].kind === "hold";
+  $("modeBox").style.display = hold ? "none" : "";
+  document.querySelectorAll("#modeSeg button").forEach(b => b.classList.toggle("on", b.dataset.m === S.mode));
+  $("modeNote").textContent = MODE_NOTE[S.mode];
+  $("voiceNote").textContent = VOICE_NOTE[S.voice];
+  const name = tg?.initDataUnsafe?.user?.first_name;
+  if (name) $("hName").textContent = name;
+}
+$("exList").addEventListener("click", e => {
+  const b = e.target.closest(".ex"); if (!b) return;
+  S.ex = b.dataset.ex; save(); render(); haptic("select");
+});
+$("modeSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  S.mode = b.dataset.m; save(); render(); haptic("select");
+});
+$("voiceSeg").addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  S.voice = b.dataset.v; save(); render(); haptic("select");
+  unlockAudio(); Coach.init().then(() => S.voice === "hard" ? Coach.say("five", true) : S.voice === "count" && Coach.count(1, true));
+});
+function show(id) { document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id)); scrollTo(0, 0); }
+
+// ================= звук и вибрация =================
+let actx;
+const ctx = () => (actx = actx || new (window.AudioContext || window.webkitAudioContext)());
+function unlockAudio() { try { ctx().resume(); } catch (e) {} }      // только из нажатия — иначе телефон не даст звук
+function tone(freq, dur = .12, type = "triangle", vol = .14, when = 0) {
+  try {
+    const t = ctx().currentTime + when, o = actx.createOscillator(), g = actx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(vol, t + .01); g.gain.exponentialRampToValueAtTime(.001, t + dur);
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + dur + .02);
+  } catch (e) {}
+}
+const chord = () => [523, 659, 784, 1047].forEach((f, i) => tone(f, .5, "triangle", .12, i * .09));
+function haptic(kind) {
+  const h = tg?.HapticFeedback; if (!h) { if (kind === "level" && navigator.vibrate) navigator.vibrate([40, 40, 80]); return; }
+  if (kind === "rep") h.impactOccurred("medium");
+  else if (kind === "level") h.notificationOccurred("success");
+  else h.selectionChanged();
+}
+
+// ================= голос тренера =================
+// Реплики записаны заранее (sounds/*.mp3): синтез речи в браузере на Android в Telegram часто не работает.
+const VOICE_VER = "pasha-3";   // меняется при перезаписи озвучки — чтобы Cloudflare и телефон не отдавали старые файлы
+const Coach = {
+  idx: null, phr: null, bufs: new Map(), src: null, busyUntil: 0, last: {}, subTimer: 0,
+  async init() {
+    if (this.idx) return;
+    try {
+      [this.idx, this.phr] = await Promise.all([fetch(`sounds/index.json?v=${VOICE_VER}`).then(r => r.json()), fetch(`sounds/phrases.json?v=${VOICE_VER}`).then(r => r.json())]);
+    } catch (e) { this.idx = {}; this.phr = {}; }
+  },
+  // качаем не больше 6 файлов одновременно: пачка из сотни запросов роняет и сервер, и слабый телефон
+  active: 0, queue: [],
+  _next() {
+    while (this.active < 6 && this.queue.length) {
+      const [name, done] = this.queue.shift(); this.active++;
+      const load = () => fetch(`sounds/${name}.mp3?v=${VOICE_VER}`).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); });
+      load().catch(() => new Promise(r => setTimeout(r, 800)).then(load))          // один повтор при сбое
+        .then(b => new Promise((ok, no) => ctx().decodeAudioData(b, ok, no))).catch(() => null)
+        .then(b => { this.active--; done(b); this._next(); });
+    }
+  },
+  buf(name, urgent = false) {
+    if (urgent) {                                   // уже стоит в очереди — переносим в начало
+      const i = this.queue.findIndex(q => q[0] === name);
+      if (i > 0) this.queue.unshift(...this.queue.splice(i, 1));
+    }
+    if (!this.bufs.has(name)) this.bufs.set(name, new Promise(done => {
+      urgent ? this.queue.unshift([name, done]) : this.queue.push([name, done]); this._next();
+    }));
+    return this.bufs.get(name);
+  },
+  // реплик больше 500 — заранее грузим счёт и по несколько реплик из каждого раздела, остальное по ходу
+  preload() {
+    if (S.voice === "off" || !this.idx) return;
+    for (let n = 1; n <= 30; n++) this.buf(`n${n}`);
+    if (S.voice !== "hard") return;
+    for (const k of Object.keys(this.idx)) if (k !== "numbers") for (let j = 0; j < 4; j++) this.buf(`${k}_${this.pick(k)}`);
+  },
+  // реплика подходит упражнению: про приседания — только на приседаниях, про планку — только в планке и т. д.
+  fits(cat, k) {
+    const t = (this.phr?.[cat]?.[k] || "").toLowerCase(), ex = sess?.ex;
+    const about = { squat: /присед/, pushup: /отжим/, lunge: /выпад/, plank: /планк/, calf: /носк|носоч|икр/ };
+    return Object.entries(about).every(([e, re]) => e === ex || !re.test(t)) || !ex;
+  },
+  pick(cat) {
+    const n = this.idx?.[cat] || 0, ok = [...Array(n).keys()].filter(k => this.fits(cat, k) && k !== this.last[cat]);
+    return ok.length ? ok[Math.floor(Math.random() * ok.length)] : Math.floor(Math.random() * n);
+  },
+  async play(name, force = false, text = null) {
+    if (S.voice === "off") return false;
+    if (!force && ctx().currentTime < this.busyUntil) return false;      // тренер не перебивает сам себя
+    const b = await this.buf(name, true);          // то, что нужно сказать сейчас, — без очереди
+    if (!b) return false;
+    if (force && this.src) { try { this.src.stop(); } catch (e) {} }
+    const s = actx.createBufferSource(); s.buffer = b; s.connect(actx.destination); s.start();
+    this.src = s; this.busyUntil = actx.currentTime + b.duration;
+    if (text) subtitle(text, b.duration);
+    return true;
+  },
+  say(cat, force = false) {
+    if (S.voice !== "hard" || !this.idx?.[cat]) return;
+    const i = this.pick(cat);
+    this.last[cat] = i;
+    this.play(`${cat}_${i}`, force, this.phr?.[cat]?.[i]);
+    this.buf(`${cat}_${this.pick(cat)}`);          // следующую реплику этого раздела — заранее
+  },
+  count(n, force = false) { if (S.voice !== "off" && n <= (this.idx?.numbers || 60)) this.play(`n${n}`, force); },
+  stop() { try { this.src?.stop(); } catch (e) {} this.busyUntil = 0; },
+};
+function subtitle(text, dur) {
+  const el = $("sub"); el.textContent = text; el.classList.add("on");
+  clearTimeout(Coach.subTimer); Coach.subTimer = setTimeout(() => el.classList.remove("on"), dur * 1000 + 900);
+}
+
+// ================= эффекты =================
+const fx = $("fx"), fctx = fx.getContext("2d");
+let parts = [];
+function burst(x, y, n = 26, power = 1) {
+  for (let i = 0; i < n; i++) {
+    const a = Math.random() * Math.PI * 2, v = (2 + Math.random() * 6) * power;
+    parts.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 2, life: 1, r: 2 + Math.random() * 3.5, hot: Math.random() < .25 });
+  }
+}
+function drawFx() {
+  fctx.clearRect(0, 0, fx.width, fx.height);
+  parts = parts.filter(p => (p.life -= .02) > 0);
+  const k = fx.width / 400;
+  for (const p of parts) {
+    p.x += p.vx * k * .6; p.y += p.vy * k * .6; p.vy += .16;
+    fctx.globalAlpha = p.life; fctx.fillStyle = p.hot ? "#fff3d6" : "#d4b47a";
+    fctx.shadowColor = "#f3dcaa"; fctx.shadowBlur = 8 * k;
+    fctx.beginPath(); fctx.arc(p.x, p.y, p.r * k, 0, 7); fctx.fill();
+  }
+  fctx.shadowBlur = 0; fctx.globalAlpha = 1;
+  drawHearts();
+}
+// ---- сердечки, как лайки в прямом эфире: вылетают снизу справа и плывут вверх ----
+let hearts = [];
+const HEART_COLORS = ["#ff3b6b", "#ff5d8f", "#ff2d55", "#ff7aa8", "#f3dcaa", "#d4b47a", "#ff4f6d"];
+function spawnHearts(n, power = 1) {
+  const k = fx.width / 400;
+  for (let i = 0; i < n; i++) {
+    hearts.push({ x: fx.width * (.78 + Math.random() * .14), y: fx.height * (.80 + Math.random() * .06),
+      vy: -(1.6 + Math.random() * 1.8) * power * k, sway: Math.random() * 6.28, sw: (.6 + Math.random()) * k,
+      s: (9 + Math.random() * 9) * k * (.8 + power * .3), life: 1, c: HEART_COLORS[Math.random() * HEART_COLORS.length | 0], grow: 0 });
+  }
+}
+function heartPath(c, x, y, s) {
+  c.beginPath(); c.moveTo(x, y + s * .3);
+  c.bezierCurveTo(x, y, x - s * .5, y - s * .1, x - s * .5, y + s * .3);
+  c.bezierCurveTo(x - s * .5, y + s * .6, x, y + s * .8, x, y + s);
+  c.bezierCurveTo(x, y + s * .8, x + s * .5, y + s * .6, x + s * .5, y + s * .3);
+  c.bezierCurveTo(x + s * .5, y - s * .1, x, y, x, y + s * .3); c.closePath();
+}
+function drawHearts() {
+  hearts = hearts.filter(h => (h.life -= .0075) > 0 && h.y > -40);
+  for (const h of hearts) {
+    h.grow = Math.min(1, h.grow + .12); h.sway += .06; h.y += h.vy; h.x += Math.sin(h.sway) * h.sw;
+    const sc = h.s * (h.grow < 1 ? .4 + .6 * h.grow : 1);
+    fctx.globalAlpha = Math.min(1, h.life * 1.6); fctx.fillStyle = h.c;
+    fctx.shadowColor = h.c; fctx.shadowBlur = 10 * fx.width / 400;
+    heartPath(fctx, h.x, h.y - sc / 2, sc); fctx.fill();
+  }
+  fctx.shadowBlur = 0; fctx.globalAlpha = 1;
+}
+function heartStream(n, ms = 450, power = 1) {     // поток сердечек в течение ms — как будто «лайкают»
+  let left = n; const per = Math.max(1, Math.round(n / (ms / 40)));
+  const t = setInterval(() => { spawnHearts(Math.min(per, left), power); left -= per; if (left <= 0) clearInterval(t); }, 40);
+}
+function floatText(html, top = 30) {        // выше строки протокола, чтобы не наезжать на неё
+  const el = document.createElement("div"); el.className = "float"; el.innerHTML = html;
+  el.style.left = (40 + Math.random() * 20) + "%"; el.style.top = top + "%";
+  $("stage").appendChild(el); setTimeout(() => el.remove(), 1300);
+}
+function levelUpFx(text) {
+  $("luTxt").textContent = text;
+  const l = $("levelup"); l.classList.remove("on"); void l.offsetWidth; l.classList.add("on");
+  const st = $("stage"); st.classList.remove("shake"); void st.offsetWidth; st.classList.add("shake");
+  burst(fx.width / 2, fx.height / 2, 120, 1.6); chord(); haptic("level");
+}
+function retrigger(el, cls) { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
+let sessShown = 0, sessAnim = 0;
+function animateSess(to) {               // счётчик «XP за подход» бежит вверх, а не прыгает
+  cancelAnimationFrame(sessAnim);
+  const from = sessShown, t0 = performance.now();
+  const step = t => { const k = Math.min(1, (t - t0) / 450); sessShown = Math.round(from + (to - from) * k);
+    $("wSess").textContent = "+" + fmt(sessShown); if (k < 1) sessAnim = requestAnimationFrame(step); };
+  sessAnim = requestAnimationFrame(step); retrigger($("wSess"), "tick");
+}
+
+// ================= начисление опыта =================
+let sess;   // текущая тренировка
+function addXp(skill, amount) {
+  const ups = [];
+  const before = lvl(S.xp).l;
+  S.xp += amount;
+  const after = lvl(S.xp).l;
+  if (after > before) ups.push(`Герой — уровень ${after}`);
+  const end = Math.ceil(amount * .4);
+  for (const [k, v] of [[skill, amount], ["end", end]]) {
+    const b = lvl(S.skills[k] || 0).l;
+    S.skills[k] = (S.skills[k] || 0) + v;
+    const a = lvl(S.skills[k]).l;
+    if (a > b) { ups.push(`${SKILLS[k]} — уровень ${a}`); sess && sess.ups.push(`${SKILLS[k]}: уровень ${a}`); }
+  }
+  if (after > before && sess) sess.ups.unshift(`Герой: уровень ${after} — ${rankOf(after)}`);
+  return ups;
+}
+function protoView() {
+  const p = sess.p50; if (!p) return;
+  const target = P50.sets[p.set];
+  $("protoTxt").textContent = p.finished ? "ПРОТОКОЛ 50 ВЫПОЛНЕН!" : `П50 · ЧАСТЬ ${p.set + 1} ИЗ ${P50.sets.length} · ${p.done} / ${target}`;
+  $("protoDots").innerHTML = P50.sets.map((n, i) => `<i class="${i < p.set || p.finished ? "done" : i === p.set ? "cur" : ""}" style="--p:${i === p.set ? p.done / n * 100 : 0}%"></i>`).join("");
+}
+function startRest() {
+  const p = sess.p50; p.resting = true;
+  const end = performance.now() + P50.rest * 1000;
+  $("restNext").textContent = `дальше: ${P50.sets[p.set]} повторений`;
+  $("rest").classList.add("on");
+  const tick = () => {
+    if (!sess || sess.p50 !== p) return;
+    const left = Math.ceil((end - performance.now()) / 1000);
+    $("restT").textContent = Math.max(0, left);
+    if (left <= 3 && left > 0 && p.beeped !== left) { p.beeped = left; tone(660, .12); }
+    if (left <= 0) { p.resting = false; $("rest").classList.remove("on"); tone(990, .25); haptic("level");
+      sess.counter = new RepCounter(sess.ex); setHint("Погнали!"); return; }
+    p.timer = setTimeout(tick, 200);
+  };
+  tick();
+}
+function protoRep() {               // после засчитанного повторения в режиме «Протокол 50»
+  const p = sess.p50; if (!p || p.finished) return;
+  p.done++;
+  if (p.done >= P50.sets[p.set]) {
+    p.set++; p.done = 0;
+    if (p.set >= P50.sets.length) {
+      p.finished = true; sess.xp += P50.xp; sess.ups.push(`Протокол 50 выполнен: +${P50.xp} XP`);
+      const ups = addXp(EX[sess.ex].skill, P50.xp); save(); animateSess(sess.xp); hud(true);
+      setTimeout(() => { levelUpFx(ups[0] || `+${P50.xp} XP за протокол`); Coach.say("proto_done", true); }, 300);
+    } else {
+      setTimeout(() => { startRest(); Coach.say("rest", true); }, 400);
+    }
+  }
+  protoView();
+}
+function onRep() {
+  if (sess.p50?.resting) return;      // на отдыхе повторения не считаем
+  const now = performance.now();
+  sess.combo = now - sess.lastRep < COMBO_WINDOW ? sess.combo + 1 : 1;
+  sess.lastRep = now;
+  sess.bestCombo = Math.max(sess.bestCombo, sess.combo);
+  sess.reps++; S.reps++;
+  const mult = 1 + .1 * Math.min(sess.combo - 1, 10);
+  const xp = Math.round(10 * mult);
+  sess.xp += xp;
+  const ups = addXp(EX[sess.ex].skill, xp);
+  let quest = false;
+  rollDay();
+  if (!S.quest.done) {
+    S.quest.reps++;
+    if (S.quest.reps >= QUEST.reps) {
+      S.quest.done = quest = true; sess.xp += QUEST.xp; sess.ups.push(`Квест дня выполнен: +${QUEST.xp} XP`);
+      ups.push(...addXp("end", QUEST.xp)); setTimeout(() => floatText(`КВЕСТ! +${QUEST.xp}`, 24), 500);
+    }
+  }
+  markStreak(); save();
+  // интерфейс
+  $("wReps").textContent = sess.reps; retrigger($("wReps"), "pop");
+  floatText(`+${xp} XP${mult > 1 ? ` <small>x${mult.toFixed(1)}</small>` : ""}`);
+  const c = $("combo"); c.textContent = `🔥 КОМБО ${sess.combo} · x${mult.toFixed(1)}`;
+  c.classList.toggle("on", sess.combo > 1); c.classList.toggle("hot", sess.combo >= 8);
+  burst(fx.width / 2, fx.height * .33, 20 + Math.min(sess.combo, 10) * 4, 1 + Math.min(sess.combo, 10) * .05);
+  heartStream(sess.demo === true ? 22 + Math.min(sess.combo, 10) * 2 : 10 + Math.min(sess.combo, 10), 500, 1 + Math.min(sess.combo, 10) * .06);
+  tone(440 * Math.pow(1.06, Math.min(sess.combo, 12)), .12); haptic("rep");
+  animateSess(sess.xp); hud(true);
+  protoRep();
+  // голос: счёт, каждые 5 — реплика, длинное комбо, уровень, квест
+  // на особых повторениях вместо числа сразу фраза — иначе она не успевает начаться, пока звучит счёт
+  if (ups.length) setTimeout(() => { levelUpFx(ups[0]); Coach.say("level", true); }, 250);
+  else if (quest) Coach.say("quest", true);
+  else if (sess.combo >= 8 && sess.combo % 8 === 0) Coach.say("combo", true);
+  else if (sess.reps % 5 === 0) Coach.say(Math.random() < .5 && Coach.idx?.[`ex_${sess.ex}`] ? `ex_${sess.ex}` : "five", true);
+  else Coach.count(sess.reps);
+}
+function onHold(r) {                // планка: каждые 5 секунд в правильной позе — опыт
+  const sec = Math.floor(r.holdMs / 1000);
+  sess.reps = sec;                      // для планки «повторения» — секунды в правильной позе
+  $("wReps").textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
+  const steps = Math.floor(r.holdMs / HOLD_STEP);
+  while ((sess.holdSteps || 0) < steps) {
+    sess.holdSteps = (sess.holdSteps || 0) + 1; sess.lastRep = performance.now();
+    const xp = 10 + Math.min(sess.holdSteps - 1, 10);          // чем дольше держишь — тем больше за отрезок
+    sess.xp += xp;
+    const ups = addXp("end", xp); markStreak(); save();
+    retrigger($("wReps"), "pop"); floatText(`+${xp} XP`); heartStream(14, 600);
+    burst(fx.width / 2, fx.height * .33, 30, 1.1); tone(520 + sess.holdSteps * 20, .12); haptic("rep");
+    animateSess(sess.xp); hud(true);
+    if (ups.length) setTimeout(() => { levelUpFx(ups[0]); Coach.say("level", true); }, 250);
+    else if (sess.holdSteps % 2 === 0) Coach.say(Math.random() < .7 ? "ex_plank" : "five");
+    else Coach.count(sess.holdSteps * 5 <= 60 ? sess.holdSteps * 5 : 60);
+  }
+}
+function hud(gain = false) {
+  const L = lvl(S.xp);
+  emblem($("wEmb"), L.l, L.rest / L.need, false); $("wBar").style.width = (L.rest / L.need * 100) + "%";
+  $("wXpTxt").textContent = `${fmt(L.rest)} / ${fmt(L.need)} XP`;
+  if (gain) retrigger($("wBarW"), "gain");
+}
+
+// ================= распознавание позы =================
+let landmarker, video = $("video"), skel = $("skel"), sctx = skel.getContext("2d"), stream, raf, wake;
+async function initModel() {
+  if (landmarker) return;
+  // модель лежит рядом с приложением: сервер Google с моделями из России отвечает 403
+  const v = "0.10.14";
+  const { FilesetResolver, PoseLandmarker } = await import(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${v}/vision_bundle.mjs`);
+  const files = await FilesetResolver.forVisionTasks(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${v}/wasm`);
+  const opts = d => ({ baseOptions: { modelAssetPath: new URL("pose_landmarker_lite.task", location.href).href, delegate: d },
+                       runningMode: "VIDEO", numPoses: 1 });
+  try { landmarker = await PoseLandmarker.createFromOptions(files, opts("GPU")); }
+  catch (e) { landmarker = await PoseLandmarker.createFromOptions(files, opts("CPU")); }
+}
+const BONES = [[11, 12], [11, 13], [13, 15], [12, 14], [14, 16], [11, 23], [12, 24], [23, 24], [23, 25], [25, 27], [24, 26], [26, 28]];
+function drawSkeleton(lm, side) {
+  const w = skel.width, h = skel.height;
+  sctx.clearRect(0, 0, w, h);
+  if (!lm) return;
+  // video cover → canvas: пересчёт координат с учётом обрезки кадра
+  const vw = video.videoWidth, vh = video.videoHeight, s = Math.max(w / vw, h / vh);
+  const ox = (w - vw * s) / 2, oy = (h - vh * s) / 2, P = p => [p.x * vw * s + ox, p.y * vh * s + oy];
+  const active = new Set(EX[sess.ex].pts[side]);
+  sctx.lineCap = "round"; sctx.shadowColor = "#d4b47a";
+  for (const [a, b] of BONES) {
+    if (lm[a].visibility < .3 || lm[b].visibility < .3) continue;
+    const hot = active.has(a) && active.has(b);
+    sctx.strokeStyle = hot ? "#f3dcaa" : "rgba(212,180,122,.55)"; sctx.lineWidth = (hot ? 7 : 4) * w / 400;
+    sctx.shadowBlur = hot ? 14 * w / 400 : 0;
+    const [x1, y1] = P(lm[a]), [x2, y2] = P(lm[b]);
+    sctx.beginPath(); sctx.moveTo(x1, y1); sctx.lineTo(x2, y2); sctx.stroke();
+  }
+  sctx.shadowBlur = 0;
+  for (const i of [11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28]) {
+    if (lm[i].visibility < .3) continue;
+    const [x, y] = P(lm[i]);
+    sctx.fillStyle = active.has(i) ? "#fff" : "#d4b47a";
+    sctx.beginPath(); sctx.arc(x, y, (active.has(i) ? 6 : 4) * w / 400, 0, 7); sctx.fill();
+  }
+}
+function processPose(lm) {
+  const e = EX[sess.ex], now = performance.now();
+  const r = sess.counter.update(lm, now);
+  if (r.status === "nobody" || r.status === "lowvis") {
+    sess.lostSince = sess.lostSince || now;
+    if (now - sess.lostSince > 4000 && now - (sess.lastNobody || 0) > 15000) { sess.lastNobody = now; Coach.say("nobody"); }
+  } else sess.lostSince = 0;
+  // человек в кадре, но ничего не делает (или просто стоит вместо упора лёжа) — тренер подкалывает:
+  // первый раз через 6 секунд, дальше каждые 9
+  if (r.status === "ok" || r.status === "pose") {
+    const since = now - Math.max(sess.lastRep, sess.startedAt);
+    if (since > 6000 && now - (sess.lastIdle || 0) > 9000 && !(EX[sess.ex].kind === "hold" && r.holding)) {
+      sess.lastIdle = now; Coach.say(r.status === "pose" && Math.random() < .5 ? "pose" : "idle");
+    }
+  }
+  if (r.status === "nobody") { drawSkeleton(null); setHint("Не вижу вас в кадре — отойдите чуть дальше", true); return; }
+  drawSkeleton(lm, r.side);
+  if (r.status === "lowvis") { setHint(e.tip, true); return; }
+  if (r.status === "pose") { $("depth").style.height = "0%";
+    if (e.kind === "hold" && r.holdMs != null) onHold(r);
+    setHint(sess.ex === "pushup" ? "Примите упор лёжа — боком к камере" : e.kind === "hold" ? "Встаньте в планку — тело одной линией, боком к камере" : "Встаньте прямо, боком к камере", true); return; }
+  if (e.kind === "hold") { $("depth").style.height = "100%"; onHold(r); setHint(sess.holdSteps ? "" : "Держите! Тело одной линией"); return; }
+  if (r.depth != null) {
+    $("depth").style.height = (r.depth * 100) + "%";
+    // на выходе из нижней точки — сердечки: чем быстрее поднимаешься, тем больше
+    if (r.state === "down") sess.wasDown = true;
+    if (sess.wasDown && sess.prevDepth != null && r.depth < sess.prevDepth) {
+      sess.heartAcc = (sess.heartAcc || 0) + (sess.prevDepth - r.depth) * 26;
+      const n = Math.floor(sess.heartAcc); if (n) { spawnHearts(n, 1 + (sess.prevDepth - r.depth) * 4); sess.heartAcc -= n; }
+    }
+    sess.prevDepth = r.depth;
+  }
+  if (sess.p50?.resting) { setHint("Отдыхаем — повторения не считаются"); return; }
+  if (r.rep) { sess.wasDown = false; onRep(); setHint(sess.reps < 3 ? "Отлично, продолжайте!" : ""); }
+  else if (r.state === "down") setHint(sess.reps < 3 ? "Хорошо! Теперь вверх ⬆️" : "");
+  else if (sess.reps === 0) setHint(sess.ex === "squat" ? "Присядьте поглубже — бёдра почти параллельно полу" : "Опуститесь ниже — согните руки");
+}
+function setHint(t, warn = false) {
+  const h = $("hint"); h.textContent = t; h.style.display = t ? "" : "none"; h.classList.toggle("warn", warn);
+}
+function loop() {
+  raf = requestAnimationFrame(loop);
+  drawFx();
+  if (sess.demo || !landmarker || video.readyState < 2) return;
+  const t = performance.now();
+  if (t - (sess.lastDetect || 0) < 33) return;           // ~30 кадров в секунду хватает
+  sess.lastDetect = t;
+  const res = landmarker.detectForVideo(video, t);
+  processPose(res.landmarks?.[0]);
+}
+function sizeCanvases() {
+  for (const c of [skel, fx]) { c.width = innerWidth * devicePixelRatio; c.height = innerHeight * devicePixelRatio; }
+}
+addEventListener("resize", sizeCanvases);
+
+// ================= запуск и остановка =================
+async function start(demo = false) {
+  unlockAudio();                          // звук разрешается только по нажатию
+  $("camErr").innerHTML = "";
+  sess = { ex: S.ex, demo, reps: 0, xp: 0, combo: 0, bestCombo: 0, lastRep: -1e9, counter: new RepCounter(S.ex), ups: [],
+           startedAt: performance.now(), saved: demo ? JSON.stringify(S) : null };   // демо не засчитываем
+  sessShown = 0; $("wSess").textContent = "+0";
+  const hold = EX[S.ex].kind === "hold";
+  sess.p50 = !hold && S.mode === "p50" ? { set: 0, done: 0 } : null;
+  $("wEx").textContent = EX[S.ex].name;
+  $("wReps").textContent = hold ? "0:00" : "0"; $("wRepsLbl").textContent = hold ? "В ПЛАНКЕ" : "ПОВТОРЕНИЙ";
+  $("proto").style.display = sess.p50 ? "" : "none"; $("rest").classList.remove("on"); protoView();
+  $("combo").classList.remove("on", "hot");
+  show("workout"); sizeCanvases(); hud();
+  tg?.BackButton?.show(); tg?.isVersionAtLeast?.("8.0") && tg.lockOrientation?.();
+  try { wake = await navigator.wakeLock?.request("screen"); } catch (e) {}
+  await Coach.init(); Coach.preload();
+  $("loading").style.display = "";
+  if (demo) {
+    $("loading").style.display = "none"; setHint("Демо: повторения идут сами, камера не нужна");
+    Coach.say("start", true);
+    let n = 0; const iv = setInterval(() => {
+      if (!sess || sess.demo !== true || n >= (hold ? 30 : sess.p50 ? 18 : 14)) return clearInterval(iv);
+      if (hold) { n++; onHold({ holdMs: n * 1000 }); return; }
+      if (sess.p50?.resting) return;
+      n++; onRep();
+    }, hold ? 1000 : 1100);
+    loop(); return;
+  }
+  try {
+    $("loadTxt").textContent = "Включаю камеру…";
+    if (!stream) {         // камеру берём один раз — на Android Telegram иначе спрашивает разрешение заново
+      stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
+    }
+    video.srcObject = stream; await video.play();
+    $("stage").classList.toggle("mirror", true);
+    $("loadTxt").textContent = "Загружаю распознавание движений… (первый раз — несколько секунд)";
+    await initModel();
+    $("loading").style.display = "none"; setHint(EX[S.ex].tip);
+    sess.startedAt = performance.now(); Coach.say("start", true);
+    loop();
+  } catch (e) {
+    console.error(e); stop(false);
+    $("camErr").innerHTML = `<div class="err"><b>Камера не включилась.</b><br>${
+      e && e.name === "NotAllowedError" ? "Разрешите доступ к камере и попробуйте ещё раз." :
+      "Не удалось запустить камеру или распознавание."}<br><small style="color:#9a958d">${String(e && e.message || e).slice(0, 160)}</small>${inTG ? "<br>Если не получается в Telegram — откройте в браузере:" : ""}
+      ${inTG ? '<button class="btn btn-ghost" id="openBrowser">Открыть в браузере</button>' : ""}</div>`;
+    $("openBrowser")?.addEventListener("click", () => tg.openLink(location.href));
+  }
+}
+function stop(showResult = true) {
+  cancelAnimationFrame(raf);
+  if (sess?.p50) { clearTimeout(sess.p50.timer); $("rest").classList.remove("on"); }
+  if (sess) sess.demo = "stopped";
+  try { wake?.release(); } catch (e) {}
+  tg?.BackButton?.hide(); tg?.unlockOrientation?.();
+  sctx.clearRect(0, 0, skel.width, skel.height);
+  const wasDemo = !!(sess && sess.saved);
+  if (wasDemo) { S = JSON.parse(sess.saved); sess.saved = null; }
+  else if (sess && sess.reps > S.best) S.best = sess.reps;
+  save();
+  if (!showResult || !sess) { Coach.stop(); show("home"); render(); return; }
+  const holdRes = EX[sess.ex].kind === "hold";
+  Coach.say((holdRes ? sess.reps >= 30 : sess.reps >= 15) || sess.p50?.finished ? "finish_good" : "finish_weak", true);
+  $("rReps").textContent = holdRes ? `${Math.floor(sess.reps / 60)}:${String(sess.reps % 60).padStart(2, "0")}` : sess.reps;
+  $("rReps").nextElementSibling.textContent = holdRes ? "в планке" : "повторений";
+  $("rCombo").textContent = holdRes ? `${sess.holdSteps || 0}` : `x${sess.bestCombo || 0}`;
+  $("rCombo").nextElementSibling.textContent = holdRes ? "отрезков по 5 с" : "лучшее комбо";
+  $("rGains").innerHTML = (wasDemo ? `<div>🎬 Это демо — опыт в Ваш прогресс не засчитан</div>` : "") +
+    (sess.ups.length ? sess.ups.map(u => `<div class="lv">⭐ ${u}</div>`).join("") :
+    `<div>До следующего уровня: ${fmt(lvl(S.xp).need - lvl(S.xp).rest)} XP</div>`);
+  $("againBtn").textContent = wasDemo ? "НАЧАТЬ С КАМЕРОЙ" : "ЕЩЁ ПОДХОД";
+  show("result");
+  const to = sess.xp, t0 = performance.now();          // итоговый опыт тоже набегает
+  const step = t => { const k = Math.min(1, (t - t0) / 900); $("rXp").textContent = `+${fmt(Math.round(to * (1 - Math.pow(1 - k, 3))))} XP`; if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+$("startBtn").onclick = () => start(false);
+$("demoBtn").onclick = () => start(true);
+$("stopBtn").onclick = () => stop(true);
+$("againBtn").onclick = () => start(false);
+$("homeBtn").onclick = () => { Coach.stop(); show("home"); render(); };
+tg?.BackButton?.onClick(() => stop(true));
+
+// ================= Telegram =================
+if (tg) {
+  tg.ready(); tg.expand();
+  try { tg.setHeaderColor("#0b0b0b"); tg.setBackgroundColor("#0b0b0b"); tg.disableVerticalSwipes?.(); } catch (e) {}
+}
+load(); render();
+</script>
+</body>
+</html>
