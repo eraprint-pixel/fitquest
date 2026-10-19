@@ -55,54 +55,56 @@ button { font: inherit; color: inherit; border: 0; cursor: pointer; }
 .emblem.up { animation: embUp .8s cubic-bezier(.2,1.6,.4,1); }
 @keyframes embUp { 40% { transform: scale(1.25) rotate(-6deg); filter: brightness(1.6); } }
 
-.brand { display: flex; flex-direction: column; align-items: center; gap: 4px; margin: 2px 0 14px; }
-.brand img { width: 86px; height: auto; }
-.brand .app { font-family: var(--disp); font-size: 15px; letter-spacing: .4em; padding-left: .4em; }
+.brand { display: flex; flex-direction: column; align-items: center; gap: 2px; margin: 0 0 8px; }
+.brand img { width: 54px; height: auto; }
+.brand .app { font-family: var(--disp); font-size: 12px; letter-spacing: .4em; padding-left: .4em; }
 
 .hero { position: relative; background: linear-gradient(160deg, #1f1c20, #131215); border: 1px solid #3a3226;
-  border-radius: 24px; padding: 18px; overflow: hidden; box-shadow: 0 10px 40px #0007, inset 0 1px 0 #ffffff0d; }
+  border-radius: 20px; padding: 12px 14px; overflow: hidden; box-shadow: 0 10px 40px #0007, inset 0 1px 0 #ffffff0d; }
 .hero-top { display: flex; align-items: flex-start; gap: 14px; }
-.hero-top .emblem { margin-top: -4px; }
-.hero-name { font-family: var(--disp); font-size: 22px; }
+.hero-top .emblem { margin-top: -2px; width: 62px; height: 68px; }
+.hero-top { align-items: center; }
+.hero-name { font-family: var(--disp); font-size: 19px; }
 .rank { display: inline-block; margin-top: 2px; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
   color: #1a140b; background: linear-gradient(90deg, var(--gold2), var(--gold)); }
-.xpbig { display: flex; align-items: baseline; gap: 8px; margin: 14px 0 8px; }
-.xpbig b { font-family: var(--disp); font-size: 40px; line-height: 1; }
+.xpbig { display: flex; align-items: baseline; gap: 8px; margin: 6px 0 6px; }
+.xpbig b { font-family: var(--disp); font-size: 28px; line-height: 1; }
 .xpbig span { font-family: var(--disp); color: var(--gold); font-size: 16px; }
 .xpbig em { margin-left: auto; font-style: normal; color: var(--muted); font-size: 13px; }
-.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
-.stat { background: var(--card2); border-radius: 14px; padding: 10px; text-align: center; border: 1px solid #ffffff08; }
-.stat b { display: block; font-family: var(--disp); font-size: 22px; color: var(--gold2); }
-.stat span { font-size: 11px; color: var(--muted); }
+.stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+.stat { background: var(--card2); border-radius: 12px; padding: 5px 4px; text-align: center; border: 1px solid #ffffff08; }
+.stat b { display: block; font-family: var(--disp); font-size: 17px; color: var(--gold2); }
+.stat span { font-size: 10px; color: var(--muted); }
 
-h2 { font-family: var(--disp); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin: 22px 4px 10px; font-weight: 400; }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; }
-.skills { display: grid; gap: 10px; }
+h2 { font-family: var(--disp); font-size: 13px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold-dim); margin: 14px 4px 6px; font-weight: 400; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 9px 12px; }
+.skills { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.skills .card { padding: 8px 9px; }
 .skill-row { display: flex; justify-content: space-between; align-items: baseline; }
-.skill-row b { font-size: 15px; } .skill-row span { font-family: var(--disp); color: var(--gold); font-size: 13px; }
+.skill-row { flex-direction: column; gap: 1px; }
+.skill-row b { font-size: 13px; } .skill-row span { font-family: var(--disp); color: var(--gold); font-size: 10px; }
 .quest { display: flex; gap: 12px; align-items: center; }
-.quest .ico { font-size: 30px; filter: drop-shadow(0 0 8px rgba(212,180,122,.4)); }
-.quest .q-title { font-family: var(--disp); font-size: 16px; }
-.quest .q-sub { font-size: 13px; color: var(--muted); }
+.quest .ico { font-size: 22px; filter: drop-shadow(0 0 8px rgba(212,180,122,.4)); }
+.quest .q-title { font-family: var(--disp); font-size: 14px; }
+.quest .q-sub { font-size: 12px; color: var(--muted); }
 .quest.done { border-color: var(--gold); box-shadow: 0 0 22px rgba(212,180,122,.2); }
 
-.ex-list { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.ex-list .ex:last-child:nth-child(odd) { grid-column: span 2; }
-.ex { background: var(--card); border: 1.5px solid var(--line); border-radius: 18px; padding: 16px 12px; text-align: left; }
-.ex .e-ico { font-size: 30px; } .ex .e-name { font-family: var(--disp); margin-top: 6px; } .ex .e-skill { font-size: 12px; color: var(--muted); }
+.ex-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.ex { background: var(--card); border: 1.5px solid var(--line); border-radius: 14px; padding: 8px 4px; text-align: center; }
+.ex .e-ico { font-size: 20px; } .ex .e-name { font-family: var(--disp); font-size: 12px; margin-top: 3px; } .ex .e-skill { display: none; }
 .ex.sel { border-color: var(--gold); background: linear-gradient(160deg, #2a2216, var(--card)); box-shadow: 0 0 20px rgba(212,180,122,.18); }
 
 .seg2 { grid-template-columns: 1fr 1fr !important; }
 .seg { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 5px; }
-.seg button { padding: 10px 4px; border-radius: 12px; font-size: 13px; font-weight: 700; color: var(--muted); background: transparent; }
+.seg button { padding: 8px 4px; border-radius: 12px; font-size: 12px; font-weight: 700; color: var(--muted); background: transparent; }
 .seg button.on { color: #1a140b; background: linear-gradient(180deg, var(--gold2), var(--gold)); }
-.seg-note { font-size: 12px; color: var(--muted); margin: 6px 4px 0; }
+.seg-note { font-size: 11px; color: var(--muted); margin: 4px 4px 0; line-height: 1.3; }
 
-.btn { display: block; width: 100%; padding: 17px; border-radius: 18px; font-family: var(--disp); font-size: 18px; margin-top: 14px; letter-spacing: .03em; }
+.btn { display: block; width: 100%; padding: 15px; border-radius: 16px; font-family: var(--disp); font-size: 17px; margin-top: 12px; letter-spacing: .03em; }
 .btn-gold { background: linear-gradient(180deg, var(--gold3), var(--gold) 60%, #b8935a); color: #15120d;
   box-shadow: 0 10px 30px rgba(212,180,122,.3), inset 0 -3px 0 #0003; }
 .btn-gold:active { transform: translateY(2px) scale(.99); }
-.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); font-size: 15px; }
+.btn-ghost { background: transparent; color: var(--muted); border: 1px solid var(--line); font-size: 14px; padding: 11px; margin-top: 8px; }
 .tip { font-size: 13px; color: var(--muted); text-align: center; margin-top: 12px; }
 .err { background: #2a1714; border: 1px solid #5a2a22; border-radius: 16px; padding: 14px; margin-top: 14px; font-size: 14px; }
 
@@ -127,29 +129,31 @@ canvas#fx { pointer-events: none; }
 .sessxp span { font-size: 10px; letter-spacing: .2em; color: var(--gold); }
 .sessxp b.tick { animation: tick .35s ease; }
 @keyframes tick { 40% { transform: scale(1.25); filter: brightness(1.5); } }
-.reps { position: absolute; left: 0; right: 0; top: 22%; text-align: center; pointer-events: none; }
-.reps b { display: block; font-family: var(--disp); font-size: 136px; line-height: 1; color: #fff;
+/* всё на краях: центр кадра свободен — человек должен видеть себя */
+.reps { position: absolute; left: 12px; top: calc(86px + var(--safe-top)); pointer-events: none; text-align: center;
+  padding: 6px 14px 8px; border-radius: 18px; background: #000a; border: 1px solid #d4b47a55; backdrop-filter: blur(4px); min-width: 96px; }
+.reps b { display: block; font-family: var(--disp); font-size: 52px; line-height: 1; color: #fff;
   text-shadow: 0 0 2px var(--gold), 0 6px 30px #000c, 0 0 46px rgba(212,180,122,.45); }
 .reps b.pop { animation: pop .38s cubic-bezier(.2,1.6,.4,1); }
 @keyframes pop { 0% { transform: scale(1); } 40% { transform: scale(1.32); color: var(--gold2); } 100% { transform: scale(1); } }
-.reps span { font-family: var(--disp); font-size: 13px; letter-spacing: .4em; color: #fffb; }
-.combo { position: absolute; right: 12px; top: calc(84px + var(--safe-top)); padding: 6px 12px; border-radius: 14px;
-  font-family: var(--disp); font-size: 17px; color: #fff; background: linear-gradient(90deg, var(--fire), var(--amber));
+.reps span { font-family: var(--disp); font-size: 9px; letter-spacing: .25em; color: #fffb; }
+.combo { position: absolute; right: 12px; top: calc(86px + var(--safe-top)); padding: 4px 10px; border-radius: 12px;
+  font-family: var(--disp); font-size: 13px; color: #fff; background: linear-gradient(90deg, var(--fire), var(--amber));
   box-shadow: 0 0 22px rgba(255,106,61,.55); opacity: 0; transform: scale(.8); transition: .2s; }
 .combo.on { opacity: 1; transform: scale(1); }
 .combo.hot { animation: flame .5s ease-in-out infinite alternate; }
 @keyframes flame { to { box-shadow: 0 0 34px rgba(255,140,60,.9); transform: scale(1.06); } }
-.depth { position: absolute; left: 12px; top: 34%; bottom: 34%; width: 10px; border-radius: 8px; background: #ffffff1f; overflow: hidden; }
+.depth { position: absolute; left: 12px; top: 42%; bottom: 30%; width: 8px; border-radius: 8px; background: #ffffff1f; overflow: hidden; }
 .depth i { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(0deg, var(--gold), var(--gold2)); border-radius: 8px; height: 0; transition: height .08s; }
-.sub { position: absolute; left: 14px; right: 14px; bottom: calc(150px + var(--safe-bot)); display: flex; justify-content: center; pointer-events: none; }
-.sub div { max-width: 92%; padding: 10px 14px; border-radius: 16px 16px 16px 4px; background: #000c; border: 1px solid var(--gold-dim);
-  font-weight: 700; font-size: 16px; color: var(--gold3); opacity: 0; transform: translateY(10px); transition: .25s; }
+.sub { position: absolute; left: 12px; right: 12px; bottom: calc(112px + var(--safe-bot)); display: flex; justify-content: flex-start; pointer-events: none; }
+.sub div { max-width: 86%; padding: 7px 11px; border-radius: 14px 14px 14px 4px; background: #000b; border: 1px solid var(--gold-dim);
+  font-weight: 700; font-size: 13px; color: var(--gold3); opacity: 0; transform: translateY(10px); transition: .25s; }
 .sub div::before { content: "🎙 Тренер: "; color: var(--gold); font-weight: 800; }
 .sub div.on { opacity: 1; transform: none; }
-.proto { position: absolute; left: 0; right: 0; top: calc(22% + 172px); text-align: center; pointer-events: none;
-  font-family: var(--disp); font-size: 17px; color: var(--gold2); text-shadow: 0 2px 8px #000; }
-.proto .dots { display: flex; justify-content: center; gap: 6px; margin-top: 6px; }
-.proto .dots i { width: 34px; height: 8px; border-radius: 4px; background: #ffffff26; }
+.proto { position: absolute; left: 12px; top: calc(178px + var(--safe-top)); text-align: left; pointer-events: none;
+  font-family: var(--disp); font-size: 12px; color: var(--gold2); text-shadow: 0 2px 8px #000; }
+.proto .dots { display: flex; justify-content: flex-start; gap: 4px; margin-top: 5px; }
+.proto .dots i { width: 18px; height: 6px; border-radius: 3px; background: #ffffff26; }
 .proto .dots i.done { background: var(--gold); box-shadow: 0 0 10px var(--gold); }
 .proto .dots i.cur { background: linear-gradient(90deg, var(--gold2) var(--p, 0%), #ffffff26 var(--p, 0%)); }
 .rest { position: absolute; inset: 0; display: none; place-items: center; background: #000b; backdrop-filter: blur(3px); z-index: 3; }
@@ -158,15 +162,15 @@ canvas#fx { pointer-events: none; }
 .rest small { font-family: var(--disp); letter-spacing: .3em; color: var(--gold); font-size: 15px; }
 .rest b { display: block; font-family: var(--disp); font-size: 110px; line-height: 1.05; }
 .rest span { color: var(--muted); }
-.hint { position: absolute; left: 14px; right: 14px; bottom: calc(92px + var(--safe-bot)); text-align: center;
-  background: #000b; border-radius: 14px; padding: 9px 12px; font-size: 14px; color: #fffd; }
+.hint { position: absolute; left: 12px; right: 12px; bottom: calc(66px + var(--safe-bot)); text-align: center;
+  background: #000b; border-radius: 12px; padding: 7px 10px; font-size: 13px; color: #fffd; }
 .hint.warn { color: var(--gold2); }
-.hud-bot { position: absolute; left: 14px; right: 14px; bottom: calc(16px + var(--safe-bot)); display: flex; gap: 10px; z-index: 4; }   /* «Завершить» доступна и на отдыхе */
-.hud-bot .btn { margin: 0; }
-.float { position: absolute; font-family: var(--disp); font-size: 46px; pointer-events: none; white-space: nowrap;
+.hud-bot { position: absolute; right: 12px; bottom: calc(14px + var(--safe-bot)); display: flex; gap: 10px; z-index: 4; }   /* «Завершить» доступна и на отдыхе */
+.hud-bot .btn { margin: 0; width: auto; padding: 10px 20px; font-size: 14px; border-radius: 14px; }
+.float { position: absolute; font-family: var(--disp); font-size: 30px; pointer-events: none; white-space: nowrap;
   background: linear-gradient(180deg, #fff, var(--gold2) 40%, var(--gold) 70%, #a37d42); -webkit-background-clip: text; background-clip: text; color: transparent;
   filter: drop-shadow(0 0 10px rgba(243,220,170,.7)) drop-shadow(0 3px 4px #000); animation: floatUp 1.25s cubic-bezier(.15,.8,.3,1) forwards; }
-.float small { font-size: 22px; }
+.float small { font-size: 15px; }
 @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 20px) scale(.5) rotate(-6deg); }
   18% { opacity: 1; transform: translate(-50%, -10px) scale(1.2) rotate(3deg); }
   100% { opacity: 0; transform: translate(-50%, -150px) scale(1) rotate(0); } }
@@ -306,7 +310,7 @@ canvas#fx { pointer-events: none; }
 <script type="module">
 import { EX, RepCounter } from "./counter.js";
 // ================= настройки игры =================
-const SKILLS = { str: "Сила", legs: "Ноги", end: "Выносливость" };
+const SKILLS = { str: "Сила", legs: "Ловкость", end: "Выносливость" };
 const RANKS = [[1, "Новичок"], [3, "Ученик"], [5, "Атлет"], [8, "Боец"], [12, "Чемпион"], [16, "Мастер"], [20, "Легенда «Кода тела»"]];
 const QUEST = { reps: 30, xp: 150 };
 // «Протокол 50» из программы Паши: 50 повторений частями, отдых 30 секунд между частями
@@ -438,7 +442,18 @@ function show(id) { document.querySelectorAll(".screen").forEach(s => s.classLis
 // ================= звук и вибрация =================
 let actx;
 const ctx = () => (actx = actx || new (window.AudioContext || window.webkitAudioContext)());
-function unlockAudio() { try { ctx().resume(); } catch (e) {} }      // только из нажатия — иначе телефон не даст звук
+// только из нажатия — иначе телефон не даст звук.
+// iPhone с включённым беззвучным режимом глушит Web Audio: просим режим «воспроизведение» (iOS 17+),
+// а для старых — крутим тихий mp3 через <audio>, он переводит звук в тот же режим.
+let silentEl;
+function unlockAudio() {
+  try { ctx().resume(); } catch (e) {}
+  try { if (navigator.audioSession) navigator.audioSession.type = "playback"; } catch (e) {}
+  try {
+    if (!silentEl) { silentEl = new Audio("sounds/silence.mp3"); silentEl.loop = true; silentEl.setAttribute("playsinline", ""); }
+    silentEl.play().catch(() => {});
+  } catch (e) {}
+}
 function tone(freq, dur = .12, type = "triangle", vol = .14, when = 0) {
   try {
     const t = ctx().currentTime + when, o = actx.createOscillator(), g = actx.createGain();
@@ -457,7 +472,7 @@ function haptic(kind) {
 
 // ================= голос тренера =================
 // Реплики записаны заранее (sounds/*.mp3): синтез речи в браузере на Android в Telegram часто не работает.
-const VOICE_VER = "pasha-3";   // меняется при перезаписи озвучки — чтобы Cloudflare и телефон не отдавали старые файлы
+const VOICE_VER = "pasha-4a";   // меняется при перезаписи озвучки — чтобы Cloudflare и телефон не отдавали старые файлы
 const Coach = {
   idx: null, phr: null, bufs: new Map(), src: null, busyUntil: 0, last: {}, subTimer: 0,
   async init() {
@@ -588,9 +603,9 @@ function heartStream(n, ms = 450, power = 1) {     // поток сердече�
   let left = n; const per = Math.max(1, Math.round(n / (ms / 40)));
   const t = setInterval(() => { spawnHearts(Math.min(per, left), power); left -= per; if (left <= 0) clearInterval(t); }, 40);
 }
-function floatText(html, top = 30) {        // выше строки протокола, чтобы не наезжать на неё
+function floatText(html, top = 0) {         // у карточки счёта в левом верхнем углу — лицо не закрываем
   const el = document.createElement("div"); el.className = "float"; el.innerHTML = html;
-  el.style.left = (40 + Math.random() * 20) + "%"; el.style.top = top + "%";
+  el.style.left = `calc(${150 + Math.random() * 30}px)`; el.style.top = `calc(${96 + top}px + var(--safe-top))`;
   $("stage").appendChild(el); setTimeout(() => el.remove(), 1300);
 }
 function levelUpFx(text) {
@@ -618,7 +633,8 @@ function addXp(skill, amount) {
   const after = lvl(S.xp).l;
   if (after > before) ups.push(`Герой — уровень ${after}`);
   const end = Math.ceil(amount * .4);
-  for (const [k, v] of [[skill, amount], ["end", end]]) {
+  // 40 % сверху идёт в «Выносливость»; у планки это и есть основной навык — второй раз не начисляем
+  for (const [k, v] of skill === "end" ? [[skill, amount]] : [[skill, amount], ["end", end]]) {
     const b = lvl(S.skills[k] || 0).l;
     S.skills[k] = (S.skills[k] || 0) + v;
     const a = lvl(S.skills[k]).l;
@@ -681,7 +697,7 @@ function onRep() {
     S.quest.reps++;
     if (S.quest.reps >= QUEST.reps) {
       S.quest.done = quest = true; sess.xp += QUEST.xp; sess.ups.push(`Квест дня выполнен: +${QUEST.xp} XP`);
-      ups.push(...addXp("end", QUEST.xp)); setTimeout(() => floatText(`КВЕСТ! +${QUEST.xp}`, 24), 500);
+      ups.push(...addXp("end", QUEST.xp)); setTimeout(() => floatText(`КВЕСТ! +${QUEST.xp}`, 40), 500);
     }
   }
   markStreak(); save();
@@ -690,7 +706,7 @@ function onRep() {
   floatText(`+${xp} XP${mult > 1 ? ` <small>x${mult.toFixed(1)}</small>` : ""}`);
   const c = $("combo"); c.textContent = `🔥 КОМБО ${sess.combo} · x${mult.toFixed(1)}`;
   c.classList.toggle("on", sess.combo > 1); c.classList.toggle("hot", sess.combo >= 8);
-  burst(fx.width / 2, fx.height * .33, 20 + Math.min(sess.combo, 10) * 4, 1 + Math.min(sess.combo, 10) * .05);
+  burst(fx.width * .16, fx.height * .17, 20 + Math.min(sess.combo, 10) * 4, 1 + Math.min(sess.combo, 10) * .05);
   heartStream(18 + Math.min(sess.combo, 10) * 2, 550, 1 + Math.min(sess.combo, 10) * .06);   // сердечки — награда за повторение
   tone(440 * Math.pow(1.06, Math.min(sess.combo, 12)), .12); haptic("rep");
   animateSess(sess.xp); hud(true);
@@ -714,7 +730,7 @@ function onHold(r) {                // планка: каждые 5 секунд
     sess.xp += xp;
     const ups = addXp("end", xp); markStreak(); save();
     retrigger($("wReps"), "pop"); floatText(`+${xp} XP`); heartStream(14, 600);
-    burst(fx.width / 2, fx.height * .33, 30, 1.1); tone(520 + sess.holdSteps * 20, .12); haptic("rep");
+    burst(fx.width * .16, fx.height * .17, 30, 1.1); tone(520 + sess.holdSteps * 20, .12); haptic("rep");
     animateSess(sess.xp); hud(true);
     if (ups.length) setTimeout(() => { levelUpFx(ups[0]); Coach.say("level", true); }, 250);
     else if (sess.holdSteps % 2 === 0) Coach.say(Math.random() < .7 ? "ex_plank" : "five");
@@ -733,9 +749,12 @@ let landmarker, video = $("video"), skel = $("skel"), sctx = skel.getContext("2d
 async function initModel() {
   if (landmarker) return;
   // модель лежит рядом с приложением: сервер Google с моделями из России отвечает 403
-  const v = "0.10.14";
-  const { FilesetResolver, PoseLandmarker } = await import(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${v}/vision_bundle.mjs`);
-  const files = await FilesetResolver.forVisionTasks(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${v}/wasm`);
+  // и сам распознаватель (MediaPipe 0.10.14) — тоже свой, в папке mediapipe/; jsDelivr — только запасной путь
+  const cdn = "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+  let base = new URL("mediapipe", location.href).href, mod;
+  try { mod = await import(`${base}/vision_bundle.mjs`); } catch (e) { base = cdn; mod = await import(`${cdn}/vision_bundle.mjs`); }
+  const { FilesetResolver, PoseLandmarker } = mod;
+  const files = await FilesetResolver.forVisionTasks(`${base}/wasm`);
   const opts = d => ({ baseOptions: { modelAssetPath: new URL("pose_landmarker_lite.task", location.href).href, delegate: d },
                        runningMode: "VIDEO", numPoses: 1 });
   try { landmarker = await PoseLandmarker.createFromOptions(files, opts("GPU")); }
@@ -874,7 +893,7 @@ function stop(showResult = true) {
   sctx.clearRect(0, 0, skel.width, skel.height);
   const wasDemo = !!(sess && sess.saved);
   if (wasDemo) { S = JSON.parse(sess.saved); sess.saved = null; }
-  else if (sess && sess.reps > S.best) S.best = sess.reps;
+  else if (sess && EX[sess.ex].kind !== "hold" && sess.reps > S.best) S.best = sess.reps;   // у планки reps — секунды, в рекорд не идут
   save();
   if (!showResult || !sess) { Coach.stop(); show("home"); render(); return; }
   const holdRes = EX[sess.ex].kind === "hold";
@@ -894,6 +913,8 @@ function stop(showResult = true) {
 }
 $("startBtn").onclick = () => start(false);
 $("demoBtn").onclick = () => start(true);
+// «Демо без камеры» — только тестерам: бот открывает им приложение со ссылкой ?t=1 (и в обычном браузере — для проверки)
+if (inTG && !new URLSearchParams(location.search).has("t")) $("demoBtn").style.display = "none";
 $("stopBtn").onclick = () => stop(true);
 $("againBtn").onclick = () => start(false);
 $("homeBtn").onclick = () => { Coach.stop(); show("home"); render(); };
