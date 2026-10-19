@@ -554,7 +554,8 @@ function drawFx() {
 }
 // ---- сердечки, как лайки в прямом эфире: вылетают снизу справа и плывут вверх ----
 let hearts = [];
-const HEART_COLORS = ["#ff3b6b", "#ff5d8f", "#ff2d55", "#ff7aa8", "#f3dcaa", "#d4b47a", "#ff4f6d"];
+// золото в цветах приложения: [светлый блик, основной, тень]
+const HEART_COLORS = [["#fff4d8", "#e6c88f", "#9b7a45"], ["#f3dcaa", "#d4b47a", "#8a6a3a"], ["#ffe9b8", "#d9b56a", "#a07c3f"], ["#fff8e6", "#f0d49a", "#b08a4c"]];
 function spawnHearts(n, power = 1) {
   const k = fx.width / 400;
   for (let i = 0; i < n; i++) {
@@ -575,9 +576,11 @@ function drawHearts() {
   for (const h of hearts) {
     h.grow = Math.min(1, h.grow + .12); h.sway += .06; h.y += h.vy; h.x += Math.sin(h.sway) * h.sw;
     const sc = h.s * (h.grow < 1 ? .4 + .6 * h.grow : 1);
-    fctx.globalAlpha = Math.min(1, h.life * 1.6); fctx.fillStyle = h.c;
-    fctx.shadowColor = h.c; fctx.shadowBlur = 10 * fx.width / 400;
-    heartPath(fctx, h.x, h.y - sc / 2, sc); fctx.fill();
+    const top = h.y - sc / 2, g = fctx.createLinearGradient(h.x - sc / 2, top, h.x + sc / 3, top + sc);
+    g.addColorStop(0, h.c[0]); g.addColorStop(.5, h.c[1]); g.addColorStop(1, h.c[2]);
+    fctx.globalAlpha = Math.min(1, h.life * 1.6); fctx.fillStyle = g;
+    fctx.shadowColor = "rgba(243,220,170,.55)"; fctx.shadowBlur = 12 * fx.width / 400;
+    heartPath(fctx, h.x, top, sc); fctx.fill();
   }
   fctx.shadowBlur = 0; fctx.globalAlpha = 1;
 }
@@ -688,7 +691,7 @@ function onRep() {
   const c = $("combo"); c.textContent = `🔥 КОМБО ${sess.combo} · x${mult.toFixed(1)}`;
   c.classList.toggle("on", sess.combo > 1); c.classList.toggle("hot", sess.combo >= 8);
   burst(fx.width / 2, fx.height * .33, 20 + Math.min(sess.combo, 10) * 4, 1 + Math.min(sess.combo, 10) * .05);
-  heartStream(sess.demo === true ? 22 + Math.min(sess.combo, 10) * 2 : 10 + Math.min(sess.combo, 10), 500, 1 + Math.min(sess.combo, 10) * .06);
+  heartStream(18 + Math.min(sess.combo, 10) * 2, 550, 1 + Math.min(sess.combo, 10) * .06);   // сердечки — награда за повторение
   tone(440 * Math.pow(1.06, Math.min(sess.combo, 12)), .12); haptic("rep");
   animateSess(sess.xp); hud(true);
   protoRep();
@@ -788,16 +791,9 @@ function processPose(lm) {
   if (e.kind === "hold") { $("depth").style.height = "100%"; onHold(r); setHint(sess.holdSteps ? "" : "Держите! Тело одной линией"); return; }
   if (r.depth != null) {
     $("depth").style.height = (r.depth * 100) + "%";
-    // на выходе из нижней точки — сердечки: чем быстрее поднимаешься, тем больше
-    if (r.state === "down") sess.wasDown = true;
-    if (sess.wasDown && sess.prevDepth != null && r.depth < sess.prevDepth) {
-      sess.heartAcc = (sess.heartAcc || 0) + (sess.prevDepth - r.depth) * 26;
-      const n = Math.floor(sess.heartAcc); if (n) { spawnHearts(n, 1 + (sess.prevDepth - r.depth) * 4); sess.heartAcc -= n; }
-    }
-    sess.prevDepth = r.depth;
   }
   if (sess.p50?.resting) { setHint("Отдыхаем — повторения не считаются"); return; }
-  if (r.rep) { sess.wasDown = false; onRep(); setHint(sess.reps < 3 ? "Отлично, продолжайте!" : ""); }
+  if (r.rep) { onRep(); setHint(sess.reps < 3 ? "Отлично, продолжайте!" : ""); }
   else if (r.state === "down") setHint(sess.reps < 3 ? "Хорошо! Теперь вверх ⬆️" : "");
   else if (sess.reps === 0) setHint(sess.ex === "squat" ? "Присядьте поглубже — бёдра почти параллельно полу" : "Опуститесь ниже — согните руки");
 }
