@@ -13,7 +13,7 @@
  * Работает без сборки, без CDN, классическим <script>. Повторный show() сам закрывает прежний. */
 (function () {
   "use strict";
-  var BASE = "demo/", VER = "4";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
+  var BASE = "demo/", VER = "5";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
   try { if (document.currentScript && document.currentScript.src) BASE = new URL(".", document.currentScript.src).href; } catch (e) {}
 
   var GOLD = "#d4b47a", GOLD2 = "#f3dcaa", HI = "#fff4da", DEEP = "#5e4a2a", BG = "#0f0f12";
@@ -22,7 +22,8 @@
   // кости: [от, до, группа]; 15 — середина плеч («шея»), 16 — середина таза (считаются на лету)
   var BONES = [[1, 2, "sh"], [7, 8, "hp"], [1, 7, "core"], [2, 8, "core"], [15, 0, "neck"],
     [1, 3, "arm"], [3, 5, "arm"], [2, 4, "arm"], [4, 6, "arm"],
-    [7, 9, "leg"], [9, 11, "leg"], [11, 13, "foot"], [8, 10, "leg"], [10, 12, "leg"], [12, 14, "foot"]];
+    [7, 9, "leg"], [9, 11, "leg"], [11, 17, "foot"], [17, 13, "foot"], [8, 10, "leg"], [10, 12, "leg"], [12, 18, "foot"], [18, 14, "foot"]];
+  // 17, 18 — пятки (считаются из лодыжки и носка): без них стопа — палка вниз, и стоя кажется, что человек на носочках
 
   /* tips — три позиции движения по порядку: [с, текст] (1 — старт, 2 — рабочая фаза, 3 — возврат/главная ошибка),
    * появляются вместе с движением; каждая — в одну строку на 360 px. phone — как поставить телефон.
@@ -329,14 +330,38 @@
   /* поза в момент t (Catmull-Rom между кадрами) → 17 точек (+ шея, таз) */
   function pose(c, t) {
     var clip = c.clip, p = clip.p, n = clip.n, f = Math.max(0, Math.min(n - 1, t * clip.fps)), i = Math.floor(f), u = f - i;
-    var i0 = Math.max(0, i - 1), i1 = i, i2 = Math.min(n - 1, i + 1), i3 = Math.min(n - 1, i + 2), out = new Array(17);
+    var i0 = Math.max(0, i - 1), i1 = i, i2 = Math.min(n - 1, i + 1), i3 = Math.min(n - 1, i + 2), out = new Array(19);
     for (var j = 0; j < 15; j++) {
       var q = [0, 0, 0];
       for (var k = 0; k < 3; k++) { var o = j * 3 + k; q[k] = cr(p[i0 * 45 + o], p[i1 * 45 + o], p[i2 * 45 + o], p[i3 * 45 + o], u); }
       out[j] = q;
     }
     out[15] = mid(out[1], out[2]); out[16] = mid(out[7], out[8]);
+    out[17] = heel(out[11], out[13], out[9], out[7], out[8]); out[18] = heel(out[12], out[14], out[10], out[7], out[8]);
     return out;
+  }
+  /* пятка: стопа — жёсткая. Стоя ровно линия лодыжка→носок идёт вниз на ~23°, подошва горизонтальна, пятка на полу
+   * на 5 см позади и 5,8 см ниже лодыжки. Поворачиваем «лодыжка→носок» на 23° к верху стопы (верх — в сторону колена). */
+  var HEEL_T = 23.5 * Math.PI / 180;
+  function heel(A, T, K, lh, rh) {
+    var d = [T[0] - A[0], T[1] - A[1], T[2] - A[2]], L = Math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]) || 1e-6;
+    var k = [-d[2], 0, d[0]], kl = Math.sqrt(k[0] * k[0] + k[2] * k[2]);            // d × вверх
+    if (kl < 0.3 * L) {                                                               // стопа почти вертикальна — ось по тазу
+      var hx = [lh[0] - rh[0], lh[1] - rh[1], lh[2] - rh[2]], pd = (hx[0] * d[0] + hx[1] * d[1] + hx[2] * d[2]) / (L * L);
+      k = [hx[0] - pd * d[0], hx[1] - pd * d[1], hx[2] - pd * d[2]];
+    }
+    kl = Math.sqrt(k[0] * k[0] + k[1] * k[1] + k[2] * k[2]) || 1e-6; k = [k[0] / kl, k[1] / kl, k[2] / kl];
+    var kd = [k[1] * d[2] - k[2] * d[1], k[2] * d[0] - k[0] * d[2], k[0] * d[1] - k[1] * d[0]];   // k × d, |kd| = L
+    var toK = [K[0] - A[0], K[1] - A[1], K[2] - A[2]];
+    if (kd[0] * toK[0] + kd[1] * toK[1] + kd[2] * toK[2] < 0) kd = [-kd[0], -kd[1], -kd[2]];      // верх стопы — к колену
+    var c1 = Math.cos(HEEL_T) / L, s1 = Math.sin(HEEL_T) / L, c2 = -s1, s2 = c1;      // подошва (θ) и нормаль (θ + 90°)
+    var H = [0, 0, 0];
+    for (var m = 0; m < 3; m++) {
+      var sole = d[m] * c1 + kd[m] * s1, nrm = d[m] * c2 + kd[m] * s2;
+      H[m] = A[m] - sole * 0.05 - nrm * 0.058;
+    }
+    if (H[1] < 0.015) H[1] = 0.015;                                                   // не ниже пола
+    return H;
   }
   function mid(a, b) { return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2]; }
 
