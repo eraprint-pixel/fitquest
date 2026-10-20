@@ -107,6 +107,25 @@
   "quest": [
    1,
    12
+  ],
+  "ex_raise": [
+   7,
+   8
+  ],
+  "ex_thruster": [
+   7,
+   8
+  ],
+  "ex_climber": [
+   7
+  ],
+  "ex_wallsit": [
+   7,
+   8
+  ],
+  "ex_crunch": [
+   7,
+   8
   ]
  },
  "tone": {
@@ -509,30 +528,30 @@
  "roast": {
   "x18": [
    "rv_bonus_6",
-   "rv_meh_1",
-   "rv_meh_16",
-   "rv_meh_19",
-   "rv_meh_3",
+   "rv_meh_10",
+   "rv_meh_14",
+   "rv_meh_4",
    "rv_meh_7",
-   "rv_notfood_1",
-   "rv_notfood_10",
-   "rv_notfood_2",
-   "rv_notfood_5",
-   "rv_off_10",
+   "rv_meh_8",
+   "rv_notfood_11",
+   "rv_notfood_4",
+   "rv_notfood_7",
+   "rv_notfood_8",
    "rv_off_15",
    "rv_off_16",
-   "rv_off_2",
    "rv_off_3",
+   "rv_off_4",
+   "rv_off_8",
    "rv_off_9",
-   "rv_ok_1",
-   "rv_ok_10",
+   "rv_ok_11",
    "rv_ok_16",
-   "rv_ok_17",
-   "rv_ok_3",
-   "rv_ok_8"
+   "rv_ok_18",
+   "rv_ok_4",
+   "rv_ok_5",
+   "rv_ok_9"
   ],
   "tone": {
-   "rv_ok_20": "Напарник"
+   "rv_ok_8": "Напарник"
   },
   "live": [
    "rv_wait_1",
@@ -541,33 +560,33 @@
    "rv_wait_4",
    "rv_wait_5",
    "rv_wait_6",
-   "rv_ok_13",
-   "rv_ok_14",
-   "rv_ok_15",
-   "rv_ok_16",
-   "rv_ok_17",
-   "rv_ok_18",
-   "rv_ok_19",
-   "rv_ok_20",
-   "rv_meh_13",
-   "rv_meh_14",
-   "rv_meh_15",
-   "rv_meh_16",
-   "rv_meh_17",
-   "rv_meh_18",
-   "rv_meh_19",
-   "rv_off_13",
-   "rv_off_14",
-   "rv_off_15",
-   "rv_off_16",
-   "rv_off_17",
-   "rv_off_18",
-   "rv_notfood_7",
-   "rv_notfood_8",
-   "rv_notfood_9",
-   "rv_notfood_10",
-   "rv_notfood_11",
-   "rv_notfood_12",
+   "rv_ok_1",
+   "rv_ok_2",
+   "rv_ok_3",
+   "rv_ok_4",
+   "rv_ok_5",
+   "rv_ok_6",
+   "rv_ok_7",
+   "rv_ok_8",
+   "rv_meh_1",
+   "rv_meh_2",
+   "rv_meh_3",
+   "rv_meh_4",
+   "rv_meh_5",
+   "rv_meh_6",
+   "rv_meh_7",
+   "rv_off_1",
+   "rv_off_2",
+   "rv_off_3",
+   "rv_off_4",
+   "rv_off_5",
+   "rv_off_6",
+   "rv_notfood_1",
+   "rv_notfood_2",
+   "rv_notfood_3",
+   "rv_notfood_4",
+   "rv_notfood_5",
+   "rv_notfood_6",
    "rv_bonus_1",
    "rv_bonus_2",
    "rv_bonus_3",
@@ -580,11 +599,11 @@
    "rv_soft_4"
   ],
   "count": {
+   "wait": 6,
    "ok": 20,
    "meh": 19,
    "off": 18,
    "notfood": 12,
-   "wait": 6,
    "bonus": 6,
    "soft": 4
   }

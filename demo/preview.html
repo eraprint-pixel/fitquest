@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Код тела · Как делать — все упражнения</title>
+<meta name="theme-color" content="#0b0b0b">
+<style>
+@font-face { font-family: "Russo One"; src: url(../fonts/russo-one-cyrillic.woff2) format("woff2"); unicode-range: U+0400-045F; font-display: swap; }
+@font-face { font-family: "Russo One"; src: url(../fonts/russo-one-latin.woff2) format("woff2"); unicode-range: U+0000-00FF, U+2000-206F; font-display: swap; }
+html, body { margin: 0; background: #0b0b0b; color: #f1ece3; font: 16px/1.4 -apple-system, "SF Pro Text", "Segoe UI", Roboto, sans-serif; }
+header { padding: calc(16px + env(safe-area-inset-top, 0px)) 16px 4px; max-width: 1400px; margin: 0 auto; }
+h1 { font: 22px/1.2 "Russo One", -apple-system, sans-serif; color: #f3dcaa; margin: 0 0 4px; letter-spacing: .02em; }
+header p { margin: 0; color: #9a958d; font-size: 14px; }
+header button { margin-top: 10px; min-height: 40px; padding: 0 14px; border-radius: 12px; border: 0; background: #211f24; color: #f3dcaa;
+  box-shadow: inset 0 0 0 1px #3a3530; font: 600 15px/1 -apple-system, sans-serif; cursor: pointer; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; padding: 12px 16px calc(24px + env(safe-area-inset-bottom, 0px));
+  max-width: 1400px; margin: 0 auto; box-sizing: border-box; }
+.cell { position: relative; cursor: pointer; }
+.cell .id { position: absolute; right: 14px; top: 12px; z-index: 2; font: 12px/1 ui-monospace, Menlo, monospace; color: #7a684a; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Как делать · все упражнения</h1>
+  <p>Тап по карточке — проиграть ещё раз. Кнопка ниже — открыть как в приложении (на весь экран).</p>
+  <button type="button" id="modal">Открыть «Приседания» как в приложении</button>
+</header>
+<div class="grid" id="grid"></div>
+<script src="demo3d.js"></script>
+<script>
+(function () {
+  // служебное: ?modal=1 — как в приложении; ?ex=squat,lunge — только эти; ?at=1.5 — стоп-кадр; ?times=0.5,2,4 — несколько стоп-кадров; ?reduced=1
+  var q = new URLSearchParams(location.search), at = q.get("at"), only = q.get("ex"), reduced = q.get("reduced");
+  var times = q.get("times") ? q.get("times").split(",").map(Number) : [at != null ? +at : undefined];
+  var ids = only ? only.split(",") : Demo3D.list, grid = document.getElementById("grid"), players = [];
+  ids.forEach(function (id) { times.forEach(function (tm) {
+    var cell = document.createElement("div"); cell.className = "cell";
+    var tag = document.createElement("div"); tag.className = "id"; tag.textContent = id + (tm != null ? " · " + tm + " с" : ""); cell.appendChild(tag);
+    grid.appendChild(cell);
+    var p = Demo3D.mount(cell, id, { noButtons: true, at: tm, reduced: reduced != null ? reduced === "1" : undefined });
+    if (p) { players.push(p); cell.addEventListener("click", function () { p.replay(); }); }
+  }); });
+  document.getElementById("modal").addEventListener("click", function () {
+    Demo3D.show(document.body, only ? ids[0] : "squat", { onDone: function (id) { console.log("onDone", id, Demo3D.seen(id)); } });
+  });
+  // ?modal=1 — сразу открыть первый ?ex как в приложении (для скриншотов; с ?at — стоп-кадр)
+  if (q.get("modal")) Demo3D.show(document.body, ids[0], { at: at != null ? +at : undefined, reduced: reduced != null ? reduced === "1" : undefined,
+    onDone: function (id) { console.log("onDone", id, Demo3D.seen(id)); } });
+  window.__players = players;
+})();
+</script>
+</body>
+</html>
