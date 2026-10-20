@@ -199,6 +199,65 @@ canvas#fx { pointer-events: none; }
 .gains { margin-top: 14px; text-align: left; }
 .gains div { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 14px; margin-top: 8px; }
 .gains div.lv { border-color: var(--gold); font-family: var(--disp); }
+
+/* ---------- «Прожарка тарелки» ---------- */
+.rs-entry { display: none; width: 100%; margin-top: 10px; padding: 12px 14px; border-radius: 16px; text-align: left;
+  background: linear-gradient(120deg, #2a1d12, var(--card)); border: 1.5px solid var(--gold); color: var(--text); }
+.rs-entry b { font-family: var(--disp); font-size: 15px; } .rs-entry span { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.rs-entry.on { display: block; }
+.rs-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.rs-head button { color: var(--muted); font-size: 14px; padding: 6px 2px; background: none; }
+.rs-title { font-family: var(--disp); font-size: 20px; letter-spacing: .04em; }
+.rs-sub { font-size: 12px; color: var(--muted); margin: -4px 0 12px; }
+.rs-box { display: none; } .rs-box.on { display: block; }
+.rs-pick { display: grid; place-items: center; gap: 8px; height: 230px; border: 2px dashed var(--gold-dim); border-radius: 22px;
+  background: radial-gradient(circle at 50% 40%, rgba(212,180,122,.12), transparent 60%), var(--card); cursor: pointer; text-align: center; }
+.rs-pick .ic { font-size: 48px; filter: drop-shadow(0 0 12px rgba(243,220,170,.4)); }
+.rs-pick b { font-family: var(--disp); font-size: 18px; } .rs-pick span { font-size: 12px; color: var(--muted); }
+.rs-cap { width: 100%; margin-top: 10px; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--card);
+  color: var(--text); font-size: 14px; }
+.rs-note { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.35; }
+.rs-load { text-align: center; padding: 26px 0 8px; }
+.rs-logo { position: relative; width: 120px; height: 140px; margin: 0 auto; }
+.rs-logo img { position: relative; width: 100%; height: 100%; object-fit: contain; animation: rsShine 2.4s ease-in-out infinite; }
+.rs-logo::before { content: ""; position: absolute; inset: -30px; border-radius: 50%; background: radial-gradient(circle, rgba(212,180,122,.45), transparent 62%);
+  animation: rsPulse 1.6s ease-in-out infinite; }
+.rs-spark { position: absolute; bottom: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--gold2); opacity: 0; animation: rsSpark 1.8s linear infinite; }
+@keyframes rsPulse { 50% { transform: scale(1.18); opacity: .7; } }
+@keyframes rsShine { 50% { filter: drop-shadow(0 0 14px rgba(243,220,170,.9)) brightness(1.25); } }
+@keyframes rsSpark { 0% { opacity: 0; transform: translateY(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-130px); } }
+.rs-stage { font-family: var(--disp); margin-top: 18px; font-size: 15px; min-height: 20px; }
+.rs-bar { height: 10px; border-radius: 6px; background: #2b282d; overflow: hidden; margin: 12px 30px 0; }
+.rs-bar i { display: block; height: 100%; width: 0; border-radius: 6px; transition: width .6s ease;
+  background: linear-gradient(90deg, #a98a55, var(--gold), var(--gold2)); box-shadow: 0 0 12px rgba(243,220,170,.6); }
+.rs-pct { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.rs-card { position: relative; border-radius: 20px; overflow: hidden; border: 3px solid var(--vc, var(--gold)); animation: rsIn .45s cubic-bezier(.2,1.2,.4,1); }
+.rs-card img { display: block; width: 100%; aspect-ratio: 960 / 560; object-fit: cover; }
+.rs-score { position: absolute; right: 12px; bottom: 12px; width: 86px; height: 86px; border-radius: 50%; display: grid; place-items: center;
+  background: var(--vc); color: var(--vi); font-family: var(--disp); font-size: 40px; box-shadow: 0 0 0 6px #0b0b0b, 0 0 26px var(--vc);
+  animation: rsPop .6s .25s cubic-bezier(.2,1.6,.4,1) both; }
+.rs-score small { position: absolute; right: 14px; bottom: 16px; font-size: 13px; }
+.rs-verdict { position: absolute; left: 12px; bottom: 14px; padding: 7px 14px; border-radius: 20px; background: var(--vc); color: var(--vi);
+  font-family: var(--disp); font-size: 14px; animation: rsSlide .5s .45s ease both; }
+@keyframes rsIn { from { opacity: 0; transform: translateY(18px) scale(.97); } }
+@keyframes rsPop { from { transform: scale(0) rotate(-20deg); } }
+@keyframes rsSlide { from { opacity: 0; transform: translateX(-30px); } }
+.rs-kcal { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; animation: rsIn .5s .3s both; }
+.rs-kcal b { font-family: var(--disp); font-size: 22px; color: var(--gold); } .rs-kcal small { display: block; font-size: 10px; color: var(--muted); letter-spacing: .1em; }
+.rs-kcal span { text-align: right; font-size: 13px; } .rs-kcal em { display: block; font-style: normal; font-size: 10px; color: var(--muted); }
+.rs-quote { margin-top: 10px; padding: 12px 14px 10px 40px; position: relative; border-radius: 16px; background: var(--card); border: 1px solid var(--gold-dim);
+  font-weight: 700; font-size: 15px; line-height: 1.35; animation: rsIn .5s .45s both; }
+.rs-quote::before { content: "«"; position: absolute; left: 12px; top: 0; font-family: var(--disp); font-size: 40px; color: var(--gold); }
+.rs-quote i { display: block; text-align: right; font-style: normal; font-weight: 400; font-size: 11px; color: var(--gold-dim); margin-top: 4px; }
+.rs-tip { margin-top: 8px; font-size: 13px; color: var(--gold3); animation: rsIn .5s .55s both; }
+.rs-fb { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 10px; }
+.rs-fb button { padding: 8px 4px; border-radius: 12px; border: 1px solid var(--line); background: var(--card); color: var(--muted); font-size: 12px; }
+.rs-fb button.on { border-color: var(--gold); color: var(--gold2); }
+.rs-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .rs-row2 .btn { margin-top: 8px; }
+.rs-msg { padding: 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); font-size: 15px; line-height: 1.4; }
+.rs-day { margin-top: 18px; } .rs-day .card { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; font-size: 13px; }
+.rs-day .card b { font-family: var(--disp); color: var(--gold); white-space: nowrap; }
+.rs-day .tot { display: flex; justify-content: space-between; margin-top: 8px; font-family: var(--disp); font-size: 14px; color: var(--gold2); }
 </style>
 </head>
 <body>
@@ -223,6 +282,8 @@ canvas#fx { pointer-events: none; }
       <div class="stat"><b id="sBest">0</b><span>рекорд за раз</span></div>
     </div>
   </div>
+
+  <button class="rs-entry" id="rsEntry"><b>🔥 Прожарка тарелки</b><span>Сфоткай еду — тренер оценит тарелку, калории и даст совет</span></button>
 
   <h2>Квест дня</h2>
   <div class="card quest" id="quest">
@@ -291,6 +352,36 @@ canvas#fx { pointer-events: none; }
   </div>
 </section>
 
+
+<!-- ПРОЖАРКА ТАРЕЛКИ -->
+<section class="screen" id="roast">
+  <div class="rs-head"><button id="rsBack">‹ Назад</button><div class="rs-title goldtext">ПРОЖАРКА ТАРЕЛКИ</div></div>
+  <div class="rs-sub">Тренер оценит тарелку: насколько она под цель, примерные калории и совет. Шутим про еду, а не про тебя.</div>
+
+  <div class="rs-box" id="rsTone">
+    <div class="rs-msg">Оценку делает нейросеть — это развлечение, а не консультация врача; калории примерные (±30%).
+      Фото уходит на оценку без твоего имени и не хранится. Не снимай лица и документы.<br><br><b>Выбери тон тренера:</b></div>
+    <button class="btn btn-gold" data-tone="hard">🔥 ЖЁСТКО, С МАТОМ — МНЕ 18+</button>
+    <button class="btn btn-ghost" data-tone="soft">🙂 Жёстко, но без мата</button>
+  </div>
+
+  <div class="rs-box" id="rsPickBox">
+    <label class="rs-pick" for="rsFile"><div class="ic">📸</div><b>СФОТКАТЬ ТАРЕЛКУ</b><span>или выбрать фото из галереи</span></label>
+    <input type="file" id="rsFile" accept="image/*" hidden>
+    <input class="rs-cap" id="rsCap" maxlength="120" placeholder="Подпись (необязательно): «ужин, 23:00, половина»">
+    <div class="rs-note">Оценка нейросети по фото — не консультация врача. Калории примерные: масло и соусы на фото не видны.</div>
+  </div>
+
+  <div class="rs-box" id="rsLoad"><div class="rs-load">
+    <div class="rs-logo"><img src="logo-mark.png" alt=""><i class="rs-spark" style="left:20%"></i><i class="rs-spark" style="left:48%;animation-delay:.5s"></i>
+      <i class="rs-spark" style="left:75%;animation-delay:1s"></i><i class="rs-spark" style="left:35%;animation-delay:1.3s"></i></div>
+    <div class="rs-stage" id="rsStage">Смотрю на тарелку…</div>
+    <div class="rs-bar"><i id="rsBar"></i></div><div class="rs-pct" id="rsPct">0%</div>
+  </div></div>
+
+  <div class="rs-box" id="rsRes"></div>
+  <div class="rs-day" id="rsDay"></div>
+</section>
 <!-- ИТОГИ -->
 <section class="screen" id="result">
   <div class="brand"><img src="logo.png" alt="Код тела"></div>
@@ -472,7 +563,7 @@ function haptic(kind) {
 
 // ================= голос тренера =================
 // Реплики записаны заранее (sounds/*.mp3): синтез речи в браузере на Android в Telegram часто не работает.
-const VOICE_VER = "pasha-4d";   // меняется при перезаписи озвучки — чтобы Cloudflare и телефон не отдавали старые файлы
+const VOICE_VER = "pasha-4e";   // меняется при перезаписи озвучки — чтобы Cloudflare и телефон не отдавали старые файлы
 const Coach = {
   idx: null, phr: null, bufs: new Map(), src: null, busyUntil: 0, last: {}, subTimer: 0,
   async init() {
@@ -918,14 +1009,125 @@ if (inTG && !new URLSearchParams(location.search).has("t")) $("demoBtn").style.d
 $("stopBtn").onclick = () => stop(true);
 $("againBtn").onclick = () => start(false);
 $("homeBtn").onclick = () => { Coach.stop(); show("home"); render(); };
-tg?.BackButton?.onClick(() => stop(true));
+tg?.BackButton?.onClick(() => $("roast").classList.contains("on") ? rsClose() : stop(true));
 
 // ================= Telegram =================
 if (tg) {
   tg.ready(); tg.expand();
   try { tg.setHeaderColor("#0b0b0b"); tg.setBackgroundColor("#0b0b0b"); tg.disableVerticalSwipes?.(); } catch (e) {}
 }
-load(); render();
+
+// ================= «Прожарка тарелки» =================
+// Фото уходит на наш сервер (ключ нейросети там, а не в приложении); кто прислал — сервер проверяет по подписи Telegram.
+const RS_API = "https://kodtela.era-print.com/api/roast";
+const RS = { tone: null, allowed: false, blob: null, url: null, last: null, tick: 0 };
+const RS_V = { ok: ["var(--gold)", "#15120d"], meh: ["#ffb547", "#15120d"], off: ["#ff6a3d", "#fff"] };
+const RS_EX = { squat: "приседаний", pushup: "отжиманий", lunge: "выпадов", calf: "подъёмов на носки", plank: "сек. планки" };
+const RS_VOICE = { ok: 12, meh: 12, off: 12, notfood: 6 };
+async function rsApi(path, body, form = false) {
+  const opt = { method: "POST" };
+  if (form) { body.append("initData", tg.initData); opt.body = body; }
+  else { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ ...body, initData: tg.initData }); }
+  const r = await fetch(RS_API + path, opt);
+  return r.json();
+}
+function rsShow(id) { ["rsTone", "rsPickBox", "rsLoad", "rsRes"].forEach(b => $(b).classList.toggle("on", b === id)); }
+async function rsInit() {
+  if (!inTG) return;
+  try { const m = await rsApi("/me", {}); RS.allowed = !!m.allowed; RS.tone = m.tone; if (RS.allowed) { $("rsEntry").classList.add("on"); rsDay(m); } } catch (e) {}
+}
+function rsOpen() {
+  unlockAudio(); show("roast"); tg?.BackButton?.show();
+  rsShow(RS.tone ? "rsPickBox" : "rsTone");
+}
+function rsClose() { show("home"); render(); tg?.BackButton?.hide(); }
+async function rsCompress(file) {          // ≤1280 px, JPEG — быстрее уходит и меньше трафика
+  const bmp = await createImageBitmap(file, { imageOrientation: "from-image" });
+  const k = Math.min(1, 1280 / Math.max(bmp.width, bmp.height));
+  const c = document.createElement("canvas"); c.width = Math.round(bmp.width * k); c.height = Math.round(bmp.height * k);
+  c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height);
+  return new Promise(ok => c.toBlob(ok, "image/jpeg", .82));
+}
+function rsProgress(stage, pct) { $("rsStage").textContent = stage; $("rsBar").style.width = pct + "%"; $("rsPct").textContent = pct + "%"; }
+function rsVoice(kind) {
+  if (RS.tone !== "hard" || S.voice === "off") return;
+  Coach.play(`rv_${kind}_${1 + Math.floor(Math.random() * RS_VOICE[kind])}`, true);
+}
+async function rsSend(file) {
+  rsShow("rsLoad"); rsProgress("Сжимаю фото…", 8);
+  const stages = [[25, "Нейросеть разглядывает тарелку…"], [42, "Считаю калории…"], [58, "Ищу, к чему придраться…"], [72, "Готовлю прожарку…"], [85, "Почти готово…"]];
+  let k = 0; clearInterval(RS.tick); RS.tick = setInterval(() => { if (k < stages.length) { const [p, t] = stages[k++]; rsProgress(t, p); } }, 1400);
+  try {
+    RS.blob = await rsCompress(file);
+    if (RS.url) URL.revokeObjectURL(RS.url); RS.url = URL.createObjectURL(RS.blob);
+    const fd = new FormData(); fd.append("photo", RS.blob, "plate.jpg"); fd.append("caption", $("rsCap").value.trim());
+    const r = await rsApi("", fd, true);
+    clearInterval(RS.tick); rsProgress("Готово!", 100);
+    await new Promise(ok => setTimeout(ok, 350));
+    rsResult(r);
+  } catch (e) {
+    clearInterval(RS.tick); rsResult({ status: "error" });
+  }
+}
+function rsResult(r) {
+  RS.last = r; rsShow("rsRes");
+  const box = $("rsRes"), again = `<button class="btn btn-gold" id="rsMore">🍽 ЕЩЁ ТАРЕЛКУ</button>`;
+  const msg = { limit: "На сегодня прожарок хватит 🔥 Тарелки на завтра — жду с утра, боец.", budget: "Тренер сегодня перегрелся от прожарок 🔥 Возвращайся завтра.",
+                error: "Нейросеть сейчас не отвечает 😮‍💨 Попробуй ещё раз через минуту." };
+  if (r.status === "red") {
+    box.innerHTML = `<div class="rs-msg">🤝 ${esc(r.roast || "Давай без жести. Ты важнее любой тарелки.")}<br><br>${esc(r.tip || "")}<br><br>Если тяжело с едой — это нормально обсудить с врачом или психологом. Тренер на связи.</div>`;
+  } else if (r.status === "notfood") {
+    box.innerHTML = `<div class="rs-msg">🤨 ${esc(r.roast || "Это не еда, боец. Где тарелка?")}</div>` + again; rsVoice("notfood");
+  } else if (r.status !== "ok") {
+    box.innerHTML = `<div class="rs-msg">${msg[r.status] || msg.error}</div>` + again;
+  } else {
+    const [vc, vi] = RS_V[r.verdict] || RS_V.meh;
+    const ex = r.mission_ex, amt = r.mission_amount;
+    box.innerHTML = `
+      <div class="rs-card" style="--vc:${vc};--vi:${vi}"><img src="${RS.url}" alt="">
+        <div class="rs-verdict">${esc(r.verdict_label)}</div><div class="rs-score">${r.score}<small>/10</small></div></div>
+      <div class="card rs-kcal"><div><small>КАЛОРИИ</small><b>≈ ${r.kcal_min}–${r.kcal_max}</b></div>
+        <span>Б ~${r.protein} · Ж ~${r.fat} · У ~${r.carbs} г<em>примерно, ±30% · масло не видно</em></span></div>
+      <div class="rs-quote">${esc(r.roast)}<i>— тренер Паша · ${esc(r.dish || "")}</i></div>
+      <div class="rs-tip">💡 ${esc(r.tip)}</div>
+      <button class="btn btn-gold" id="rsMission" style="font-size:15px">💪 МИССИЯ: ${amt} ${(RS_EX[ex] || "").toUpperCase()}</button>
+      <div class="rs-fb"><button data-fb="up">ккал больше ⬆️</button><button data-fb="ok">👌 точно</button><button data-fb="down">ккал меньше ⬇️</button></div>
+      <div class="rs-row2"><button class="btn btn-ghost" id="rsShare">📤 В чат</button><button class="btn btn-ghost" id="rsMore">🍽 Ещё тарелку</button></div>`;
+    $("rsMission").onclick = () => { if (EX[ex]) { S.ex = ex; if (EX[ex].kind !== "hold") S.mode = "free"; save(); } tg?.BackButton?.hide(); start(false); };
+    box.querySelectorAll("[data-fb]").forEach(b => b.onclick = async () => {
+      box.querySelectorAll("[data-fb]").forEach(x => x.classList.toggle("on", x === b)); haptic("select");
+      try { await rsApi("/fb", { id: r.id, fb: b.dataset.fb }); } catch (e) {}
+    });
+    $("rsShare").onclick = async () => {
+      const b = $("rsShare"); b.textContent = "Отправляю…"; b.disabled = true;
+      try { const fd = new FormData(); fd.append("id", r.id); fd.append("photo", RS.blob, "plate.jpg");
+            const x = await rsApi("/share", fd, true); b.textContent = x.ok ? "✅ В чате" : "Не вышло"; } catch (e) { b.textContent = "Не вышло"; }
+    };
+    haptic(r.verdict === "ok" ? "level" : "rep"); rsVoice(r.verdict);
+    rsApi("/me", {}).then(rsDay).catch(() => {});
+  }
+  const more = $("rsMore"); if (more) more.onclick = () => { $("rsCap").value = ""; rsShow("rsPickBox"); $("rsFile").click(); };
+}
+function rsDay(m) {
+  const h = (m && m.history) || [];
+  if (!h.length) { $("rsDay").innerHTML = ""; return; }
+  $("rsDay").innerHTML = `<h2>Итог дня</h2>` + h.map(x => `<div class="card"><span>${x.at} · ${esc(x.dish || "тарелка")}</span><b>${x.score}/10 · ≈${x.kcal_min}–${x.kcal_max}</b></div>`).join("") +
+    `<div class="tot"><span>Всего за день</span><span>≈ ${m.kcal_today[0]}–${m.kcal_today[1]} ккал</span></div>`;
+}
+const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+$("rsEntry").onclick = rsOpen;
+$("rsBack").onclick = rsClose;
+$("rsFile").onchange = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) rsSend(f); };
+document.querySelectorAll("#rsTone [data-tone]").forEach(b => b.onclick = async () => {
+  RS.tone = b.dataset.tone; haptic("select");
+  try { await rsApi("/tone", { tone: RS.tone }); } catch (e) {}
+  rsShow("rsPickBox");
+});
+rsInit();
+load();
+// бонус-миссия из «Прожарки тарелки»: бот открывает приложение с ?ex=squat — сразу нужное упражнение
+{ const ex = new URLSearchParams(location.search).get("ex"); if (ex && EX[ex]) { S.ex = ex; if (EX[ex].kind === "hold") S.mode = "free"; } }
+render();
 </script>
 </body>
 </html>
