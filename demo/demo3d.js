@@ -13,7 +13,7 @@
  * Работает без сборки, без CDN, классическим <script>. Повторный show() сам закрывает прежний. */
 (function () {
   "use strict";
-  var BASE = "demo/", VER = "3";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
+  var BASE = "demo/", VER = "4";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
   try { if (document.currentScript && document.currentScript.src) BASE = new URL(".", document.currentScript.src).href; } catch (e) {}
 
   var GOLD = "#d4b47a", GOLD2 = "#f3dcaa", HI = "#fff4da", DEEP = "#5e4a2a", BG = "#0f0f12";
@@ -114,10 +114,11 @@
       ".d3-root *{box-sizing:border-box}",
       ".d3-fixed{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9000;background:rgba(8,8,10,.94);align-items:center;overflow-y:auto;",
       "padding:calc(12px + var(--tg-safe-area-inset-top,env(safe-area-inset-top,0px))) 16px calc(12px + var(--tg-safe-area-inset-bottom,env(safe-area-inset-bottom,0px)))}",
-      ".d3-card{width:100%;max-width:440px;background:" + BG + ";border:1px solid #2e2b30;border-radius:20px;padding:14px 14px 14px;",
+      ".d3-card{position:relative;width:100%;max-width:440px;background:" + BG + ";border:1px solid #2e2b30;border-radius:20px;padding:14px 14px 14px;",
       "box-shadow:0 10px 40px rgba(0,0,0,.5),inset 0 1px 0 rgba(243,220,170,.06)}",
       ".d3-kick{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#9a958d}",
       ".d3-title{font:20px/1.2 'Russo One',-apple-system,sans-serif;letter-spacing:.02em;color:" + GOLD2 + ";margin:2px 0 10px}",
+      ".d3-kick,.d3-title{padding-right:40px}",
       ".d3-stage{position:relative;width:100%;aspect-ratio:1/1;border-radius:14px;overflow:hidden;background:" + BG + "}",
       "@supports not (aspect-ratio:1/1){.d3-stage{height:0;padding-bottom:100%}}",
       ".d3-stage canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}",
@@ -141,6 +142,9 @@
       ".d3-again{flex:0 0 auto;padding:0 18px;background:#211f24;color:" + GOLD2 + ";box-shadow:inset 0 0 0 1px #3a3530}",
       ".d3-ok{flex:1 1 auto;padding:0 12px;background:linear-gradient(180deg,#f3dcaa," + GOLD + " 60%,#a8854b);color:#1a1408}",
       ".d3-again[hidden]{display:none}",
+      ".d3-x{position:absolute;top:6px;right:6px;width:44px;height:44px;border:0;border-radius:50%;background:transparent;color:#b3ada4;",
+      "font:300 26px/44px -apple-system,sans-serif;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}",
+      ".d3-x:active{background:#211f24;color:" + GOLD2 + "}",
       ".d3-done .d3-ok{animation:d3pulse 1.6s ease-in-out 2}",
       "@keyframes d3pulse{50%{box-shadow:0 0 0 6px rgba(243,220,170,.18)}}"
     ].join("");
@@ -174,6 +178,7 @@
     if (c.ro) try { c.ro.disconnect(); } catch (e) {}
     window.removeEventListener("resize", c.onResize);
     document.removeEventListener("visibilitychange", c.onVis);
+    if (c.onKey) document.removeEventListener("keydown", c.onKey);
     if (c.mq && c.onMq) try { c.mq.removeEventListener ? c.mq.removeEventListener("change", c.onMq) : c.mq.removeListener(c.onMq); } catch (e) {}
     if (c.canvas) { c.canvas.width = c.canvas.height = 0; }
     if (c.root && c.root.parentNode) c.root.parentNode.removeChild(c.root);
@@ -208,7 +213,7 @@
     root.setAttribute("role", "dialog");
     root.setAttribute("aria-label", "Как делать: " + ex.name);
     root.innerHTML =
-      '<div class="d3-card"><div class="d3-kick">Как делать</div><div class="d3-title"></div>' +
+      '<div class="d3-card"><button type="button" class="d3-x" aria-label="Закрыть">✕</button><div class="d3-kick">Как делать</div><div class="d3-title"></div>' +
       '<div class="d3-stage"><canvas aria-hidden="true"></canvas><div class="d3-bar"><i></i></div></div>' +
       '<ul class="d3-tips"></ul>' +
       '<div class="d3-phone"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="4.5" y="1" width="13" height="20" rx="3" fill="none" stroke="' + GOLD + '" stroke-width="1.6"/><circle cx="11" cy="17.3" r="1.2" fill="' + GOLD + '"/></svg><span></span></div>' +
@@ -235,6 +240,12 @@
       cbs.forEach(function (cb) { if (typeof cb === "function") try { cb(id); } catch (e) { setTimeout(function () { throw e; }); } });
     });
     again.addEventListener("click", function () { if (!c.dead) replay(c); });
+    // просто посмотреть и выйти: ✕, тап по тёмному фону вокруг карточки, Esc (и системная «Назад» в приложении)
+    var quit = function () { if (c.dead) return; markSeen(id); destroy(c); if (typeof opts.onClose === "function") try { opts.onClose(id); } catch (e) {} };
+    root.querySelector(".d3-x").addEventListener("click", quit);
+    root.addEventListener("click", function (e) { if (e.target === root && el === document.body) quit(); });
+    c.onKey = function (e) { if (e.key === "Escape") quit(); };
+    document.addEventListener("keydown", c.onKey);
 
     try { c.ctx = c.canvas.getContext("2d"); } catch (e) { c.ctx = null; }
     c.onResize = function () { if (!c.dead) { size(c); if (!c.playing) draw(c); } };
