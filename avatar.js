@@ -31,11 +31,23 @@
 
   var GOAL_MODE = 'honest';   // 'honest' | 'dream' — см. шапку
   // звания «Операции Подъём» — те же, что в игре (index.html, RANKS)
-  // Лестница как в ВС РФ, но одной линией: солдаты и сержанты → офицеры с младшего лейтенанта → генерал.
-  // Прапорщика нет (отдельная ветка, в офицеры не ведёт). У каждого звания — позывной-прикол (про лень и режим, не про тело).
+  // 12 званий по неделям сезона: солдаты и сержанты → офицеры с младшего лейтенанта → генерал.
+  // У каждого звания — позывной-прикол (про лень и режим, не про тело).
   var RANKS = ['Новобранец С Дивана', 'Рядовой Подъём', 'Ефрейтор Без Отмазок', 'Младший сержант Будильник', 'Сержант Режим',
-    'Старший сержант Планка', 'Старшина Порядок', 'Младший лейтенант Зарядка', 'Лейтенант Протокол', 'Старший лейтенант Марш-бросок',
-    'Капитан Железо', 'Майор Дисциплина', 'Подполковник Сила Воли', 'Полковник Сталь', 'Генерал Кода тела'];
+    'Старшина Порядок', 'Младший лейтенант Зарядка', 'Лейтенант Протокол', 'Капитан Железо', 'Майор Дисциплина',
+    'Полковник Сталь', 'Генерал Кода тела'];
+  var MAXL = RANKS.length;
+  var BASES = ['Младший сержант', 'Младший лейтенант', 'Новобранец', 'Рядовой', 'Ефрейтор', 'Сержант', 'Старшина', 'Лейтенант', 'Капитан', 'Майор', 'Полковник', 'Генерал'];
+  function rankParts(name) {
+    for (var i = 0; i < BASES.length; i++) if (name.indexOf(BASES[i] + ' ') === 0) return [BASES[i], name.slice(BASES[i].length + 1)];
+    return [name, ''];
+  }
+  // родительный падеж («до Ефрейтора Без Отмазок»): прозвище-существительное мужского рода склоняется, остальные — нет
+  var RANKS_GEN = ['Новобранца С Дивана', 'Рядового Подъёма', 'Ефрейтора Без Отмазок', 'Младшего сержанта Будильника', 'Сержанта Режим',
+    'Старшины Порядка', 'Младшего лейтенанта Зарядка', 'Лейтенанта Протокола', 'Капитана Железо', 'Майора Дисциплина',
+    'Полковника Сталь', 'Генерала Кода тела'];
+  // Звание (1..12) → ступень формы (внутренняя шкала рисования: погоны, головной убор, берцы, жетон и т. п.)
+  var GEAR = [0, 1, 2, 3, 4, 5, 7, 8, 9, 11, 12, 14, 15];
   var STAGES = ['Старт', 'Втягиваюсь', 'В ритме', 'Крепну', 'В форме', 'Боевая форма'];
   // «Сырые» очки за событие. За день засчитывается не больше DAY_CAP (с убывающей отдачей).
   var EVENTS = { workout: 1, order: 0.6, boss: 2, challenge: 0.8, plate: 0.2, streak3: 0.5, streak7: 1.5, streak30: 3 };
@@ -127,10 +139,10 @@
   }
   function r3(x) { return Math.round(x * 1000) / 1000; }
 
-  function autoLevel(pr) { return 1 + Math.floor(clamp(pr, 0, 1) * 14.999); }
+  function autoLevel(pr) { return 1 + Math.floor(clamp(pr, 0, 1) * (MAXL - 0.001)); }
   function levelOf(state, opts) {
     var l = (opts && opts.level) || state.level || autoLevel(state.progress);
-    return clamp(Math.round(l), 1, 15);
+    return clamp(Math.round(l), 1, MAXL);
   }
 
   function stage(state, opts) {
@@ -145,7 +157,7 @@
     var ev = typeof event === 'string' ? { type: event } : (event || {});
     var s = clone(state), before = stage(state);
     if (ev.type === 'level') {
-      var lv = clamp(Math.round(+ev.level || 1), 1, 15);
+      var lv = clamp(Math.round(+ev.level || 1), 1, MAXL);
       var was = levelOf(state);
       s.level = lv; s.updated = Date.now();
       return { state: s, changed: lv !== was, gain: 0, stageUp: false, levelUp: lv > was };
@@ -199,7 +211,7 @@
       leg: clamp((state.height_cm - (state.sex === 'f' ? 164 : 176)) / 5, -4, 4),
       glow: pr, level: levelOf({ level: state.level, progress: pr }, opts),
       medals: opts.uniform === 'grey' ? [] : (opts.medals || state.medals || []).slice(0, 12), medalIn: 1,
-      uniform: opts.uniform || null, eyes: opts.eyes || null, mask: !!opts.mask
+      uniform: opts.uniform || null, eyes: opts.eyes || null, mask: !!opts.mask, shrug: +opts.shrug || 0
     };
   }
   function mixP(a, b, t) {
@@ -288,7 +300,7 @@
 
   function drawBody(P, uid, fx) {
     fx = fx || {};
-    var f = P.fat, m = P.mus, p = P.pos, c = P.conf, fem = P.sex === 'f', lv = P.level;
+    var f = P.fat, m = P.mus, p = P.pos, c = P.conf, fem = P.sex === 'f', lv = GEAR[clamp(Math.round(P.level) || 1, 1, MAXL)];   // ступень формы
     var F = P.face, skin = SKINS[P.skin] || SKINS[1], hairC = HAIRS[F.hairColor] || HAIRS[0];
     var mm = fem ? 0.6 : 1; // «мышечный» множитель
     var grey = P.uniform === 'grey';        // Генерал Завтра: серая форма Армии Завтра
@@ -306,9 +318,9 @@
     P.headY = hy;                          // для крупного плана головы (svg с opts.head)
     var hem = band + 8;
     // горизонталь (полуширины)
-    var S = (fem ? 32 : 37) + (fem ? 6 : 12) * m + 7 * f + 4 * p;
-    var C = S - (fem ? 3 : 4.5) + (fem ? 3 * m * mm : 1.2 * m) + 4 * f;
-    var W = (fem ? 24 : 28) + 30 * f - (fem ? 2 : 4) * m;
+    var S = (fem ? 32 : 37) + (fem ? 6 : 15) * m + 7 * f + 4 * p;   // у мужчины к 100% плечи и дельты шире
+    var C = fem ? S - 3 + 3 * m * mm + 4 * f : S - 4.5 + 1.2 * m + 1.2 * f;
+    var W = (fem ? 24 : 28) + 30 * f - (fem ? 2 : 5.5) * m;        // талия уже — V от подмышек
     var Bl = (fem ? 26 : 29) + 38 * f;
     var H = (fem ? 33 : 29) + 22 * f;
     var Hm = Math.max(Bl * 0.92, H + 1.5);
@@ -323,8 +335,8 @@
     var tx = function (y) { return interpX(torsoR, y) - CX + 1.5; };
 
     // руки (правая; левая — зеркалом)
-    var ua = (fem ? 7 : 8) + 4.5 * f + (fem ? 3 : 6.5) * m;
-    var fa = (fem ? 5.8 : 6.5) + 3.5 * f + (fem ? 1.5 : 3) * m;
+    var ua = (fem ? 7 : 8) + 4.5 * f + (fem ? 3 : 7.5) * m;
+    var fa = (fem ? 5.8 : 6.5) + 3.5 * f + (fem ? 1.5 : 4.5) * m;   // предплечья толще у мужчины
     var shJ = [CX + S - 7, sh + 12 + 4 * slump];
     var elY = sh + 46, wrY = sh + 80;
     var elX = Math.max(CX + S - 2 + 2 * m, CX + tx(elY) + ua + 1);
@@ -334,13 +346,16 @@
     var hipX = CX + tx(band - 8) + fa * 0.2, hipY = band - 8;
     elX = lerp(elX, Math.max(elX, CX + S + 15 + 4 * m), aE); elY = lerp(elY, sh + 36, aE);
     wrX = lerp(wrX, hipX + 3, aE); wrY = lerp(wrY, hipY, aE);
+    var shr = clamp(P.shrug || 0, 0, 1), sE = shr * shr * (3 - 2 * shr);   // «развёл руками»: локти к телу, кисти в стороны ладонями вверх
+    elX = lerp(elX, CX + S + 4, sE); elY = lerp(elY, sh + 44, sE);
+    wrX = lerp(wrX, CX + S + 27, sE); wrY = lerp(wrY, sh + 42, sE);
     var elb = [elX, elY], wr = [wrX, wrY];
     var armAxis = [shJ, at(shJ, elb, 0.5), elb, at(elb, wr, 0.5), wr];
     var armW = [[ua + 1, ua + 3.5 + 2 * m * mm], [ua + 0.5 + 2.5 * m * mm, ua + 1 + 1.5 * m * mm], [fa + 0.8 + f, fa + 1 + f], [fa + 0.5 + 1.5 * m * mm, fa + 1 + 1.5 * m * mm], [fa - 0.8, fa - 0.6]];
     var slT = fem ? 0.42 : 0.55;
     var sleeve = limb([at(shJ, elb, -0.05), at(shJ, elb, slT * 0.5), at(shJ, elb, slT)], [[ua + 2, ua + 5 + 2 * m * mm], [ua + 2 + 1.5 * m * mm, ua + 3.5 + 1.5 * m * mm], [ua + 2 + 2.2 * m * mm, ua + 2.6 + 2 * m * mm]], 'flat');
     var handR = (fem ? 6.6 : 7.6) + 1.6 * f;
-    var hand = [lerp(wrX + 0.6, wrX - 1, aE), lerp(wrY + handR * 0.85, wrY + 2, aE)];
+    var hand = [lerp(lerp(wrX + 0.6, wrX - 1, aE), wrX + handR * 0.8, sE), lerp(lerp(wrY + handR * 0.85, wrY + 2, aE), wrY - 1, sE)];
 
     // ноги
     var lx = CX + 11 + 9 * f + (fem ? 2 : 0);
@@ -457,20 +472,43 @@
     // торс (футболка)
     var torso = sym([CX, sh + 6], torsoR, [CX, hem + 2 + 5 * f]);
     var torsoD = smooth(torso, true);
-    out.push(cel(torsoD, shirt[0], shirt[1], 7, uid));
-    out.push('<clipPath id="' + uid + 'tc"><path d="' + torsoD + '"/></clipPath><g clip-path="url(#' + uid + 'tc)"><ellipse cx="' + CX + '" cy="' + r1(sh + 2) + '" rx="' + r1(rx * 0.75) + '" ry="10" fill="#000" opacity=".22"/>' +
-      '<path d="M' + r1(CX - S + 4) + ' ' + r1(sh + 6) + 'Q' + r1(CX - S * 0.4) + ' ' + r1(sh + 2) + ' ' + r1(CX - S * 0.1) + ' ' + r1(sh + 10) + '" fill="none" stroke="' + shirt[2] + '" stroke-width="4" stroke-linecap="round" opacity=".6"/></g>');
+    out.push(cel(torsoD, shirt[0], fem ? shirt[1] : darken(shirt[0], 0.88), fem ? 7 : 4, uid));   // у мужчин тонкая тень по краю — без «округлостей» сбоку
+    out.push('<clipPath id="' + uid + 'tc"><path d="' + torsoD + '"/></clipPath><g clip-path="url(#' + uid + 'tc)">' + (fem
+      ? '<ellipse cx="' + CX + '" cy="' + r1(sh + 2) + '" rx="' + r1(rx * 0.75) + '" ry="10" fill="#000" opacity=".22"/>' +
+        '<path d="M' + r1(CX - S + 4) + ' ' + r1(sh + 6) + 'Q' + r1(CX - S * 0.4) + ' ' + r1(sh + 2) + ' ' + r1(CX - S * 0.1) + ' ' + r1(sh + 10) + '" fill="none" stroke="' + shirt[2] + '" stroke-width="4" stroke-linecap="round" opacity=".6"/>'
+      // мужчина: прямая тень у ворота и блик вдоль плечевого шва — без круглых пятен на груди
+      : '<path d="M' + r1(CX - nw - 6) + ' ' + r1(sh - 1) + 'L' + r1(CX + nw + 6) + ' ' + r1(sh - 1) + 'L' + r1(CX + nw + 2) + ' ' + r1(sh + 5) + 'L' + r1(CX - nw - 2) + ' ' + r1(sh + 5) + 'Z" fill="#000" opacity=".18"/>' +
+        '<path d="M' + r1(CX - S + 5) + ' ' + r1(sh + 4) + 'L' + r1(CX - nw - 4) + ' ' + r1(sh) + '" stroke="' + shirt[2] + '" stroke-width="3.2" stroke-linecap="round" opacity=".55"/>') + '</g>');
     out.push('<path d="' + torsoD + '" fill="none" ' + O + '/>');
     // ворот
     out.push('<path d="M' + r1(CX - nw) + ' ' + r1(sh - 3) + 'Q' + CX + ' ' + r1(sh + 15) + ' ' + r1(CX + nw) + ' ' + r1(sh - 3) + '" fill="none" stroke="' + (lv >= 15 ? GOLD : shirt[1]) + '" stroke-width="3" stroke-linecap="round"/>');
     // рельеф груди (муж.) / мягкая складка (жен.)
-    if (!fem && m > 0.3) {
-      var pop = r1(clamp((m - 0.3) / 0.5, 0, 1) * 0.6 * 10) / 10;
-      // нижний край грудной мышцы — почти прямой и поднимается к подмышке (дугой вниз читается как женская грудь)
-      var pec = 'M' + (CX + 1.5) + ' ' + r1(sh + 27) + 'L' + r1(CX + C * 0.42) + ' ' + r1(sh + 26.5) + 'L' + r1(CX + C * 0.66) + ' ' + r1(sh + 21);
-      out.push('<path d="' + pec + '" fill="none" stroke="' + shirt[1] + '" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity="' + pop + '"/>');
-      out.push('<path d="' + pec + '" ' + mirror + ' fill="none" stroke="' + shirt[1] + '" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" opacity="' + pop + '"/>');
-      out.push('<path d="M' + CX + ' ' + r1(sh + 15) + 'V' + r1(sh + 26) + '" stroke="' + shirt[1] + '" stroke-width="1.4" stroke-linecap="round" opacity="' + r1(pop * 0.7 * 10) / 10 + '"/>');
+    if (!fem && m > 0.25) {
+      // грудные мышцы: широкая плоская пластина — верх почти горизонтальный от плеча к центру, низ прямой и уходит вверх к подмышке
+      var pop = clamp((m - 0.25) / 0.5, 0, 1), py = sh + 25 + 1.5 * f;
+      var plate = 'M' + r1(CX + 1.5) + ' ' + r1(sh + 8) + 'L' + r1(CX + C * 0.7) + ' ' + r1(sh + 6) + 'L' + r1(CX + C * 0.8) + ' ' + r1(sh + 17) + 'L' + r1(CX + C * 0.5) + ' ' + r1(py) + 'L' + r1(CX + 1.5) + ' ' + r1(py + 0.5) + 'Z';
+      var low = 'M' + r1(CX + 1.5) + ' ' + r1(py + 0.5) + 'L' + r1(CX + C * 0.5) + ' ' + r1(py) + 'L' + r1(CX + C * 0.8) + ' ' + r1(sh + 17);
+      // под нижним краем — ровная полоса тени (ткань ложится на пресс), не круглая
+      var band = low + 'L' + r1(CX + C * 0.74) + ' ' + r1(sh + 21) + 'L' + r1(CX + C * 0.5) + ' ' + r1(py + 4) + 'L' + r1(CX + 1.5) + ' ' + r1(py + 4.5) + 'Z';
+      var pecG = '<path d="' + plate + '" fill="' + shirt[2] + '" opacity="' + r1(pop * 0.75 * 100) / 100 + '"/>' +
+        '<path d="' + band + '" fill="#000" opacity="' + r1(pop * 0.16 * 100) / 100 + '"/>' +
+        '<path d="' + low + '" fill="none" stroke="' + darken(shirt[0], 0.6) + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" opacity="' + r1((0.4 + 0.55 * pop) * 100) / 100 + '"/>';
+      out.push(pecG, '<g ' + mirror + '>' + pecG + '</g>');
+      // разделение пластин: узкая тень по грудине, к 100% глубже
+      out.push('<path d="M' + CX + ' ' + r1(sh + 9) + 'V' + r1(py + 2) + '" stroke="' + darken(shirt[0], 0.6) + '" stroke-width="' + r1((1.3 + 1.2 * pop) * 10) / 10 + '" stroke-linecap="round" opacity="' + r1((0.3 + 0.55 * pop) * 100) / 100 + '"/>');
+      // V-линия: ровная тень вдоль бока от подмышки к талии (внутри контура футболки)
+      var vS = '<path d="M' + r1(CX + C + 3) + ' ' + r1(sh + 15) + 'L' + r1(CX + W + 3) + ' ' + r1(sh + 50) + 'L' + r1(CX + W - 4 - 2 * pop) + ' ' + r1(sh + 50) + 'L' + r1(CX + C - 5 - 3 * pop) + ' ' + r1(sh + 21) + 'Z" fill="#000" opacity="' + r1(pop * 0.28 * 100) / 100 + '"/>';
+      out.push('<g clip-path="url(#' + uid + 'tc)">' + vS + '<g ' + mirror + '>' + vS + '</g></g>');
+      // складки поперёк рукава (по оси плеча), обрезаны контуром рукава — только на ткани
+      var dx = elb[0] - shJ[0], dy = elb[1] - shJ[1], dl2 = Math.sqrt(dx * dx + dy * dy) || 1, ux = dx / dl2, uy = dy / dl2, uw = ua + 3 + 2 * m;
+      // линия натяжения: от края рукава назад к плечу вдоль бицепса, чуть выгнута наружу
+      var fold = function (k, len) { var q = at(shJ, elb, slT * 0.96), x0 = q[0] + uy * uw * k, y0 = q[1] - ux * uw * k;
+        return 'M' + r1(x0) + ' ' + r1(y0) + 'q' + r1(-ux * len * 0.5 + uy * 1.6) + ' ' + r1(-uy * len * 0.5 - ux * 1.6) + ' ' + r1(-ux * len) + ' ' + r1(-uy * len); };
+      var bf = '<g clip-path="url(#' + uid + 'sl)"><path d="' + fold(0.55, 7 + 3 * pop) + fold(0.15, 5 + 2 * pop) + '" fill="none" stroke="' + darken(shirt[0], 0.6) + '" stroke-width="1.4" stroke-linecap="round" opacity="' + r1(pop * 0.8 * 100) / 100 + '"/></g>';
+      out.push('<clipPath id="' + uid + 'sl"><path d="' + sleeve + '"/></clipPath>', bf, '<g ' + mirror + '>' + bf + '</g>');
+      // дельты: складка ткани на рукаве по краю мышцы
+      var dl = '<path d="M' + r1(CX + S - 3) + ' ' + r1(sh + 6) + 'q' + r1(4 + 3 * m) + ' ' + r1(6) + ' ' + r1(3 + 2 * m) + ' ' + r1(14) + '" fill="none" stroke="' + shirt[1] + '" stroke-width="1.4" stroke-linecap="round" opacity="' + r1(pop * 0.6 * 100) / 100 + '"/>';
+      out.push(dl, '<g ' + mirror + '>' + dl + '</g>');
     }
     // складка ткани на животе — мягкая тень, без «смешных» деталей
     if (f > 0.35) {
@@ -589,9 +627,10 @@
       star5(x, y + 6.5, 2.4, '#8a6a32');
   }
 
-  // Погоны по образцу ВС РФ (Указ Президента № 293): лычки поперёк у сержантов, продольная — у старшины,
-  // звёзды вдоль оси у прапорщика; офицеры: просветы и звёзды — лейтенант 2, ст. лейтенант 3, капитан 4 малые,
-  // майор 1 и полковник 3 крупные на двух просветах; генерал — золотой погон «зигзаг»; Легенда — своя большая звезда.
+  // Погоны по образцу ВС РФ (Указ Президента № 293), lv — ступень формы (см. GEAR):
+  // рядовой — чистый погон; ефрейтор, мл. сержант, сержант — 1/2/3 лычки поперёк; старшина — широкая лычка вдоль;
+  // мл. лейтенант 1, лейтенант 2, капитан 4 малые звезды на одном просвете; майор 1 и полковник 3 крупные на двух просветах;
+  // генерал — золотой погон «зигзаг» с крупной звездой.
   function epaulette(lv, nw, S, sh, f, uid, grey) {
     var x0 = CX + nw + 3, x1 = CX + S - 2, len = x1 - x0;
     var gen = lv >= 15, gold = gen;
@@ -615,7 +654,6 @@
     if (lv <= 14) {                                                  // старшие офицеры: 2 просвета, крупные звёзды
       s += line(0.04, -0.3, 0.97, -0.3, 1.2, '#141b0e') + line(0.04, 0.3, 0.97, 0.3, 1.2, '#141b0e');
       if (lv === 12) return s + st(0.7, 0, 3.1);                    // майор — 1
-      if (lv === 13) return s + st(0.8, -0.55, 2.6) + st(0.8, 0.55, 2.6);   // подполковник — 2
       return s + st(0.82, -0.55, 2.5) + st(0.82, 0.55, 2.5) + st(0.5, 0, 2.5);     // полковник — 3
     }
     // генерал: золотой погон с «зигзагом» и крупной звездой; Легенда — огненная звезда в венке
@@ -990,20 +1028,21 @@
   // Avatar.rankUp({state, fromState?, from, to, rankName(l), line, sign, onClose, sound, haptic}) — полноэкранный праздник:
   // лучи, конфетти, «НОВОЕ ЗВАНИЕ!», боец переодевается в новую форму, что открылось, фраза Паши, кнопка.
   var UNLOCK = { 2: 'Форма, кепка, берцы и чистые погоны', 3: 'Лычка ефрейтора и жетон', 4: 'Вторая лычка и напульсник', 5: 'Три лычки, красный берет и золотой рант',
-    6: 'Широкая лычка старшего сержанта', 7: 'Продольная лычка старшины и золотая бляха', 8: 'Офицерский просвет и первая звезда',
-    9: 'Две звезды лейтенанта и синий берет', 10: 'Третья звезда и золотой жетон', 11: 'Четвёртая звезда — капитан', 12: 'Два просвета, большая звезда и фуражка',
-    13: 'Две большие звезды подполковника', 14: 'Три большие звезды полковника', 15: 'Золотые генеральские погоны, золотой берет и сияние' };
+    6: 'Продольная лычка старшины и золотая бляха', 7: 'Офицерский просвет и первая звезда', 8: 'Две звезды лейтенанта, синий берет и звезда на рукаве',
+    9: 'Четыре звезды капитана и золотой жетон', 10: 'Два просвета, большая звезда и фуражка', 11: 'Три большие звезды полковника',
+    12: 'Золотые генеральские погоны, золотой берет и сияние' };
   var RU_CSS = '.avru{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;background:radial-gradient(circle at 50% 42%,#3b2c14,#0b0b0c 62%);opacity:0;transition:opacity .35s;font-family:-apple-system,"PT Sans",sans-serif;color:#f1ece3;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px))}' +
     '.avru.on{opacity:1}.avru .rays{position:absolute;left:50%;top:42%;width:240vmax;height:240vmax;margin:-120vmax 0 0 -120vmax;background:repeating-conic-gradient(from 0deg,rgba(243,220,170,.16) 0 7deg,transparent 7deg 18deg);animation:avruSpin 18s linear infinite;pointer-events:none}' +
     '.avru .glow{position:absolute;left:50%;top:42%;width:520px;height:520px;margin:-260px 0 0 -260px;border-radius:50%;background:radial-gradient(circle,rgba(255,214,120,.55),rgba(212,180,122,.15) 45%,transparent 70%);animation:avruPulse 1.6s ease-in-out infinite;pointer-events:none}' +
-    '.avru .cf{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;pointer-events:none;animation:avruFall linear forwards}' +
+    '.avru .cf{position:absolute;top:-20px;width:9px;height:14px;border-radius:2px;pointer-events:none;z-index:1;animation:avruFall linear forwards}' +
+    '.avru>h2,.avru>.lv,.avru>.fig,.avru>.unl,.avru>.say,.avru>button{z-index:2}' +
     '.avru h2{position:relative;margin:0;font-family:"Russo One",sans-serif;font-size:34px;letter-spacing:.04em;background:linear-gradient(180deg,#fff4d8,#d4b47a 55%,#a8854b);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 0 18px rgba(255,214,120,.6));animation:avruPop .7s cubic-bezier(.2,1.6,.4,1) both}' +
     '.avru .lv{position:relative;margin:10px 0 4px;display:flex;align-items:center;gap:10px;animation:avruPop .7s .15s cubic-bezier(.2,1.6,.4,1) both}' +
     '.avru .lv b{display:grid;place-items:center;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff4d8,#d4b47a 60%,#8a6a32);color:#1a140b;font-family:"Russo One",sans-serif;font-size:22px;box-shadow:0 0 22px rgba(255,214,120,.7)}' +
-    '.avru .lv span{font-family:"Russo One",sans-serif;font-size:26px;color:#fff4d8;text-shadow:0 2px 12px #000}' +
+    '.avru .lv span{font-family:"Russo One",sans-serif;font-size:24px;line-height:1.15;color:#fff4d8;text-shadow:0 2px 12px #000;max-width:260px}.avru .lv span em{display:block;font-style:normal;font-size:17px;color:#f3dcaa}' +
     '.avru .fig{position:relative;width:min(62vw,250px);height:min(78vw,320px);animation:avruRise .8s .2s cubic-bezier(.2,1.3,.4,1) both}' +
-    '.avru .unl{position:relative;margin-top:4px;padding:8px 14px;border-radius:14px;background:rgba(23,24,28,.8);border:1px solid #d4b47a;color:#f3dcaa;font-weight:700;font-size:14px;text-align:center;animation:avruPop .6s 1.2s both}' +
-    '.avru .say{position:relative;margin:10px 0 0;max-width:340px;text-align:center;font-size:15px;color:#e9e1d2;animation:avruPop .6s 1.5s both}.avru .say i{display:block;font-size:12px;color:#9a958d;margin-top:3px}' +
+    '.avru .unl{position:relative;margin-top:4px;padding:8px 14px;border-radius:14px;background:rgba(23,24,28,.8);border:1px solid #d4b47a;color:#f3dcaa;font-weight:700;font-size:15px;line-height:1.35;text-align:center;animation:avruPop .6s 1.2s both}' +
+    '.avru .say{position:relative;margin:10px 0 0;max-width:340px;text-align:center;font-size:16px;line-height:1.4;color:#e9e1d2;animation:avruPop .6s 1.5s both}.avru .say i{display:block;font-size:13px;color:#b8b2a8;margin-top:3px}' +
     '.avru button{position:relative;margin-top:14px;width:min(100%,360px);padding:15px;border:0;border-radius:16px;font-family:"Russo One",sans-serif;font-size:17px;color:#15120d;background:linear-gradient(180deg,#fff4d8,#d4b47a 60%,#b8935a);box-shadow:0 10px 30px rgba(212,180,122,.4);animation:avruPop .6s 1.8s both}' +
     '@keyframes avruSpin{to{transform:rotate(360deg)}}@keyframes avruPulse{50%{transform:scale(1.12);opacity:.8}}' +
     '@keyframes avruFall{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--r))}}@keyframes avruPop{from{transform:scale(.3);opacity:0}}@keyframes avruRise{from{transform:translateY(40px) scale(.8);opacity:0}}' +
@@ -1016,13 +1055,14 @@
     var ov = doc.createElement('div'); ov.className = 'avru'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Новое звание');
     var name = o.rankName ? o.rankName(to) : RANKS[to - 1];
     var opened = []; for (var l = from + 1; l <= to; l++) if (UNLOCK[l]) opened.push(UNLOCK[l]);
-    ov.innerHTML = '<div class="rays"></div><div class="glow"></div><h2>НОВОЕ ЗВАНИЕ!</h2>' +
-      '<div class="lv"><b>' + to + '</b><span>' + name + '</span></div>' + (o.state ? '<div class="fig"></div>' : '') +
+    if (o.restore) opened = [];
+    ov.innerHTML = '<div class="rays"></div><div class="glow"></div><h2>' + (o.restore ? 'ЗВАНИЕ ВОЗВРАЩЕНО!' : 'НОВОЕ ЗВАНИЕ!') + '</h2>' +
+      '<div class="lv"><b>' + to + '</b><span>' + rankParts(name)[0] + (rankParts(name)[1] ? '<em>' + rankParts(name)[1] + '</em>' : '') + '</span></div>' + (o.state ? '<div class="fig"></div>' : '') +
       (opened.length ? '<div class="unl">🎖 Открыто: ' + opened.slice(-3).join(' · ') + (opened.length > 3 ? ' · и ещё ' + (opened.length - 3) : '') + '</div>' : '') +
       (o.line ? '<div class="say">' + o.line + (o.sign ? '<i>— ' + o.sign + '</i>' : '') + '</div>' : '') +
       '<button type="button">СЛУЖУ «КОДУ ТЕЛА»!</button>';
     var cols = ['#d4b47a', '#f3dcaa', '#fff4d8', '#a3262e', '#5f7046', '#ffb547', '#ffffff'];
-    for (var i = 0; i < 70; i++) {
+    for (var i = 0; i < (o.restore ? 28 : 70); i++) {
       var c = doc.createElement('i'); c.className = 'cf';
       c.style.left = (Math.random() * 100) + 'vw'; c.style.background = cols[i % cols.length];
       c.style.setProperty('--dx', ((Math.random() - 0.5) * 30) + 'vw'); c.style.setProperty('--r', (360 + Math.random() * 900) + 'deg');
@@ -1042,11 +1082,53 @@
     return { close: close, el: ov };
   }
 
+  /* ------------------------------------------------------------------ разжалование */
+  // Avatar.demote({state, from, to, rankName(l), line, sign, sound, onClose}) — без унижения: погон тускнеет, знак со звоном
+  // отлетает, форма через тёмный силуэт откатывается на прошлую ступень, боец разводит руками. Анимация ≤ 3 с.
+  var DM_CSS = '.avdm{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;' +
+    'background:radial-gradient(circle at 50% 40%,#232633,#0b0b0c 66%);opacity:0;transition:opacity .35s;font-family:-apple-system,"PT Sans",sans-serif;color:#f1ece3;padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px))}' +
+    '.avdm.on{opacity:1}.avdm h2{margin:0;font-family:"Russo One",sans-serif;font-size:28px;letter-spacing:.04em;color:#c9ccd2;animation:avruPop .6s both}' +
+    '.avdm .lv{margin:8px 0 2px;font-size:17px;color:#e9e1d2;text-align:center;animation:avruPop .6s .1s both}.avdm .lv{white-space:nowrap}.avdm .lv b{font-family:"Russo One",sans-serif;font-size:min(19px,4.6vw);color:#f3dcaa}' +
+    '.avdm .fig{position:relative;width:min(60vw,240px);height:min(76vw,300px);transition:filter 1s}.avdm .fig.dim{filter:saturate(.55) brightness(.82)}' +
+    '.avdm .figw{position:relative}.avdm .pin{position:absolute;left:68%;top:31%;width:20px;height:20px;opacity:0;pointer-events:none}.avdm .pin.go{animation:avdmFly 1.3s cubic-bezier(.3,.7,.4,1) forwards}' +
+    '.avdm .ret{margin-top:6px;padding:10px 14px;border-radius:14px;background:rgba(23,24,28,.85);border:1px solid #7a684a;color:#f3dcaa;font-weight:700;font-size:15px;text-align:center;animation:avruPop .6s 2.4s both}' +
+    '.avdm .say{margin:16px 0 0;max-width:340px;text-align:center;font-size:16px;line-height:1.4;color:#e9e1d2;animation:avruPop .6s 2.6s both}.avdm .say i{display:block;font-size:13px;color:#b8b2a8;margin-top:3px}' +
+    '.avdm button{margin-top:14px;width:min(100%,360px);min-height:50px;padding:14px;border:0;border-radius:16px;font-family:"Russo One",sans-serif;font-size:16px;color:#15120d;background:linear-gradient(180deg,#fff4d8,#d4b47a 60%,#b8935a);animation:avruPop .6s 2.8s both}' +
+    '@keyframes avdmFly{0%{opacity:1;transform:translate(0,0) rotate(0) scale(1)}35%{opacity:1;transform:translate(46px,-70px) rotate(220deg) scale(1.25)}100%{opacity:0;transform:translate(90px,170px) rotate(620deg) scale(.7)}}' +
+    '@keyframes avruPop{from{transform:scale(.3);opacity:0}}@media (prefers-reduced-motion:reduce){.avdm .pin{display:none}}';
+  function demote(o) {
+    o = o || {};
+    var doc = document, from = o.from || 2, to = o.to || Math.max(1, from - 1);
+    if (!doc.getElementById('avdm-css')) { var st = doc.createElement('style'); st.id = 'avdm-css'; st.textContent = DM_CSS; doc.head.appendChild(st); }
+    var old = doc.querySelector('.avdm'); if (old) old.remove();
+    var gen = o.rankGen ? o.rankGen(to) : RANKS_GEN[to - 1] || RANKS[to - 1];
+    var ov = doc.createElement('div'); ov.className = 'avdm'; ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-label', 'Разжалование');
+    var gear = GEAR[clamp(from, 1, MAXL)], pin = gear >= 8 ? star5(11, 11, 10, GOLD2) : '<rect x="2" y="7" width="18" height="8" rx="2" fill="' + GOLD + '" stroke="' + INK + '" stroke-width="1.2"/>';
+    ov.innerHTML = '<h2>РАЗЖАЛОВАН</h2><div class="lv">до <b>' + gen + '</b></div>' +
+      (o.state ? '<div class="figw"><div class="fig"></div><svg class="pin" viewBox="0 0 22 22">' + pin + '</svg></div>' : '') +
+      (o.line && /(3|три)\s*дн/i.test(o.line) ? '' : '<div class="ret">🎖 3 дня с приказом — и погоны вернутся</div>') +
+      (o.line ? '<div class="say">' + o.line + (o.sign ? '<i>— ' + o.sign + '</i>' : '') + '</div>' : '') +
+      '<button type="button">ПОНЯЛ, ВОЗВРАЩАЮСЬ В СТРОЙ</button>';
+    doc.body.appendChild(ov);
+    requestAnimationFrame(function () { ov.classList.add('on'); });
+    if (o.state) {
+      var fig = ov.querySelector('.fig');
+      render(fig, o.state, { level: from, animate: false, logo: false, bg: false });
+      setTimeout(function () { fig.classList.add('dim'); }, 250);                                       // погон тускнеет
+      setTimeout(function () { var p = ov.querySelector('.pin'); if (p) p.classList.add('go'); try { if (o.sound) o.sound(); } catch (e) {} }, 550);   // знак отлетает со звоном
+      setTimeout(function () { render(fig, o.state, { from: o.state, fromLevel: from, level: to, animate: true, duration: 1200, sparks: false, logo: false, bg: false }); }, 800);
+      setTimeout(function () { fig.classList.remove('dim'); render(fig, o.state, { from: o.state, fromLevel: to, level: to, shrug: 1, animate: true, duration: 600, sparks: false, logo: false, bg: false }); }, 2150);   // разводит руками
+    }
+    var close = function () { ov.classList.remove('on'); setTimeout(function () { ov.remove(); if (o.onClose) o.onClose(); }, 350); };
+    ov.querySelector('button').onclick = close;
+    return { close: close, el: ov };
+  }
+
   root.Avatar = {
     create: create, progress: progress, render: render, stage: stage, svg: svg, today: today,
-    params: params, RANKS: RANKS.slice(), STAGES: STAGES.slice(), EVENTS: JSON.parse(JSON.stringify(EVENTS)),
+    params: params, RANKS: RANKS.slice(), RANKS_GEN: RANKS_GEN.slice(), rankParts: rankParts, STAGES: STAGES.slice(), EVENTS: JSON.parse(JSON.stringify(EVENTS)),
     DAY_CAP: DAY_CAP, FULL: FULL, GOAL_MODE: GOAL_MODE, version: 2,
     SKINS: SKINS.map(function (x) { return x[0]; }), HAIRS: HAIRS.slice(), EYE_COLORS: EYE_COLORS.slice(),
-    FACE: JSON.parse(JSON.stringify(FACE)), faceOf: faceOf, randomFace: randomFace, rankUp: rankUp, UNLOCK: JSON.parse(JSON.stringify(UNLOCK))
+    FACE: JSON.parse(JSON.stringify(FACE)), faceOf: faceOf, randomFace: randomFace, rankUp: rankUp, demote: demote, UNLOCK: JSON.parse(JSON.stringify(UNLOCK))
   };
 })(typeof window !== 'undefined' ? window : this);
