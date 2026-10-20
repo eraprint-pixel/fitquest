@@ -186,9 +186,8 @@ canvas#fx { pointer-events: none; }
 .shake { animation: shake .45s; }
 @keyframes shake { 20% { transform: translate(-6px, 3px); } 40% { transform: translate(5px, -4px); } 60% { transform: translate(-4px, 2px); } 80% { transform: translate(3px, -2px); } }
 .loading { position: absolute; inset: 0; display: grid; place-items: center; background: var(--bg); text-align: center; padding: 30px; }
-.loading img { width: 70px; animation: breathe 1.6s ease-in-out infinite; }
-@keyframes breathe { 50% { opacity: .45; transform: scale(.94); } }
-.loading p { color: var(--muted); }
+.loading > div { width: 100%; max-width: 360px; }       /* логотип со свечением и искрами — как у прожарки */
+.loading .rs-bar { margin: 12px 20px 0; }
 
 /* ---------- итоги ---------- */
 .result { text-align: center; }
@@ -238,7 +237,9 @@ canvas#fx { pointer-events: none; }
 .rs-logo img { position: relative; width: 100%; height: 100%; object-fit: contain; animation: rsShine 2.4s ease-in-out infinite; }
 .rs-logo::before { content: ""; position: absolute; inset: -30px; border-radius: 50%; background: radial-gradient(circle, rgba(212,180,122,.45), transparent 62%);
   animation: rsPulse 1.6s ease-in-out infinite; }
-.rs-spark { position: absolute; bottom: 10px; width: 5px; height: 5px; border-radius: 50%; background: var(--gold2); opacity: 0; animation: rsSpark 1.8s linear infinite; }
+.rs-spark { position: absolute; bottom: 10px; width: 7px; height: 7px; border-radius: 50%; background: var(--gold3); opacity: 0;
+  box-shadow: 0 0 10px 2px rgba(243,220,170,.85); animation: rsSpark 1.8s linear infinite; }
+.rs-spark:nth-of-type(even) { width: 5px; height: 5px; background: #ffb547; box-shadow: 0 0 8px 2px rgba(255,140,60,.7); }
 @keyframes rsPulse { 50% { transform: scale(1.18); opacity: .7; } }
 @keyframes rsShine { 50% { filter: drop-shadow(0 0 14px rgba(243,220,170,.9)) brightness(1.25); } }
 @keyframes rsSpark { 0% { opacity: 0; transform: translateY(0); } 20% { opacity: 1; } 100% { opacity: 0; transform: translateY(-130px); } }
@@ -374,7 +375,12 @@ canvas#fx { pointer-events: none; }
     <div class="sub"><div id="sub"></div></div>
     <div class="hint" id="hint">Встаньте так, чтобы было видно всё тело</div>
     <div class="hud-bot"><button class="btn btn-gold" id="stopBtn">ЗАВЕРШИТЬ</button></div>
-    <div class="loading" id="loading"><div><img src="logo-mark.png" alt=""><p id="loadTxt">Загружаю распознавание движений…</p></div></div>
+    <div class="loading" id="loading"><div>
+      <div class="rs-logo"><img src="logo-mark.png" alt=""><i class="rs-spark" style="left:20%"></i><i class="rs-spark" style="left:48%;animation-delay:.5s"></i>
+        <i class="rs-spark" style="left:75%;animation-delay:1s"></i><i class="rs-spark" style="left:35%;animation-delay:1.3s"></i><i class="rs-spark" style="left:62%;animation-delay:.8s"></i><i class="rs-spark" style="left:10%;animation-delay:1.5s"></i><i class="rs-spark" style="left:88%;animation-delay:.3s"></i></div>
+      <div class="rs-stage" id="loadTxt">Разминаю тренера…</div>
+      <div class="rs-bar"><i id="loadBar"></i></div><div class="rs-pct" id="loadPct">0%</div>
+    </div></div>
   </div>
 </section>
 
@@ -952,6 +958,13 @@ function sizeCanvases() {
 addEventListener("resize", sizeCanvases);
 
 // ================= запуск и остановка =================
+let loadTick = 0;
+function loadSet(text, pct) { $("loadTxt").textContent = text; $("loadBar").style.width = pct + "%"; $("loadPct").textContent = pct + "%"; }
+function loadCreep(from, to) {          // пока камера и распознавание грузятся — шкала плавно ползёт, но не до конца
+  clearInterval(loadTick); let p = from;
+  loadTick = setInterval(() => { p = Math.min(to, p + Math.max(1, Math.round((to - p) / 8))); $("loadBar").style.width = p + "%"; $("loadPct").textContent = p + "%"; }, 400);
+}
+async function loadDone() { clearInterval(loadTick); loadSet("Погнали! 🔥", 100); await new Promise(r => setTimeout(r, 450)); $("loading").style.display = "none"; }
 async function start(demo = false) {
   unlockAudio();                          // звук разрешается только по нажатию
   $("camErr").innerHTML = "";
@@ -968,9 +981,12 @@ async function start(demo = false) {
   tg?.BackButton?.show(); tg?.isVersionAtLeast?.("8.0") && tg.lockOrientation?.();
   try { wake = await navigator.wakeLock?.request("screen"); } catch (e) {}
   await Coach.init(); Coach.preload();
-  $("loading").style.display = "";
+  $("loading").style.display = ""; loadSet("Разминаю тренера…", 10);
   if (demo) {
-    $("loading").style.display = "none"; setHint("Демо: повторения идут сами, камера не нужна");
+    loadCreep(10, 90); await new Promise(r => setTimeout(r, 1300));
+    if (!sess || sess.demo !== true) return;          // вышли, пока шла заставка
+    await loadDone();
+    setHint("Демо: повторения идут сами, камера не нужна");
     Coach.say("start", true);
     let n = 0; const iv = setInterval(() => {
       if (!sess || sess.demo !== true || n >= (hold ? 30 : sess.p50 ? 18 : 14)) return clearInterval(iv);
@@ -981,15 +997,15 @@ async function start(demo = false) {
     loop(); return;
   }
   try {
-    $("loadTxt").textContent = "Включаю камеру…";
+    loadSet("Включаю камеру…", 15); loadCreep(15, 40);
     if (!stream) {         // камеру берём один раз — на Android Telegram иначе спрашивает разрешение заново
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
     }
     video.srcObject = stream; await video.play();
     $("stage").classList.toggle("mirror", true);
-    $("loadTxt").textContent = "Загружаю распознавание движений… (первый раз — несколько секунд)";
+    loadSet(landmarker ? "Настраиваю распознавание…" : "Загружаю распознавание движений… (первый раз — несколько секунд)", 45); loadCreep(45, 92);
     await initModel();
-    $("loading").style.display = "none"; setHint(EX[S.ex].tip);
+    await loadDone(); setHint(EX[S.ex].tip);
     sess.startedAt = performance.now(); Coach.say("start", true);
     loop();
   } catch (e) {
@@ -1002,7 +1018,7 @@ async function start(demo = false) {
   }
 }
 function stop(showResult = true) {
-  cancelAnimationFrame(raf);
+  cancelAnimationFrame(raf); clearInterval(loadTick);
   if (sess?.p50) { clearTimeout(sess.p50.timer); $("rest").classList.remove("on"); }
   if (sess) sess.demo = "stopped";
   try { wake?.release(); } catch (e) {}
