@@ -1527,8 +1527,11 @@ const R = { task: 40, chest: 60, weight: 20, weightMon: 50, weightMonTok: 2, pla
 const DMG = { rep: 1, holdSec: .5, task: 30, weight: 20, plate: 10 };          // урон боссу
 const MILES = [[3, "Пережил учебку", 0, 0], [7, "Неделя без самоволки", 100, 5], [14, "Две недели на передовой", 150, 7], [21, "Привычка завербована", 0, 0],
                [30, "Ветеран месяца", 300, 15], [50, "Полсотни в строю", 400, 20], [70, "Ветеран Операции «Подъём»", 500, 25], [100, "Сотня в строю", 700, 40]];
-const NEWBIE = { squat: 20, pushup: 15, lunge: 20, calf: 30, plank: 30 };     // новичок: 14 дней или до 5-го уровня
-const ROTA = ["squat", "pushup", "calf", "lunge", "squat", "plank"];          // упражнение дня по кругу; воскресенье — планка
+const NEWBIE = { squat: 20, pushup: 15, lunge: 20, calf: 30, plank: 30, raise: 30, thruster: 20, climber: 30, wallsit: 30 };   // новичок: 14 дней или до 5-го уровня
+// пределы цели для опытного (повторения или секунды) — по протоколам Паши: махи 3×50, присед с жимом 3×20–30, скалолаз по минуте, стульчик до минуты
+const LIMIT = { plank: [30, 120], wallsit: [20, 60], raise: [30, 150], thruster: [20, 90], climber: [30, 120] };
+// упражнение дня — по кругу из EX_ORDER (только те, для которых есть тексты); воскресенье — планка; скалолаз — только в замену, пока не проверен вживую
+const NOT_IN_ORDER = ["climber"];
 const LEAGUES = ["Учебка", "Окоп", "Передовая", "Спецназ", "Генштаб"];
 const SQUADS = ["Рота Без Отмазок", "Десант с Дивана", "Спецназ Гречки", "Ночной дозор Холодильника", "Штрафбат Понедельника", "Партизаны Режима",
                 "Кавалерия на Носках", "Морпехи Протокола 50", "Танковые войска Тапка", "Разведрота Прожарки", "Железный взвод Планки", "Отдельный полк «Так Точно»"];
@@ -1539,9 +1542,18 @@ const BOSSES = [["Прапорщик Будильник", "Шесть раз п�
   ["Генерал Завтра", "Финальный и самый живучий", "«Протокол 50»", "Штурм"]];
 const SEASON_MON = "2026-09-28";     // понедельник недели, в которую стартовал поток (01.10.2026) — неделя 1 сезона
 const EX_N = { squat: ["приседание", "приседания", "приседаний"], pushup: ["отжимание", "отжимания", "отжиманий"], lunge: ["выпад", "выпада", "выпадов"],
-               calf: ["подъём на носки", "подъёма на носки", "подъёмов на носки"], plank: ["секунда", "секунды", "секунд"] };
+               calf: ["подъём на носки", "подъёма на носки", "подъёмов на носки"], plank: ["секунда", "секунды", "секунд"] ,
+               raise: ["мах", "маха", "махов"], thruster: ["присед с жимом", "приседа с жимом", "приседов с жимом"],
+               climber: ["шаг «Скалолаза»", "шага «Скалолаза»", "шагов «Скалолаза»"], wallsit: ["секунда", "секунды", "секунд"] };
 const plural = (n, f) => f[n % 10 === 1 && n % 100 !== 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2];
-const exWord = (ex, n) => `${n} ${plural(n, EX_N[ex])}`;
+const exWord = (ex, n) => EX_N[ex] ? `${n} ${plural(n, EX_N[ex])}` : `${EX[ex]?.name || ex}: ${n}`;
+const isHold = ex => EX[ex]?.kind === "hold";
+// текст задачи; нет текста — короткая подпись, а не падение
+const exTask = (tone, ex, n) => (TONE[tone]?.t[ex] || (k => exWord(ex, k)))(n);
+// упражнения для приказа дня и для замены: из EX_ORDER, только с текстами во всех трёх тонах
+function gExList(forOrder) {
+  return EX_ORDER.filter(k => EX[k] && NEWBIE[k] && EX_N[k] && ["sarge", "coach", "buddy"].every(t => TONE[t].t[k]) && !(forOrder && NOT_IN_ORDER.includes(k)));
+}
 
 // ---------- тон Паши: Сержант / Тренер / Напарник ----------
 // Красные линии во всех тонах: никаких шуток про тело, вес и внешность; жёсткость — только к лени и отговоркам.
@@ -1550,21 +1562,27 @@ const TONE = {
     hi: ["Подъём, боец! Приказ на столе, а Генерал Завтра уже точит отмазки.", "Боец, в строй! Отмазки сдать на входе.", "Генерал Завтра шепчет «с понедельника». А мы начинаем сегодня."],
     w: "Встань на весы до завтрака и запиши цифру. Без переговоров", p: "Прожарь любую тарелку. Кофе с печенькой — не завтрак, а алиби",
     t: { squat: n => `${exWord("squat", n)}. Камера смотрит, я считаю`, pushup: n => `${exWord("pushup", n)}. С колен честно, с дивана нет`,
-         lunge: n => `${exWord("lunge", n)}. Шире шаг, боец`, calf: n => `${exWord("calf", n)}. Икры тоже давали присягу`, plank: n => `Планка ${exWord("plank", n)}. Держи строй` },
+         lunge: n => `${exWord("lunge", n)}. Шире шаг, боец`, calf: n => `${exWord("calf", n)}. Икры тоже давали присягу`, plank: n => `Планка ${exWord("plank", n)}. Держи строй`,
+         raise: n => `${exWord("raise", n)} в стороны. Плечи вверх, отговорки вниз`, thruster: n => `${exWord("thruster", n)}. Присел, выжал — доложил`,
+         climber: n => `${exWord("climber", n)}. Боком к камере, колени в атаку`, wallsit: n => `Стульчик ${exWord("wallsit", n)}. Сидим ровно, как на построении` },
     chest: "Три из трёх! Сундук твой, а Генерал Завтра рыдает в плед.", done: "Приказ выполнен. Вольно, боец. До завтра.",
     lost: "Серия обнулилась, опыт остался. Погнали заново, уже ветераном." },
   coach: { name: "Тренер", sign: "тренер Паша", note: "Бодро и требовательно, без мата.",
     hi: ["Доброе утро! Три задачи — и день засчитан.", "Работаем! Сегодня три понятных шага.", "Новый день — новый приказ. Начнём с простого."],
     w: "Запиши вес без трагедии. Это сводка, а не приговор", p: "Сфоткай любую тарелку — разберём вместе",
     t: { squat: n => `${exWord("squat", n)} — в своём темпе, но до конца`, pushup: n => `${exWord("pushup", n)}. С колен — тоже честно`,
-         lunge: n => `${exWord("lunge", n)}. Спина ровно, шаг широкий`, calf: n => `${exWord("calf", n)}. Медленно вверх, медленно вниз`, plank: n => `Планка ${exWord("plank", n)}. Тело одной линией` },
+         lunge: n => `${exWord("lunge", n)}. Спина ровно, шаг широкий`, calf: n => `${exWord("calf", n)}. Медленно вверх, медленно вниз`, plank: n => `Планка ${exWord("plank", n)}. Тело одной линией`,
+         raise: n => `${exWord("raise", n)} в стороны. Локти чуть согнуты, плавно`, thruster: n => `${exWord("thruster", n)}. Глубоко присел — мощно выжал`,
+         climber: n => `${exWord("climber", n)}. Боком к камере, корпус ровно`, wallsit: n => `Стульчик ${exWord("wallsit", n)}. Спина к стене, колени над стопами` },
     chest: "Все три задачи закрыты — забирай сундук!", done: "Отличный день. Завтра — следующий шаг.",
     lost: "Серия обнулилась, опыт остался. Начинаем новую — уже с опытом." },
   buddy: { name: "Напарник", sign: "Паша", note: "Мягко и с поддержкой. Включается сам после пропусков — чтобы вернуться было легко.",
     hi: ["Привет! Давай сегодня понемногу — я рядом.", "Как ты? Три маленьких шага, без спешки.", "Рад тебя видеть. Сделаем сегодня сколько получится."],
     w: "Встань на весы, когда удобно. Это просто цифра для дневника", p: "Сфоткай любую тарелку — просто посмотрим, что сегодня на столе",
     t: { squat: n => `Давай вместе: ${exWord("squat", n)}. Не спеша`, pushup: n => `${exWord("pushup", n)}. Можно с колен — это нормально`,
-         lunge: n => `${exWord("lunge", n)}. Держись за стул, если нужно`, calf: n => `${exWord("calf", n)}. Спокойно, в своём ритме`, plank: n => `Планка ${exWord("plank", n)}. Можно с колен` },
+         lunge: n => `${exWord("lunge", n)}. Держись за стул, если нужно`, calf: n => `${exWord("calf", n)}. Спокойно, в своём ритме`, plank: n => `Планка ${exWord("plank", n)}. Можно с колен`,
+         raise: n => `${exWord("raise", n)} в стороны. Можно с бутылками воды`, thruster: n => `${exWord("thruster", n)}. В своём темпе, можно без веса`,
+         climber: n => `${exWord("climber", n)}. Медленно — тоже засчитывается`, wallsit: n => `Стульчик ${exWord("wallsit", n)}. Дыши спокойно, ты справишься` },
     chest: "Все три готовы — это правда круто. Открывай сундук!", done: "День засчитан. Отдых — тоже часть плана.",
     lost: "Серия начнётся заново, а весь опыт с тобой. Вернуться — тоже победа." },
 };
@@ -1584,22 +1602,22 @@ let G = gFresh();
 function gNewDay(d) {
   const y = dAdd(d, -1), old = G.day;
   const sunday = dow(d) === 0;                                   // воскресенье — день восстановления: планка 30 с
-  const ex = sunday ? "plank" : ROTA[Math.abs(dDiff(d, SEASON_MON)) % ROTA.length];
+  const rota = gExList(true), ex = sunday || !rota.length ? "plank" : rota[Math.abs(dDiff(d, SEASON_MON)) % rota.length];
   // не выполнил вчера задачу «Движение» — сегодня цель на 20% ниже: поддержка вместо наказания
   const yMiss = d !== G.born && !(old && old.d === y && old.done.t);
-  return { d, ex, n: gTarget(ex, d, yMiss, sunday), yMiss, swaps: 0, w: 0, p: 0, reps: 0, exr: {}, hold: 0, wk: 0, done: { w: 0, p: 0, t: 0 }, chest: null };
+  return { d, ex, n: gTarget(ex, d, yMiss, sunday), yMiss, swaps: 0, w: 0, p: 0, reps: 0, exr: {}, hold: 0, exh: {}, wk: 0, done: { w: 0, p: 0, t: 0 }, chest: null };
 }
 function gTarget(ex, d, yMiss, sunday) {
   if (sunday) return 30;
   const newbie = dDiff(d, G.born) < 14 || lvl(S.xp).l < 5;
-  let n = NEWBIE[ex];
+  let n = NEWBIE[ex] || 20;
   if (!newbie) {               // опытный: медиана за 7 дней × 1,1, в пределах 20–150 (планка — 30–120 с)
-    const v = Object.entries(G.hist).filter(([k]) => k < d && dDiff(d, k) <= 7).map(([, h]) => ex === "plank" ? h[1] : h[0]).filter(x => x > 0).sort((a, b) => a - b);
+    const v = Object.entries(G.hist).filter(([k]) => k < d && dDiff(d, k) <= 7).map(([, h]) => isHold(ex) ? h[1] : h[0]).filter(x => x > 0).sort((a, b) => a - b);
     if (v.length) n = Math.round(v[v.length >> 1] * 1.1);
-    n = ex === "plank" ? Math.min(120, Math.max(30, n)) : Math.min(150, Math.max(20, n));
+    const [lo, hi] = LIMIT[ex] || [20, 150]; n = Math.min(hi, Math.max(lo, n));
   }
   if (yMiss) n = Math.round(n * .8);
-  return ex === "plank" ? Math.max(20, Math.round(n / 5) * 5) : Math.max(10, n);
+  return isHold(ex) ? Math.max(20, Math.round(n / 5) * 5) : Math.max(10, n);
 }
 function gRoll() {
   const d = gDay(), wk = weekOf(d);
@@ -1618,6 +1636,7 @@ function gRoll() {
     G.day = gNewDay(d); changed = true;
     for (const k of Object.keys(G.hist)) if (dDiff(d, k) > 10) delete G.hist[k];
   }
+  if (!EX[G.day.ex]) { G.day.ex = "squat"; G.day.n = gTarget("squat", d, G.day.yMiss, false); changed = true; }   // упражнение исчезло из списка — не падаем
   if (changed) gameSave(G, { t: "day" });
 }
 const gTone = () => (G.soft && dDiff(gDay(), G.soft) <= 1) ? "buddy" : (G.tone || "coach");   // после пропуска — «Напарник» на 2 дня
@@ -1657,7 +1676,7 @@ function gActive() {                 // серию засчитывает люб
 }
 function gCheck(quiet = false) {     // отмечает выполненные задачи приказа; возвращает опыт за них. quiet — без всплывашек (у вызвавшего своя карточка)
   const D = G.day, alt = gPlateAlt();
-  const ok = { w: D.w > 0, p: alt ? (D.ex === "plank" ? (D.exr.calf || 0) >= 20 : D.hold >= 30) : D.p > 0, t: gTrain().have >= D.n };
+  const ok = { w: D.w > 0, p: alt ? (D.ex === "plank" ? (D.exr.calf || 0) >= 20 : gHeld(D, "plank") >= 30) : D.p > 0, t: gTrain().have >= D.n };
   let xp = 0;
   for (const k of ["w", "p", "t"]) if (ok[k] && !D.done[k]) {
     D.done[k] = 1; xp += R.task; G.week.dmg += DMG.task; heroXp(R.task);
@@ -1668,8 +1687,11 @@ function gCheck(quiet = false) {     // отмечает выполненные 
   return xp;
 }
 function gTrain() {                  // задача «Движение»: сколько сделано из скольких
-  const D = G.day, have = D.ex === "plank" ? D.hold : (D.exr[D.ex] || 0);
-  return { have: Math.min(have, D.n), need: D.n, done: !!D.done.t, title: TONE[gTone()].t[D.ex](D.n) };
+  const D = G.day, have = isHold(D.ex) ? gHeld(D, D.ex) : (D.exr[D.ex] || 0);
+  return { have: Math.min(have, D.n), need: D.n, done: !!D.done.t, title: exTask(gTone(), D.ex, D.n) };
+}
+function gHeld(D, ex) {                // секунды удержания по упражнению; в старых днях (до стульчика) всё — планка
+  return D.exh ? (D.exh[ex] || 0) : ex === "plank" ? D.hold : 0;
 }
 const gPlateAlt = () => !RS.allowed;      // прожарка не открыта — вместо тарелки «Вызов»
 function gOnReps(ex, n) {
@@ -1680,11 +1702,13 @@ function gOnReps(ex, n) {
   const xp = gCheck() + gMission(ex, n); gameSave(G, { t: "reps", ex, n });
   return { xp };
 }
-function gOnHold(sec) {
+function gOnHold(sec, ex = sess?.ex) {  // ex — какое удержание (планка, стульчик); по умолчанию — текущая тренировка
   gRoll(); const D = G.day;
-  D.hold += sec; G.week.dmg += sec * DMG.holdSec; G.hist[D.d] = [D.reps, D.hold];
+  if (!isHold(ex)) ex = "plank";
+  if (!D.exh) D.exh = { plank: D.hold };
+  D.exh[ex] = (D.exh[ex] || 0) + sec; D.hold += sec; G.week.dmg += sec * DMG.holdSec; G.hist[D.d] = [D.reps, D.hold];
   if (D.hold >= R.streakHold) gActive();
-  const xp = gCheck() + gMission("plank", sec); gameSave(G, { t: "hold", sec });
+  const xp = gCheck() + gMission(ex, sec); gameSave(G, { t: "hold", ex, sec });
   return { xp };
 }
 function gOnWorkout(sec, reps) {         // тренировка от 3 минут (и хоть какое-то движение) — +30 XP раз в день
@@ -1758,7 +1782,8 @@ function gSwap() {                       // заменить упражнени�
   const D = G.day; if (D.done.t) return;
   const cost = D.swaps ? R.swapCost : 0;
   if (G.tok < cost) return gToast(`Нужно ${cost} 🪙 — жетоны дают сундук и вехи серии`);
-  const list = Object.keys(EX).filter(k => k !== D.ex);
+  const list = gExList(false).filter(k => k !== D.ex);
+  if (!list.length) return;
   D.ex = list[Math.floor(Math.random() * list.length)]; D.n = gTarget(D.ex, D.d, D.yMiss, dow(D.d) === 0 && D.ex === "plank");
   D.swaps++; gTok(-cost); gCheck(); gameSave(G, { t: "swap" }); gRenderAll(); haptic("select");
 }
@@ -1816,9 +1841,9 @@ function orRender() {
 // ---------- хаб: три задачи приказа ведут прямо в тренировку, прожарку и вес ----------
 function hubTasks(tone = gTone()) {
   const D = G.day, T = TONE[tone], tr = gTrain(), alt = gPlateAlt(), mon = dow(D.d) === 1;
-  const altEx = D.ex === "plank" ? "calf" : "plank", altN = altEx === "calf" ? 20 : 30, altHave = altEx === "calf" ? Math.min(20, D.exr.calf || 0) : Math.min(30, D.hold);
+  const altEx = D.ex === "plank" ? "calf" : "plank", altN = altEx === "calf" ? 20 : 30, altHave = altEx === "calf" ? Math.min(20, D.exr.calf || 0) : Math.min(30, gHeld(D, "plank"));
   return [
-    { k: "t", ic: "🏋️", name: "ТРЕНИРОВКА", sub: `${EX[D.ex].ico} ${T.t[D.ex](D.n)}${D.yMiss && !tr.done ? " · сегодня полегче" : ""}`,
+    { k: "t", ic: "🏋️", name: "ТРЕНИРОВКА", sub: `${EX[D.ex].ico} ${exTask(tone, D.ex, D.n)}${D.yMiss && !tr.done ? " · сегодня полегче" : ""}`,
       st: tr.done ? "✓" : `${tr.have}/${tr.need}`, bar: tr.done ? null : tr.have / tr.need, swap: !tr.done, go: () => hubTrain(D.ex) },
     alt ? { k: "p", ic: EX[altEx].ico, name: "ВЫЗОВ", sub: `${altEx === "calf" ? T.t.calf(20) : T.t.plank(30)} · прожарка тарелки откроется позже`,
             st: D.done.p ? "✓" : `${altHave}/${altN}`, bar: D.done.p ? null : altHave / altN, go: () => hubTrain(altEx) }
