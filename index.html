@@ -272,264 +272,9 @@ canvas#fx { pointer-events: none; }
 .rs-fb button.on { border-color: var(--gold); color: var(--gold2); }
 .rs-row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .rs-row2 .btn { margin-top: 8px; }
 .rs-msg { padding: 16px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); font-size: 15px; line-height: 1.4; }
-.rs-day { margin-top: 18px; }
-.rs-day .tot { display: flex; justify-content: space-between; margin-top: 8px; font-family: var(--disp); font-size: 13px; color: var(--gold2); }
-.rs-got { margin-bottom: 10px; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--gold); animation: rsIn .4s both;
-  background: linear-gradient(180deg, rgba(212,180,122,.18), rgba(212,180,122,.04)); }
-.rs-got .h { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-family: var(--disp); font-size: 15px; letter-spacing: .04em; color: var(--gold2); }
-.rs-got .h b { font-size: 22px; color: var(--gold); white-space: nowrap; }
-.rs-got .ln { font-size: 13px; margin-top: 6px; line-height: 1.3; } .rs-got .ln.ok { color: var(--gold3); font-weight: 700; }
-.rs-got small { display: block; margin-top: 8px; font-size: 11px; color: var(--muted); }
-.rs-mis { margin-top: 12px; padding: 12px 14px; border-radius: 16px; background: var(--card); border: 1px dashed var(--gold-dim); }
-.rs-mis .t { font-family: var(--disp); font-size: 10px; letter-spacing: .2em; color: var(--fire); }
-.rs-mis b { display: block; font-family: var(--disp); font-size: 20px; margin-top: 2px; }
-.rs-mis small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; } .rs-mis .btn { margin-top: 10px; }
-.rs-tabs { margin-bottom: 4px; }
-.rs-it { display: flex; align-items: center; gap: 8px; width: 100%; text-align: left; margin-top: 6px; padding: 10px 12px; border-radius: 14px;
-  background: var(--card); border: 1px solid var(--line); color: inherit; font-size: 13px; position: relative; z-index: 1; }
-.rs-it.on { border-color: var(--gold-dim); }
-.rs-it .tm { color: var(--muted); font-size: 12px; min-width: 36px; }
-.rs-it .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rs-it .k { font-family: var(--disp); color: var(--gold); white-space: nowrap; font-size: 12px; }
-.rs-it .vc { padding: 3px 7px; border-radius: 10px; font-size: 9px; letter-spacing: .04em; font-family: var(--disp); background: var(--vc); color: var(--vi); white-space: nowrap; }
-.rs-more { margin-top: -10px; padding: 16px 12px 10px; border-radius: 0 0 14px 14px; background: var(--card2); border: 1px solid var(--line); border-top: 0;
-  font-size: 13px; line-height: 1.35; color: var(--gold3); }
-.rs-more div { margin-top: 6px; color: var(--text); }
-.rs-more button { margin: 8px 8px 0 0; font-size: 12px; color: var(--muted); background: none; border: 1px solid var(--line); border-radius: 10px; padding: 6px 10px; }
-.rs-more button[data-go] { color: var(--gold2); border-color: var(--gold-dim); }
-.rs-wk { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 8px; }
-.rs-wk button { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; color: var(--muted); font-size: 11px; padding: 0; }
-.rs-wk .col { position: relative; width: 100%; height: 72px; border-radius: 10px; background: var(--card); border: 1px solid var(--line); overflow: hidden; }
-.rs-wk .col i { position: absolute; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, var(--gold2), var(--gold)); border-radius: 6px 6px 0 0; }
-.rs-wk .col b { position: absolute; left: 0; right: 0; top: 4px; z-index: 1; text-align: center; font-family: var(--disp); font-size: 13px; color: var(--gold3);
-  text-shadow: 0 1px 3px #000; }
-.rs-wk button.on .col { border-color: var(--gold); box-shadow: 0 0 0 1px var(--gold); } .rs-wk button.td span { color: var(--gold2); font-weight: 700; }
-.rs-sum { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
-.rs-chip { padding: 4px 10px; border-radius: 20px; font-size: 12px; background: var(--card2); border: 1px solid var(--line); color: var(--text); }
-.rs-empty { margin-top: 8px; padding: 12px 14px; border-radius: 14px; background: var(--card); border: 1px dashed var(--line); font-size: 13px; color: var(--muted); }
-.rs-bdg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.rs-bdg > div { position: relative; padding: 10px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); font-size: 12px; }
-.rs-bdg > div:not(.done) .ic { filter: grayscale(1); opacity: .55; }
-.rs-bdg > div.done { border-color: var(--gold); background: linear-gradient(180deg, rgba(212,180,122,.14), var(--card)); }
-.rs-bdg .ic { font-size: 24px; } .rs-bdg em { position: absolute; right: 10px; top: 8px; font-style: normal; color: var(--gold); font-weight: 700; }
-.rs-bdg b { display: block; font-family: var(--disp); font-size: 13px; margin-top: 4px; color: var(--gold2); }
-.rs-bdg small { display: block; color: var(--muted); font-size: 11px; margin-top: 3px; line-height: 1.3; } .rs-bdg small.g { color: var(--gold3); }
-.rs-bdg .bar { height: 6px; margin-top: 6px; }
-.rs-hk { display: block; margin: 14px auto 4px; background: none; color: var(--muted); font-size: 12px; text-decoration: underline; }
-#rsRes .rs-note { margin-top: 8px; font-size: 12px; color: var(--gold3); }
-
-/* ---------- игровой слой «Операция Подъём» ---------- */
-#order, #league, #menu { max-width: 520px; margin: 0 auto; }
-.gm-strip { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: -6px 0 4px; }
-.gm-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
-  background: var(--card); border: 1px solid var(--line); color: var(--gold2); white-space: nowrap; }
-.gm-chip.rank { color: #1a140b; background: linear-gradient(90deg, var(--gold2), var(--gold)); border: 0; }
-.gm-say { margin-top: 10px; padding: 12px 14px 10px 40px; position: relative; border-radius: 16px; background: var(--card); border: 1px solid var(--gold-dim);
-  font-weight: 700; font-size: 15px; line-height: 1.35; }
-.gm-say::before { content: "«"; position: absolute; left: 12px; top: 0; font-family: var(--disp); font-size: 40px; color: var(--gold); }
-.gm-say i { display: block; text-align: right; font-style: normal; font-weight: 400; font-size: 11px; color: var(--gold-dim); margin-top: 4px; }
-.gm-streak { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
-.gm-fire { position: relative; width: 64px; height: 64px; flex: none; display: grid; place-items: center; font-size: 34px;
-  border-radius: 50%; background: radial-gradient(circle, rgba(255,140,60,.35), transparent 68%); }
-.gm-fire.on { animation: rsPulse 2s ease-in-out infinite; }
-.gm-fire b { position: absolute; bottom: -2px; right: -4px; min-width: 26px; padding: 1px 6px; border-radius: 12px; font-family: var(--disp); font-size: 14px;
-  color: #1a140b; background: linear-gradient(180deg, var(--gold2), var(--gold)); text-align: center; }
-.gm-streak .t b { display: block; font-family: var(--disp); font-size: 16px; }
-.gm-streak .t span { display: block; font-size: 12px; color: var(--muted); }
-.gm-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.gm-task { display: flex; gap: 12px; align-items: center; width: 100%; text-align: left; margin-top: 8px; padding: 12px; border-radius: 16px;
-  background: var(--card); border: 1.5px solid var(--line); color: var(--text); }
-.gm-task .ic { font-size: 26px; width: 36px; text-align: center; filter: drop-shadow(0 0 8px rgba(212,180,122,.35)); }
-.gm-task .slot { font-family: var(--disp); font-size: 10px; letter-spacing: .18em; color: var(--gold-dim); }
-.gm-task .tt { font-weight: 700; font-size: 14px; line-height: 1.3; margin-top: 1px; }
-.gm-task .ts { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.gm-task .ok { margin-left: auto; flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-size: 15px;
-  border: 1.5px solid var(--gold-dim); color: var(--gold); }
-.gm-task.done { border-color: var(--gold); background: linear-gradient(135deg, #241d14, var(--card) 70%); }
-.gm-task.done .ok { background: linear-gradient(180deg, var(--gold2), var(--gold)); color: #1a140b; border: 0; }
-.gm-task.done .tt { color: var(--gold2); }
-.gm-task.pop { animation: rsIn .45s cubic-bezier(.2,1.2,.4,1); }
-.gm-swap { display: inline-block; margin-top: 6px; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: 700;
-  border: 1px solid var(--gold-dim); color: var(--gold); background: transparent; }
-.gm-chest { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; margin-top: 12px; padding: 14px 16px; border-radius: 20px;
-  background: var(--card); border: 1.5px dashed var(--line); color: var(--text); }
-.gm-chest .ic { font-size: 40px; width: 52px; text-align: center; filter: grayscale(.8) opacity(.6); }
-.gm-chest b { display: block; font-family: var(--disp); font-size: 16px; } .gm-chest small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
-.gm-chest.ready { border: 1.5px solid var(--gold); background: linear-gradient(135deg, #2a2216, var(--card) 70%); box-shadow: 0 0 26px rgba(212,180,122,.25); }
-.gm-chest.ready .ic { filter: drop-shadow(0 0 12px rgba(243,220,170,.7)); animation: chestWiggle 1.6s ease-in-out infinite; }
-.gm-chest.open { border-style: solid; border-color: var(--gold-dim); } .gm-chest.open .ic { filter: none; }
-@keyframes chestWiggle { 0%, 70%, 100% { transform: none; } 75% { transform: rotate(-9deg) scale(1.08); } 85% { transform: rotate(8deg) scale(1.08); } 92% { transform: rotate(-4deg); } }
-.gm-note { font-size: 11px; color: var(--muted); margin: 8px 4px 0; line-height: 1.35; }
-.gm-lost { margin-top: 10px; padding: 12px 14px; border-radius: 16px; background: #1d1714; border: 1px solid #5a3a22; font-size: 13px; }
-.gm-lost .btn { font-size: 14px; padding: 11px; margin-top: 8px; }
-.gm-miles { display: flex; gap: 4px; margin-top: 10px; }
-.gm-miles i { flex: 1; height: 6px; border-radius: 3px; background: #2b282d; }
-.gm-miles i.done { background: linear-gradient(90deg, var(--gold), var(--gold2)); box-shadow: 0 0 8px rgba(243,220,170,.5); }
-.gm-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
-.gm-badges span { padding: 4px 10px; border-radius: 12px; font-size: 12px; background: var(--card2); border: 1px solid var(--gold-dim); color: var(--gold2); }
-.seg button small { display: block; font-weight: 400; font-size: 10px; opacity: .8; }
-/* оверлеи: выбор тона, вес, сундук */
-.gm-ov { position: fixed; inset: 0; z-index: 20; display: none; place-items: center; padding: 20px 16px; background: #000c; backdrop-filter: blur(4px); }
-.gm-ov.on { display: grid; }
-.gm-ov > div { width: 100%; max-width: 420px; background: linear-gradient(160deg, #1f1c20, #131215); border: 1px solid #3a3226; border-radius: 22px;
-  padding: 18px 16px; box-shadow: 0 20px 60px #000a; animation: rsIn .35s ease; }
-.gm-ov h3 { font-family: var(--disp); font-weight: 400; font-size: 19px; margin: 0 0 4px; text-align: center; }
-.gm-ov p { font-size: 13px; color: var(--muted); margin: 0 0 6px; text-align: center; line-height: 1.35; }
-.gm-tone { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; margin-top: 10px; padding: 12px 14px; border-radius: 16px;
-  background: var(--card); border: 1.5px solid var(--line); color: var(--text); }
-.gm-tone .ic { font-size: 28px; } .gm-tone b { display: block; font-family: var(--disp); font-size: 15px; } .gm-tone small { font-size: 12px; color: var(--muted); }
-.gm-tone:active, .gm-tone.on { border-color: var(--gold); }
-.gm-wt { display: flex; align-items: baseline; justify-content: center; gap: 8px; margin-top: 12px; }
-.gm-wt input { width: 150px; padding: 12px; border-radius: 14px; border: 1.5px solid var(--gold-dim); background: var(--card); color: var(--gold2);
-  font-family: var(--disp); font-size: 30px; text-align: center; }
-.gm-wt span { font-family: var(--disp); color: var(--gold); }
-.gm-chestbig { position: relative; width: 140px; height: 140px; margin: 6px auto 0; display: grid; place-items: center; font-size: 86px; cursor: pointer; }
-.gm-chestbig::before { content: ""; position: absolute; inset: -20px; border-radius: 50%; background: radial-gradient(circle, rgba(212,180,122,.45), transparent 62%);
-  animation: rsPulse 1.6s ease-in-out infinite; }
-.gm-chestbig span { position: relative; animation: chestWiggle 1.4s ease-in-out infinite; }
-.gm-chestbig.boom span { animation: embUp .8s cubic-bezier(.2,1.6,.4,1); }
-.gm-chestbig .rs-spark { bottom: 30px; }
-.gm-loot { display: none; text-align: center; margin-top: 8px; }
-.gm-loot.on { display: block; animation: rsIn .45s ease; }
-.gm-loot div { display: inline-block; margin: 4px; padding: 8px 14px; border-radius: 14px; background: var(--card2); border: 1px solid var(--gold); font-family: var(--disp); color: var(--gold2); }
-.gm-toast { position: fixed; left: 16px; right: 16px; bottom: calc(18px + var(--safe-bot)); z-index: 30; max-width: 488px; margin: 0 auto; padding: 12px 14px;
-  border-radius: 16px; background: #15130fee; border: 1px solid var(--gold); box-shadow: 0 10px 40px #000c, 0 0 20px rgba(212,180,122,.25);
-  font-weight: 700; font-size: 14px; color: var(--gold3); opacity: 0; transform: translateY(20px); transition: .3s; pointer-events: none; }
-.gm-toast.on { opacity: 1; transform: none; }
-/* лига и отряд */
-.gm-demo { margin: 0 0 10px; padding: 8px 12px; border-radius: 12px; font-size: 12px; color: var(--muted); background: var(--card); border: 1px dashed var(--gold-dim); }
-.gm-pane { display: none; } .gm-pane.on { display: block; }
-.gm-ladder { display: flex; gap: 4px; margin-top: 12px; }
-.gm-ladder span { flex: 1; text-align: center; padding: 6px 2px; border-radius: 10px; font-size: 10px; font-weight: 700; color: var(--muted); background: var(--card); border: 1px solid var(--line); }
-.gm-ladder span.on { color: #1a140b; background: linear-gradient(180deg, var(--gold2), var(--gold)); border: 0; }
-.gm-lhead { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 4px 4px; }
-.gm-lhead b { font-family: var(--disp); font-size: 18px; } .gm-lhead span { font-size: 12px; color: var(--muted); }
-.gm-row { display: flex; align-items: center; gap: 10px; margin-top: 4px; padding: 8px 12px; border-radius: 12px; background: var(--card); border: 1px solid var(--line); font-size: 14px; }
-.gm-row .n { width: 22px; font-family: var(--disp); color: var(--gold-dim); text-align: right; }
-.gm-row .nm { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.gm-row .pt { font-family: var(--disp); color: var(--gold); white-space: nowrap; }
-.gm-row.top .n { color: var(--gold2); }
-.gm-row.me { border-color: var(--gold); background: linear-gradient(135deg, #2a2216, var(--card) 70%); }
-.gm-row .rsp { padding: 4px 9px; border-radius: 10px; font-size: 12px; border: 1px solid var(--gold-dim); color: var(--gold); background: transparent; }
-.gm-row .rsp.on { background: linear-gradient(180deg, var(--gold2), var(--gold)); color: #1a140b; border: 0; }
-.gm-gap { text-align: center; color: var(--gold-dim); font-size: 12px; margin: 2px 0; letter-spacing: .3em; }
-.gm-up { margin: 6px 4px 2px; font-size: 11px; color: var(--good); font-family: var(--disp); letter-spacing: .1em; }
-.gm-boss { position: relative; margin-top: 10px; padding: 14px; border-radius: 20px; overflow: hidden;
-  background: radial-gradient(80% 60% at 85% 0%, rgba(255,106,61,.18), transparent 70%), linear-gradient(160deg, #1f1c20, #131215); border: 1px solid #5a3a22; }
-.gm-boss .wk { font-family: var(--disp); font-size: 10px; letter-spacing: .2em; color: var(--fire); }
-.gm-boss b { display: block; font-family: var(--disp); font-size: 22px; margin-top: 2px; }
-.gm-boss small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
-.gm-hp { position: relative; height: 18px; border-radius: 10px; background: #2a1714; overflow: hidden; margin-top: 12px; border: 1px solid #5a2a22; }
-.gm-hp i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 10px; background: linear-gradient(90deg, #a8321c, var(--fire), var(--amber)); transition: width .8s ease; }
-.gm-hp span { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--disp); font-size: 11px; color: #fff; text-shadow: 0 1px 3px #000; }
-/* хаб: приказ дня — три большие плитки, под ними серия, звание и лига */
-.hub-h { display: flex; justify-content: space-between; align-items: baseline; margin: 12px 4px 0; }
-.hub-h b { font-family: var(--disp); font-size: 18px; letter-spacing: .04em; } .hub-h span { font-family: var(--disp); font-size: 13px; color: var(--gold); }
-.hub-t { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; margin-top: 10px; padding: 16px 14px; border-radius: 22px;
-  background: linear-gradient(135deg, #241d14, var(--card) 60%); border: 1.5px solid var(--gold-dim); color: var(--text); box-shadow: 0 8px 28px #0006; transition: transform .15s; }
-.hub-t:active { transform: scale(.98); }
-.hub-t .ic { font-size: 38px; width: 50px; text-align: center; flex: none; filter: drop-shadow(0 0 10px rgba(243,220,170,.35)); }
-.hub-t .m { flex: 1; min-width: 0; }
-.hub-t b { display: block; font-family: var(--disp); font-size: 17px; letter-spacing: .02em; }
-.hub-t small { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
-.hub-t .bar { margin-top: 7px; }
-.hub-t .st { flex: none; min-width: 54px; padding: 5px 9px; border-radius: 12px; text-align: center; font-family: var(--disp); font-size: 12px;
-  color: var(--gold); border: 1.5px solid var(--gold-dim); }
-.hub-t.done { border-color: var(--gold); box-shadow: 0 0 22px rgba(212,180,122,.2); }
-.hub-t.done .st { color: #1a140b; background: linear-gradient(180deg, var(--gold2), var(--gold)); border: 0; }
-.hub-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 12px; }
-.hub-s { padding: 10px 6px; border-radius: 16px; text-align: center; background: var(--card); border: 1px solid var(--line); color: var(--text); }
-.hub-s .ic { font-size: 20px; } .hub-s b { display: block; font-family: var(--disp); font-size: 18px; color: var(--gold2); margin-top: 2px; }
-.hub-s span { display: block; font-size: 10px; color: var(--muted); line-height: 1.25; margin-top: 2px; }
-.hub-help { display: block; margin: 12px auto 0; padding: 6px 12px; background: none; color: var(--gold-dim); font-size: 13px; }
-/* обучение при первом входе */
-.onb-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 12px; }
-.onb-dots i { width: 22px; height: 5px; border-radius: 3px; background: #2b282d; } .onb-dots i.on { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
-.onb-step { display: none; } .onb-step.on { display: block; animation: rsIn .35s ease; }
-.onb-task { display: flex; align-items: center; gap: 12px; margin-top: 10px; padding: 12px; border-radius: 16px; background: var(--card); border: 1px solid var(--line); }
-.onb-task .ic { font-size: 30px; width: 40px; text-align: center; } .onb-task b { display: block; font-family: var(--disp); font-size: 15px; }
-.onb-task small { font-size: 12px; color: var(--muted); }
-.onb-flow { display: flex; align-items: center; justify-content: space-between; gap: 2px; margin-top: 14px; }
-.onb-flow div { flex: 1; text-align: center; padding: 10px 2px; border-radius: 14px; background: var(--card); border: 1px solid var(--gold-dim); }
-.onb-flow span { display: block; font-size: 26px; } .onb-flow b { display: block; font-family: var(--disp); font-size: 12px; margin-top: 2px; }
-.onb-flow small { display: block; font-size: 9px; color: var(--muted); }
-.onb-flow i { font-style: normal; color: var(--gold); font-size: 18px; }
-#onbGo .hub-t { padding: 12px; margin-top: 8px; } #onbGo .hub-t .ic { font-size: 30px; width: 40px; }
-/* карточка бойца в хабе — компактной строкой под серией/званием/лигой */
-#avSlot .av-card { margin-top: 8px; padding: 4px 12px 4px 4px; border-radius: 16px; box-shadow: none; }
-#avSlot .av-fig { width: 46px; height: 62px; }
-#avSlot .av-txt b { font-size: 14px; } #avSlot .av-txt span { margin: 1px 0 4px; } #avSlot .av-txt .xpbar { height: 6px; }
-/* ===== аватар бойца (тред «Аватар») ===== */
-.av-card { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; margin-top: 12px; padding: 8px 14px 8px 6px;
-  border-radius: 22px; background: radial-gradient(120% 140% at 0% 50%, rgba(212,180,122,.16), transparent 60%), var(--card);
-  border: 1.5px solid var(--gold-dim); color: var(--text); box-shadow: 0 8px 28px #0006; transition: transform .15s; }
-.av-card:active { transform: scale(.98); }
-.av-card .go { margin-left: auto; font-size: 22px; color: var(--gold); }
-.av-fig { width: 78px; height: 104px; flex: none; }
-.av-txt { flex: 1; min-width: 0; }
-.av-txt small { display: block; font-family: var(--disp); font-size: 10px; letter-spacing: .2em; color: var(--gold-dim); }
-.av-txt b { display: block; font-family: var(--disp); font-size: 16px; letter-spacing: .02em; margin-top: 2px; }
-.av-txt span { display: block; font-size: 12px; color: var(--muted); margin: 2px 0 7px; }
-.av-txt .xpbar { height: 9px; }
-.av-txt em { display: block; font-style: normal; font-size: 12px; font-weight: 700; color: var(--good); margin-top: 6px; }
-.av-txt em:empty { display: none; }
-.av-empty .av-fig { opacity: .38; filter: grayscale(1); }
-.av-res { display: flex; align-items: center; gap: 10px; text-align: left; margin: 14px 0 2px; padding: 6px 14px 6px 4px;
-  border-radius: 18px; background: var(--card); border: 1px solid var(--line); transition: border-color .4s, box-shadow .4s; }
-.av-res.up { border-color: var(--gold); box-shadow: 0 0 26px rgba(212,180,122,.22); }
-.av-res .av-fig { width: 84px; height: 112px; }
-.av-res .av-txt b { font-size: 15px; }
-.av-res button { margin-top: 8px; padding: 7px 14px; border-radius: 12px; font-family: var(--disp); font-size: 13px; color: #15120d;
-  background: linear-gradient(180deg, var(--gold3), var(--gold) 60%, #b8935a); }
-#avatar { max-width: 520px; margin: 0 auto; }
-.av-big { width: 200px; height: 266px; margin: 0 auto; }
-.av-name { text-align: center; margin: 2px 0 8px; }
-.av-name b { display: block; font-family: var(--disp); font-size: 22px; }
-.av-name span { font-size: 13px; color: var(--muted); }
-.av-steps { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; margin-top: 8px; }
-.av-steps i { font-style: normal; font-size: 9px; line-height: 1.15; text-align: center; padding: 5px 2px; border-radius: 8px; color: var(--muted);
-  background: var(--card); border: 1px solid var(--line); }
-.av-steps i.done { color: #1a140b; background: linear-gradient(180deg, var(--gold2), var(--gold)); border-color: transparent; }
-.av-steps i.cur { color: var(--gold2); border-color: var(--gold); }
-.av-how { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 10px 12px; font-size: 13px; line-height: 1.45; }
-.av-how div { display: flex; gap: 8px; } .av-how div + div { margin-top: 5px; }
-.av-pair { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; text-align: center; }
-.av-pair .av-mini { width: 112px; height: 150px; margin: 0 auto; }
-.av-pair span { font-size: 12px; color: var(--muted); }
-.av-pair .av-arrow { font-size: 22px; color: var(--gold); }
-.av-form { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 10px; }
-.av-form label { display: block; font-size: 11px; color: var(--muted); text-align: center; }
-.av-form .in { display: flex; align-items: baseline; margin-top: 4px; border-radius: 14px; border: 1.5px solid var(--gold-dim); background: var(--card); padding: 0 8px; }
-.av-form input { width: 100%; min-width: 0; padding: 11px 0; border: 0; background: none; color: var(--gold2); font-family: var(--disp); font-size: 19px; text-align: center; outline: none; }
-.av-form input::placeholder { color: #5d5649; }
-.av-form .in span { font-size: 11px; color: var(--gold-dim); }
-.av-hint { font-size: 12px; color: var(--muted); text-align: center; margin-top: 8px; min-height: 16px; }
-.av-hint button { background: none; color: var(--gold); text-decoration: underline; font-size: 12px; padding: 0; }
-.av-sw { display: flex; gap: 10px; justify-content: center; margin-top: 8px; }
-.av-sw button { width: 32px; height: 32px; border-radius: 50%; border: 2px solid #ffffff1f; box-shadow: inset 0 0 0 2px #0b0b0b; }
-.av-sw button.on { border-color: var(--gold2); }
-.gm-toast.on.av-tap { pointer-events: auto; cursor: pointer; }
-.av-tabs { margin-bottom: 10px; }
-.av-from { font-size: 12px; color: var(--gold); text-align: center; margin-top: 10px; }
-.av-from:empty { display: none; }
-.av-form .in.from { border-color: var(--gold); box-shadow: 0 0 0 1px rgba(212,180,122,.35); }
-.av-fhead { display: flex; align-items: flex-end; justify-content: center; gap: 4px; }
-.av-fbig { width: 190px; height: 190px; border-radius: 50%; background: radial-gradient(circle at 50% 42%, #4a4336, #26231e 72%); border: 1.5px solid var(--gold-dim); overflow: hidden; }
-.av-fbody { width: 78px; height: 104px; }
-.av-rnd { display: block; margin: 10px auto 0; padding: 8px 16px; border-radius: 14px; background: var(--card2); border: 1px solid var(--gold-dim); color: var(--gold2); font-weight: 700; font-size: 14px; }
-.av-cats { display: flex; gap: 6px; overflow-x: auto; margin: 12px -16px 0; padding: 2px 16px 6px; scrollbar-width: none; }
-.av-cats::-webkit-scrollbar { display: none; }
-.av-cats button { flex: none; padding: 7px 12px; border-radius: 12px; font-size: 13px; font-weight: 700; color: var(--muted); background: var(--card); border: 1px solid var(--line); }
-.av-cats button.on { color: #1a140b; background: linear-gradient(180deg, var(--gold2), var(--gold)); border-color: transparent; }
-.av-opts { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 8px; }
-.av-opts button { padding: 4px 2px 6px; border-radius: 14px; background: var(--card); border: 1.5px solid var(--line); color: var(--muted); font-size: 11px; line-height: 1.2; }
-.av-opts button.on { border-color: var(--gold); color: var(--gold2); background: #211c15; }
-.av-opts button .th { width: 100%; aspect-ratio: 1; border-radius: 10px; overflow: hidden; margin-bottom: 3px; background: radial-gradient(circle at 50% 42%, #3d372c, #221f1b 75%); }
-.av-opts.sw { grid-template-columns: repeat(auto-fill, 52px); justify-content: center; gap: 10px; }
-.av-opts.sw button { width: 52px; height: 52px; padding: 0; border-radius: 50%; border: 3px solid #ffffff1f; box-shadow: inset 0 0 0 2px #0b0b0b; }
-.av-opts.sw button.on { border-color: var(--gold2); }
-.av-two { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; } .av-two .btn { margin-top: 8px; padding: 11px 6px; }
-.av-err { color: var(--fire); font-size: 13px; text-align: center; min-height: 18px; margin: 8px 0 0; }
+.rs-day { margin-top: 18px; } .rs-day .card { display: flex; justify-content: space-between; gap: 8px; margin-top: 6px; font-size: 13px; }
+.rs-day .card b { font-family: var(--disp); color: var(--gold); white-space: nowrap; }
+.rs-day .tot { display: flex; justify-content: space-between; margin-top: 8px; font-family: var(--disp); font-size: 14px; color: var(--gold2); }
 </style>
 </head>
 <body>
@@ -538,123 +283,12 @@ canvas#fx { pointer-events: none; }
 <section class="screen on" id="menu">
   <div class="brand"><img src="logo.png" alt="Код тела"><div class="app goldtext">ЛИЧНЫЙ ТРЕНЕР</div></div>
   <div class="mn-hi" id="mnHi">Привет! Что сегодня?<span>Выбирай — тренер уже ждёт</span></div>
-  <div class="gm-strip" id="mnStrip"></div>
-  <!-- ХАБ ИГРЫ: приказ дня из трёх задач — через него человек находит тренировку, прожарку и вес -->
-  <div class="hub-h"><b class="goldtext">ПРИКАЗ ДНЯ</b><span id="hubCount">0 из 3</span></div>
-  <div id="hub"></div>
-  <button class="gm-chest" id="hubChest"></button>
-  <div class="hub-row">
-    <button class="hub-s" id="hubStreak"></button><button class="hub-s" id="hubRank"></button><button class="hub-s" id="hubLeague"></button>
-  </div>
-  <div id="avSlot"></div>      <!-- место карточки «Твой боец» (тред «Аватар»): под приказом, рядом с серией и званием -->
-  <button class="hub-help" id="hubHelp">❔ Как играть</button>
-  <!-- прежние плитки меню: остаются для кода тренировки и прожарки, на экране не показываются -->
-  <div hidden>
-  <button class="mn-tile" id="mnTrain"><div class="ic">🏋️</div><div><b>ТРЕНИРОВКА С КАМЕРОЙ</b>
+  <button class="mn-tile main" id="mnTrain"><div class="ic">🏋️</div><div><b>ТРЕНИРОВКА С КАМЕРОЙ</b>
     <small>Камера считает повторения, за каждое — опыт и уровни</small><em id="mnLvl">Уровень 1</em></div><div class="go">›</div></button>
   <button class="mn-tile" id="mnRoast" style="display:none"><div class="ic">🍽</div><div><b>ПРОЖАРКА ТАРЕЛКИ</b>
     <small>Сфоткай еду — тренер оценит тарелку, калории и даст совет</small><em id="mnPlates">Сегодня 0 тарелок</em></div><div class="go">›</div></button>
-  </div>
+  <div class="mn-tile off"><div class="ic">⚔️</div><div><b>СКОРО</b><small>Дуэли, испытания и новые фишки</small></div></div>
 </section>
-
-<!-- ПРОФИЛЬ БОЙЦА: звание, серия, жетоны, значки, тон (задачи и сундук — в хабе) -->
-<section class="screen" id="order">
-  <div class="rs-head"><button id="orBack">‹ Приказ</button><div class="rs-title goldtext">ПРОФИЛЬ БОЙЦА</div></div>
-  <div class="hero">
-    <div class="hero-top">
-      <div class="emblem" id="oEmb"></div>
-      <div style="flex:1;min-width:0">
-        <div class="hero-name" id="oRank">Новобранец</div>
-        <div class="xpbig" style="margin:4px 0"><b class="goldtext" id="oXp" style="font-size:22px">0</b><span style="font-size:13px">XP</span><em id="oNext"></em></div>
-        <div class="xpbar"><i id="oBar"></i></div>
-      </div>
-    </div>
-    <div class="gm-streak">
-      <div class="gm-fire" id="oFire">🔥<b id="oStreak">0</b></div>
-      <div class="t"><b id="oStreakT">Серия: 0 дней</b><span id="oStreakS"></span></div>
-    </div>
-    <div class="gm-miles" id="oMiles"></div>
-    <div class="gm-chips" id="oChips"></div>
-  </div>
-  <div id="oLost"></div>
-  <div class="gm-say" id="oSay"></div>
-  <div class="gm-note">Награды — только за действия. Цифра на весах и оценка тарелки на опыт не влияют. День закрывается в 03:00.</div>
-  <div id="oBadges"></div>
-  <h2>Тон тренера</h2>
-  <div class="seg" id="toneSeg">
-    <button data-tone="sarge">🪖 Сержант<small>жёстко, с юмором</small></button>
-    <button data-tone="coach">🏋️ Тренер<small>бодро</small></button>
-    <button data-tone="buddy">🤝 Напарник<small>мягко</small></button>
-  </div>
-  <div class="seg-note" id="toneNote"></div>
-  <h2>Жетоны</h2>
-  <button class="btn btn-ghost" id="oBuyFrz" style="margin-top:0">❄️ Купить заморозку серии · 10 🪙</button>
-  <div class="gm-note" id="oTokNote"></div>
-</section>
-
-<!-- ЛИГА И ОТРЯД -->
-<section class="screen" id="league">
-  <div class="rs-head"><button id="lgBack">‹ Приказ</button><div class="rs-title goldtext">ЛИГА И ОТРЯД</div></div>
-  <div class="gm-demo">🧪 Тестовый режим: соперники и бойцы отряда — пока демо. Твои очки и урон — настоящие, из твоих действий.</div>
-  <div class="seg seg2" id="lgSeg"><button data-p="lgLeague" class="on">🏆 Лига недели</button><button data-p="lgSquad">🛡 Отряд и босс</button></div>
-  <div class="gm-pane on" id="lgLeague"></div>
-  <div class="gm-pane" id="lgSquad"></div>
-</section>
-
-<!-- оверлеи игры -->
-<div class="gm-ov" id="onbOv"><div>
-  <div class="onb-dots" id="onbDots"><i class="on"></i><i></i><i></i></div>
-  <div class="onb-step on" data-s="0">
-    <h3 class="goldtext">КАЖДЫЙ ДЕНЬ — ПРИКАЗ</h3>
-    <p>Паша даёт приказ из трёх задач. Каждая — пара минут.</p>
-    <div class="onb-task"><div class="ic">🏋️</div><div><b>Тренировка с камерой</b><small>Камера считает повторения, тренер подбадривает голосом</small></div></div>
-    <div class="onb-task"><div class="ic">🍽</div><div><b>Тарелка на прожарку</b><small>Сфоткай еду — тренер оценит тарелку и даст совет</small></div></div>
-    <div class="onb-task"><div class="ic">⚖️</div><div><b>Вес</b><small>Запиши цифру. Это сводка, а не приговор</small></div></div>
-    <button class="btn btn-gold" data-next>ДАЛЬШЕ</button>
-  </div>
-  <div class="onb-step" data-s="1">
-    <h3 class="goldtext">ЗА ПРИКАЗ — НАГРАДЫ</h3>
-    <div class="onb-flow">
-      <div><span>📜</span><b>3 задачи</b><small>по +40 XP</small></div><i>›</i>
-      <div><span>🎁</span><b>Сундук</b><small>+60 XP и жетоны</small></div><i>›</i>
-      <div><span>🔥</span><b>Серия</b><small>дни подряд</small></div><i>›</i>
-      <div><span>⭐</span><b>Звание</b><small>15 ступеней</small></div>
-    </div>
-    <p style="margin-top:12px">Серию продлевает любое одно действие за день. Пропустил — сработает заморозка ❄️.<br>
-      От «Новобранца» до «Легенды Кода тела». Награды — только за действия, не за килограммы.</p>
-    <button class="btn btn-gold" data-next>ДАЛЬШЕ</button>
-  </div>
-  <div class="onb-step" data-s="2">
-    <h3 class="goldtext">КАК С ТОБОЙ ГОВОРИТЬ?</h3>
-    <div class="seg" id="onbTone">
-      <button data-tone="sarge">🪖 Сержант<small>жёстко, с юмором</small></button>
-      <button data-tone="coach" class="on">🏋️ Тренер<small>бодро</small></button>
-      <button data-tone="buddy">🤝 Напарник<small>мягко</small></button>
-    </div>
-    <h3 class="goldtext" style="margin-top:16px;font-size:16px">С ЧЕГО НАЧНЁМ?</h3>
-    <div id="onbGo"></div>
-    <button class="btn btn-ghost" data-go="look">Сначала осмотрюсь</button>
-  </div>
-</div></div>
-<div class="gm-ov" id="wtOv"><div>
-  <h3 class="goldtext">ЗАПИСАТЬ ВЕС</h3>
-  <p id="wtSub">Это сводка, а не приговор.</p>
-  <div class="gm-wt"><input id="wtIn" type="number" inputmode="decimal" step="0.1" min="30" max="300" placeholder="0,0"><span>кг</span></div>
-  <p id="wtErr" style="color:var(--fire);min-height:18px;margin-top:6px"></p>
-  <button class="btn btn-gold" id="wtOk" style="margin-top:4px">ЗАПИСАТЬ</button>
-  <button class="btn btn-ghost" id="wtNo">Позже</button>
-  <div class="gm-note" style="text-align:center">Пока тест: цифра остаётся только в твоём телефоне. Дневник в боте веди как обычно.</div>
-</div></div>
-<div class="gm-ov" id="chestOv"><div style="text-align:center">
-  <h3 class="goldtext" id="chTitle">СУНДУК</h3>
-  <p id="chSay"></p>
-  <div class="gm-chestbig" id="chBox"><span>🎁</span><i class="rs-spark" style="left:20%"></i><i class="rs-spark" style="left:48%;animation-delay:.5s"></i>
-    <i class="rs-spark" style="left:75%;animation-delay:1s"></i><i class="rs-spark" style="left:35%;animation-delay:1.3s"></i><i class="rs-spark" style="left:62%;animation-delay:.8s"></i></div>
-  <p id="chHint">Нажми на сундук</p>
-  <div class="gm-loot" id="chLoot"></div>
-  <button class="btn btn-gold" id="chOk" style="display:none">ЗАБРАТЬ</button>
-</div></div>
-<div class="gm-toast" id="toast"></div>
 
 <!-- ТРЕНИРОВКА: главный экран -->
 <section class="screen" id="home">
@@ -678,16 +312,15 @@ canvas#fx { pointer-events: none; }
     </div>
   </div>
 
-  <h2>Приказ дня</h2>
-  <button class="card quest" id="quest" style="width:100%;text-align:left;color:inherit">
-    <div class="ico">📜</div>
+  <h2>Квест дня</h2>
+  <div class="card quest" id="quest">
+    <div class="ico">⚔️</div>
     <div style="flex:1">
       <div class="q-title" id="qTitle">30 повторений</div>
-      <div class="q-sub" id="qSub">Награда: +40 XP</div>
+      <div class="q-sub" id="qSub">Награда: +150 XP</div>
       <div class="bar"><i id="qBar"></i></div>
     </div>
-    <div style="color:var(--gold);font-size:22px">›</div>
-  </button>
+  </div>
 
   <h2>Навыки</h2>
   <div class="skills" id="skills"></div>
@@ -797,64 +430,12 @@ canvas#fx { pointer-events: none; }
   </div>
 </section>
 
-<!-- АВАТАР БОЙЦА (тред «Аватар»): создание, данные, путь бойца. Карточка в меню и блок в итогах вставляются из скрипта -->
-<section class="screen" id="avatar">
-  <div class="rs-head"><button id="avBack">‹ Меню</button><div class="rs-title goldtext">ТВОЙ БОЕЦ</div></div>
-  <div id="avView">
-    <div class="av-big" id="avBig"></div>
-    <div class="av-name"><b class="goldtext" id="avVRank"></b><span id="avVStage"></span></div>
-    <div class="xpbar"><i id="avVBar"></i></div>
-    <div class="av-steps" id="avSteps"></div>
-    <div class="stats"><div class="stat"><b id="avCW">0</b><span>тренировок</span></div><div class="stat"><b id="avCO">0</b><span>приказов</span></div>
-      <div class="stat"><b id="avCP">0</b><span>тарелок</span></div></div>
-    <h2>Как крепнет боец</h2>
-    <div class="av-how">
-      <div><span>🏋️</span><span>Тренировка от 3 минут</span></div>
-      <div><span>📜</span><span>Закрытый приказ дня — все три задачи</span></div>
-      <div><span>🍽</span><span>Тарелка в прожарке</span></div>
-      <div><span>🔥</span><span>Вехи серии: 3, 7 и 30 дней подряд</span></div>
-      <div><span>🎖</span><span>Форма и знаки — по званию</span></div>
-    </div>
-    <div class="gm-note">🔒 Боец виден только тебе. Он меняется за действия, а не за цифру на весах. За день засчитывается разумный максимум — сто подходов за вечер его не ускорят.</div>
-    <button class="btn btn-gold" id="avGo" style="display:none">В СТРОЙ ›</button>
-    <div class="av-two"><button class="btn btn-ghost" id="avEditBtn">✏️ Изменить данные</button><button class="btn btn-ghost" id="avFaceBtn">🎨 Изменить лицо</button></div>
-  </div>
-  <div id="avEdit" style="display:none">
-    <div class="seg seg2 av-tabs" id="avTabs"><button data-p="data">1 · Данные</button><button data-p="face">2 · Лицо</button></div>
-    <div id="avPData">
-      <div class="av-pair"><div><div class="av-mini" id="avNow"></div><span>Старт</span></div><div class="av-arrow">→</div>
-        <div><div class="av-mini" id="avGoal"></div><span id="avGoalCap">Цель</span></div></div>
-      <h2>Пол</h2>
-      <div class="seg seg2" id="avSex"><button data-v="m">Мужской</button><button data-v="f">Женский</button></div>
-      <div class="av-from" id="avFrom"></div>
-      <div class="av-form">
-        <label>Рост<div class="in"><input id="avH" type="number" inputmode="numeric" min="130" max="215" placeholder="175"><span>см</span></div></label>
-        <label>Вес<div class="in"><input id="avW" type="number" inputmode="decimal" step="0.1" min="35" max="250" placeholder="0"><span>кг</span></div></label>
-        <label>Цель<div class="in"><input id="avG" type="number" inputmode="decimal" step="0.1" min="35" max="250" placeholder="авто"><span>кг</span></div></label>
-      </div>
-      <div class="av-hint" id="avHint"></div>
-    </div>
-    <div id="avPFace" style="display:none">
-      <div class="av-fhead"><div class="av-fbig" id="avFaceBig"></div><div class="av-fbody" id="avFaceBody"></div></div>
-      <button class="av-rnd" id="avRnd">🎲 Случайно</button>
-      <div class="av-cats" id="avCats"></div>
-      <div class="av-opts" id="avOpts"></div>
-    </div>
-    <p class="av-err" id="avErr"></p>
-    <button class="btn btn-gold" id="avSave">ДАЛЕЕ — ЛИЦО ›</button>
-    <button class="btn btn-ghost" id="avLater">Позже</button>
-    <div class="gm-note">Вес нужен только для стартовой фигуры и цели. Дальше боец крепнет за тренировки, приказы и прожарку. Лицо — твоё, от прогресса не меняется. Данные хранятся в твоём телефоне и в Telegram, никому не показываются.</div>
-  </div>
-</section>
-
-<script src="avatar.js?v=3"></script>
 <script type="module">
-import { EX, EX_ORDER, RepCounter } from "./counter.js";
+import { EX, RepCounter } from "./counter.js";
 // ================= настройки игры =================
 const SKILLS = { str: "Сила", legs: "Ловкость", end: "Выносливость" };
-// 15 званий «Операции Подъём»: уровень → звание (после 15-го звание остаётся «Легендой»)
-const RANKS = ["Новобранец", "Рядовой Подъём", "Ефрейтор Без Отмазок", "Младший сержант", "Сержант Режим", "Старший сержант Планка",
-  "Старшина", "Прапорщик", "Лейтенант", "Старший лейтенант", "Капитан Железо", "Майор Дисциплина", "Полковник", "Генерал Подъёма", "Легенда Кода тела"];
+const RANKS = [[1, "Новичок"], [3, "Ученик"], [5, "Атлет"], [8, "Боец"], [12, "Чемпион"], [16, "Мастер"], [20, "Легенда «Кода тела»"]];
+const QUEST = { reps: 30, xp: 150 };
 // «Протокол 50» из программы Паши: 50 повторений частями, отдых 30 секунд между частями
 const P50 = { sets: [15, 10, 10, 8, 7], rest: 30, xp: 100 };
 const MODE_NOTE = { free: "Сколько сделаете — столько и засчитаем.",
@@ -868,7 +449,7 @@ const VOICE_NOTE = { hard: "Тренер считает повторения и 
 // ================= прогресс =================
 const today = () => new Date().toLocaleDateString("sv-SE");   // ГГГГ-ММ-ДД по местному времени
 const fresh = () => ({ xp: 0, skills: { str: 0, legs: 0, end: 0 }, reps: 0, best: 0, streak: 0, lastDay: "",
-                       ex: "squat", voice: "hard", mode: "free" });     // серия и задачи дня — в игровом слое (G)
+                       quest: { day: today(), reps: 0, done: false }, ex: "squat", voice: "hard", mode: "free" });
 let S = fresh();
 const tg = window.Telegram?.WebApp;
 const inTG = !!(tg && tg.initData);
@@ -888,13 +469,24 @@ function save() {
   try { localStorage.setItem(KEY, v); } catch (e) {}
   if (inTG && tg.CloudStorage && v.length < 4000) tg.CloudStorage.setItem(KEY, v, () => {});
 }
-function lvl(xp) {           // 100 XP на первый уровень, дальше порог ×1,35; с 11-го — ×1,2, иначе верхние уровни берутся раз в две недели
+function lvl(xp) {           // 100 XP на первый уровень, каждый следующий порог в 1,35 раза больше
   let l = 1, need = 100, rest = xp;
-  while (rest >= need) { rest -= need; l++; need = Math.round(need * (l >= 11 ? 1.2 : 1.35)); }
+  while (rest >= need) { rest -= need; l++; need = Math.round(need * 1.35); }
   return { l, rest, need };
 }
-const rankOf = l => RANKS[Math.min(l, RANKS.length) - 1];
+const rankOf = l => RANKS.filter(r => l >= r[0]).pop()[1];
 const fmt = n => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+function rollDay() {
+  const d = today();
+  if (S.quest.day !== d) S.quest = { day: d, reps: 0, done: false };
+}
+function markStreak() {
+  const d = today();
+  if (S.lastDay === d) return;
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  S.streak = S.lastDay === y.toLocaleDateString("sv-SE") ? S.streak + 1 : 1;
+  S.lastDay = d;
+}
 
 // ================= эмблема уровня =================
 // Шестиугольник: золотая грань заполняется по мере набора опыта до следующего уровня,
@@ -926,37 +518,29 @@ function emblem(el, level, frac, label = true) {
 // ================= главный экран =================
 const $ = id => document.getElementById(id);
 function render() {
-  gRoll();
+  rollDay();
   const L = lvl(S.xp);
   emblem($("hEmb"), L.l, L.rest / L.need); $("hRank").textContent = rankOf(L.l);
   $("hBar").style.width = (L.rest / L.need * 100) + "%";
   $("hXp").textContent = fmt(S.xp); $("hNext").textContent = `до ${L.l + 1} ур.: ${fmt(L.need - L.rest)} XP`;
-  $("sReps").textContent = fmt(S.reps); $("sStreak").textContent = G.streak; $("sBest").textContent = S.best;
-  const M = G.mission && G.mission.d === gDay() ? G.mission : null;
-  if (M) {                               // бонус-миссия из прожарки важнее — она на этом экране и считается
-    $("qTitle").textContent = `💪 Бонус-миссия: ${exWord(M.ex, M.n)}`;
-    $("qSub").textContent = `Сделано ${M.have} из ${M.n} · +${MISSION_XP} XP${S.ex !== M.ex ? ` · выбери «${EX[M.ex].name}»` : ""}`;
-    $("qBar").style.width = (M.have / M.n * 100) + "%"; $("quest").classList.remove("done");
-  } else {
-  const t = gTrain(), n = gDone();       // на экране тренировки — задача «Движение» из приказа дня
-  $("qTitle").textContent = t.done ? `Тренировка в приказе ✓ · задачи ${n} из 3` : t.title;
-  $("qSub").textContent = t.done ? (G.day.chest ? "Сундук открыт. Новый приказ — завтра в 03:00" : n === 3 ? "Все три готовы — сундук ждёт!" : "Остальные задачи — в «Приказе дня»")
-                                 : `Сделано ${t.have} из ${t.need} · награда +${R.task} XP`;
-  $("qBar").style.width = Math.min(100, t.have / t.need * 100) + "%";
-  $("quest").classList.toggle("done", t.done);
-  }
+  $("sReps").textContent = fmt(S.reps); $("sStreak").textContent = S.streak; $("sBest").textContent = S.best;
+  const q = S.quest;
+  $("qTitle").textContent = q.done ? "Квест выполнен ✓" : `${QUEST.reps} повторений за день`;
+  $("qSub").textContent = q.done ? `+${QUEST.xp} XP получено. Новый квест — завтра` : `Сделано ${q.reps} из ${QUEST.reps} · награда +${QUEST.xp} XP`;
+  $("qBar").style.width = Math.min(100, q.reps / QUEST.reps * 100) + "%";
+  $("quest").classList.toggle("done", q.done);
   $("skills").innerHTML = Object.entries(SKILLS).map(([k, name]) => {
     const s = lvl(S.skills[k] || 0);
     return `<div class="card" id="sk_${k}"><div class="skill-row"><b>${name}</b><span>УР. ${s.l} · ${fmt(S.skills[k] || 0)} XP</span></div>
             <div class="bar"><i style="width:${s.rest / s.need * 100}%"></i></div></div>`;
   }).join("");
-  $("exList").innerHTML = EX_ORDER.map(k => [k, EX[k]]).map(([k, e]) =>
+  $("exList").innerHTML = Object.entries(EX).map(([k, e]) =>
     `<button class="ex ${S.ex === k ? "sel" : ""}" data-ex="${k}"><div class="e-ico">${e.ico}</div>
      <div class="e-name">${e.name}</div><div class="e-skill">навык: ${SKILLS[e.skill]}</div></button>`).join("");
   $("exTip").textContent = EX[S.ex].tip;
   document.querySelectorAll("#voiceSeg button").forEach(b => b.classList.toggle("on", b.dataset.v === S.voice));
   const hold = EX[S.ex].kind === "hold";
-  $("modeBox").style.display = hold || EX[S.ex].noP50 ? "none" : "";      // «Протокол 50» — не для удержаний и скалолаза
+  $("modeBox").style.display = hold ? "none" : "";
   document.querySelectorAll("#modeSeg button").forEach(b => b.classList.toggle("on", b.dataset.m === S.mode));
   $("modeNote").textContent = MODE_NOTE[S.mode];
   $("voiceNote").textContent = VOICE_NOTE[S.voice];
@@ -1053,9 +637,8 @@ const Coach = {
   // реплика подходит упражнению: про приседания — только на приседаниях, про планку — только в планке и т. д.
   fits(cat, k) {
     const t = (this.phr?.[cat]?.[k] || "").toLowerCase(), ex = sess?.ex;
-    if (!ex || cat.startsWith("ex_")) return true;             // ex_* — и так только про своё упражнение
-    if (EX[ex].front && /боком/.test(t)) return false;          // махи и присед с жимом снимают лицом к камере
-    return EX_ORDER.every(e => e === ex || EX[ex].also?.includes(e) || !EX[e].say.test(t));
+    const about = { squat: /присед/, pushup: /отжим/, lunge: /выпад/, plank: /планк/, calf: /носк|носоч|икр/ };
+    return Object.entries(about).every(([e, re]) => e === ex || !re.test(t)) || !ex;
   },
   pick(cat) {
     const n = this.idx?.[cat] || 0, ok = [...Array(n).keys()].filter(k => this.fits(cat, k) && k !== this.last[cat] && !this.hold.has(`${cat}_${k}`));
@@ -1171,7 +754,7 @@ let sess;   // текущая тренировка
 function addXp(skill, amount) {
   const ups = [];
   const before = lvl(S.xp).l;
-  S.xp += amount; gWeekXp(amount);
+  S.xp += amount;
   const after = lvl(S.xp).l;
   if (after > before) ups.push(`Герой — уровень ${after}`);
   const end = Math.ceil(amount * .4);
@@ -1230,14 +813,19 @@ function onRep() {
   sess.bestCombo = Math.max(sess.bestCombo, sess.combo);
   sess.reps++; S.reps++;
   const mult = 1 + .1 * Math.min(sess.combo - 1, 10);
-  // потолок против гринда: после 250 повторений за день опыт идёт с коэффициентом 0,25
-  const xp = Math.max(1, Math.round(10 * mult * (gRoll(), G.day.reps >= R.repsFull ? R.repsTail : 1)));
+  const xp = Math.round(10 * mult);
   sess.xp += xp;
   const ups = addXp(EX[sess.ex].skill, xp);
-  const g = gOnReps(sess.ex, 1);          // приказ дня, серия, урон боссу
-  const quest = g.xp > 0;
-  if (quest) { sess.xp += g.xp; setTimeout(() => floatText(`ПРИКАЗ! +${g.xp}`, 40), 500); }
-  save();
+  let quest = false;
+  rollDay();
+  if (!S.quest.done) {
+    S.quest.reps++;
+    if (S.quest.reps >= QUEST.reps) {
+      S.quest.done = quest = true; sess.xp += QUEST.xp; sess.ups.push(`Квест дня выполнен: +${QUEST.xp} XP`);
+      ups.push(...addXp("end", QUEST.xp)); setTimeout(() => floatText(`КВЕСТ! +${QUEST.xp}`, 40), 500);
+    }
+  }
+  markStreak(); save();
   // интерфейс
   $("wReps").textContent = sess.reps; retrigger($("wReps"), "pop");
   floatText(`+${xp} XP${mult > 1 ? ` <small>x${mult.toFixed(1)}</small>` : ""}`);
@@ -1256,9 +844,8 @@ function onRep() {
   else if (sess.reps % 5 === 0) Coach.say(Math.random() < .5 && Coach.idx?.[`ex_${sess.ex}`] ? `ex_${sess.ex}` : "five", true);
   else Coach.count(sess.reps);
 }
-function onHold(r) {                // планка, стульчик: каждые 5 секунд в правильной позе — опыт
+function onHold(r) {                // планка: каждые 5 секунд в правильной позе — опыт
   const sec = Math.floor(r.holdMs / 1000);
-  if (sec > sess.reps) { const g = gOnHold(sec - sess.reps); if (g.xp) { sess.xp += g.xp; animateSess(sess.xp); setTimeout(() => floatText(`ПРИКАЗ! +${g.xp}`, 40), 300); Coach.say("quest", true); } }
   sess.reps = sec;                      // для планки «повторения» — секунды в правильной позе
   $("wReps").textContent = `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, "0")}`;
   const steps = Math.floor(r.holdMs / HOLD_STEP);
@@ -1266,12 +853,12 @@ function onHold(r) {                // планка, стульчик: кажд�
     sess.holdSteps = (sess.holdSteps || 0) + 1; sess.lastRep = performance.now();
     const xp = 10 + Math.min(sess.holdSteps - 1, 10);          // чем дольше держишь — тем больше за отрезок
     sess.xp += xp;
-    const ups = addXp("end", xp); save();
+    const ups = addXp("end", xp); markStreak(); save();
     retrigger($("wReps"), "pop"); floatText(`+${xp} XP`); heartStream(14, 600);
     burst(fx.width * .16, fx.height * .17, 30, 1.1); tone(520 + sess.holdSteps * 20, .12); haptic("rep");
     animateSess(sess.xp); hud(true);
     if (ups.length) setTimeout(() => { levelUpFx(ups[0]); Coach.say("level", true); }, 250);
-    else if (sess.holdSteps % 2 === 0) Coach.say(Math.random() < .7 && Coach.idx?.[`ex_${sess.ex}`] ? `ex_${sess.ex}` : "five");
+    else if (sess.holdSteps % 2 === 0) Coach.say(Math.random() < .7 ? "ex_plank" : "five");
     else Coach.count(sess.holdSteps * 5 <= 60 ? sess.holdSteps * 5 : 60);
   }
 }
@@ -1326,8 +913,7 @@ function drawSkeleton(lm, side) {
 }
 function processPose(lm) {
   const e = EX[sess.ex], now = performance.now();
-  // пропорции кадра — углы считаются в пикселях, а не в долях ширины и высоты
-  const r = sess.counter.update(lm, now, video.videoWidth && video.videoHeight ? video.videoWidth / video.videoHeight : 1);
+  const r = sess.counter.update(lm, now);
   if (r.status === "nobody" || r.status === "lowvis") {
     sess.lostSince = sess.lostSince || now;
     if (now - sess.lostSince > 4000 && now - (sess.lastNobody || 0) > 15000) { sess.lastNobody = now; Coach.say("nobody"); }
@@ -1345,15 +931,15 @@ function processPose(lm) {
   if (r.status === "lowvis") { setHint(e.tip, true); return; }
   if (r.status === "pose") { $("depth").style.height = "0%";
     if (e.kind === "hold" && r.holdMs != null) onHold(r);
-    setHint(e.hints.pose, true); return; }
-  if (e.kind === "hold") { $("depth").style.height = "100%"; onHold(r); setHint(sess.holdSteps ? "" : e.hints.start); return; }
+    setHint(sess.ex === "pushup" ? "Примите упор лёжа — боком к камере" : e.kind === "hold" ? "Встаньте в планку — тело одной линией, боком к камере" : "Встаньте прямо, боком к камере", true); return; }
+  if (e.kind === "hold") { $("depth").style.height = "100%"; onHold(r); setHint(sess.holdSteps ? "" : "Держите! Тело одной линией"); return; }
   if (r.depth != null) {
     $("depth").style.height = (r.depth * 100) + "%";
   }
   if (sess.p50?.resting) { setHint("Отдыхаем — повторения не считаются"); return; }
   if (r.rep) { onRep(); setHint(sess.reps < 3 ? "Отлично, продолжайте!" : ""); }
-  else if (r.state === "down") setHint(sess.reps < 3 ? e.hints.down || "Хорошо! Теперь вверх ⬆️" : "");
-  else if (sess.reps === 0) setHint(e.hints.start);
+  else if (r.state === "down") setHint(sess.reps < 3 ? "Хорошо! Теперь вверх ⬆️" : "");
+  else if (sess.reps === 0) setHint(sess.ex === "squat" ? "Присядьте поглубже — бёдра почти параллельно полу" : "Опуститесь ниже — согните руки");
 }
 function setHint(t, warn = false) {
   const h = $("hint"); h.textContent = t; h.style.display = t ? "" : "none"; h.classList.toggle("warn", warn);
@@ -1385,12 +971,12 @@ async function start(demo = false) {
   unlockAudio();                          // звук разрешается только по нажатию
   $("camErr").innerHTML = "";
   sess = { ex: S.ex, demo, reps: 0, xp: 0, combo: 0, bestCombo: 0, lastRep: -1e9, counter: new RepCounter(S.ex), ups: [],
-           startedAt: performance.now(), saved: demo ? JSON.stringify(S) : null, gSaved: demo ? JSON.stringify(G) : null };   // демо не засчитываем
+           startedAt: performance.now(), saved: demo ? JSON.stringify(S) : null };   // демо не засчитываем
   sessShown = 0; $("wSess").textContent = "+0";
   const hold = EX[S.ex].kind === "hold";
-  sess.p50 = !hold && !EX[S.ex].noP50 && S.mode === "p50" ? { set: 0, done: 0 } : null;
+  sess.p50 = !hold && S.mode === "p50" ? { set: 0, done: 0 } : null;
   $("wEx").textContent = EX[S.ex].name;
-  $("wReps").textContent = hold ? "0:00" : "0"; $("wRepsLbl").textContent = hold ? EX[S.ex].label : "ПОВТОРЕНИЙ";
+  $("wReps").textContent = hold ? "0:00" : "0"; $("wRepsLbl").textContent = hold ? "В ПЛАНКЕ" : "ПОВТОРЕНИЙ";
   $("proto").style.display = sess.p50 ? "" : "none"; $("rest").classList.remove("on"); protoView();
   $("combo").classList.remove("on", "hot");
   show("workout"); sizeCanvases(); hud();
@@ -1441,15 +1027,14 @@ function stop(showResult = true) {
   tg?.BackButton?.hide(); tg?.unlockOrientation?.();
   sctx.clearRect(0, 0, skel.width, skel.height);
   const wasDemo = !!(sess && sess.saved);
-  if (wasDemo) { S = JSON.parse(sess.saved); sess.saved = null; G = JSON.parse(sess.gSaved); }
+  if (wasDemo) { S = JSON.parse(sess.saved); sess.saved = null; }
   else if (sess && EX[sess.ex].kind !== "hold" && sess.reps > S.best) S.best = sess.reps;   // у планки reps — секунды, в рекорд не идут
-  if (!wasDemo && sess && sess.startedAt) { const g = gOnWorkout((performance.now() - sess.startedAt) / 1000, sess.reps); sess.xp += g.xp; }
   save();
   if (!showResult || !sess) { Coach.stop(); openTrain(); return; }
   const holdRes = EX[sess.ex].kind === "hold";
   Coach.say((holdRes ? sess.reps >= 30 : sess.reps >= 15) || sess.p50?.finished ? "finish_good" : "finish_weak", true);
   $("rReps").textContent = holdRes ? `${Math.floor(sess.reps / 60)}:${String(sess.reps % 60).padStart(2, "0")}` : sess.reps;
-  $("rReps").nextElementSibling.textContent = holdRes ? EX[sess.ex].word : "повторений";
+  $("rReps").nextElementSibling.textContent = holdRes ? "в планке" : "повторений";
   $("rCombo").textContent = holdRes ? `${sess.holdSteps || 0}` : `x${sess.bestCombo || 0}`;
   $("rCombo").nextElementSibling.textContent = holdRes ? "отрезков по 5 с" : "лучшее комбо";
   $("rGains").innerHTML = (wasDemo ? `<div>🎬 Это демо — опыт в Ваш прогресс не засчитан</div>` : "") +
@@ -1477,654 +1062,49 @@ if (tg) {
   try { tg.setHeaderColor("#0b0b0b"); tg.setBackgroundColor("#0b0b0b"); tg.disableVerticalSwipes?.(); } catch (e) {}
 }
 
-// ================= игровой слой «Операция Подъём» =================
-// Приказ дня (вес · тарелка · тренировка) → сундук → серия с заморозками; звания из XP; лига и отряд (пока демо-соперники).
-// Награды — только за действия: цифра на весах и оценка тарелки на XP не влияют.
-//
-// Хранилище — ОДНА прослойка: gameGet() / gameSave(state, action). Сейчас — телефон (localStorage + CloudStorage Telegram).
-// Когда тред «Сервер/API» включит игру, достаточно задать GAME_API: gameGet() берёт состояние с сервера (GET-подобный POST /state),
-// gameSave() отправляет только действие (POST /action), а сервер сам проверяет, начисляет и возвращает настоящее состояние.
-// Действия: {t:"weight", v} {t:"plate"} {t:"reps", ex, n} {t:"hold", sec} {t:"workout", sec, reps} {t:"chest"} {t:"swap"}
-//           {t:"tone", tone} {t:"freeze_buy"} {t:"restore"} {t:"respect", who} {t:"day"} (новый день/неделя), {t:"init"}
-const GAME_KEY = "kodtela_game_v1";
-const GAME_API = "";       // "https://kodtela.era-print.com/api/game" — включить, когда сервер будет готов
-async function gameGet() {
-  if (GAME_API && inTG) {
-    try {
-      const r = await fetch(GAME_API + "/state", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData: tg.initData }) });
-      const x = await r.json(); if (x && x.state) return { ...gFresh(), ...x.state };
-    } catch (e) {}               // нет сети — играем из кэша телефона
-  }
-  let best = null;
-  try { best = JSON.parse(localStorage.getItem(GAME_KEY) || "null"); } catch (e) {}
-  if (inTG && tg.CloudStorage) {             // в Telegram — ещё и копия в аккаунте; берём более свежую
-    const cloud = await new Promise(ok => {
-      const t = setTimeout(() => ok(null), 1500);
-      try { tg.CloudStorage.getItem(GAME_KEY, (err, val) => { clearTimeout(t); try { ok(!err && val ? JSON.parse(val) : null); } catch (e) { ok(null); } }); }
-      catch (e) { clearTimeout(t); ok(null); }
-    });
-    if (cloud && (!best || (cloud.rev || 0) > (best.rev || 0))) best = cloud;
-  }
-  return best ? { ...gFresh(), ...best } : null;
-}
-let gReady = false, gPending = null;          // пока состояние не загружено — ничего не пишем, иначе пустое затрёт настоящее
-function gameSave(state, action) {
-  if (!gReady || (sess && sess.saved)) return;   // идёт демо — ничего не сохраняем и никуда не шлём
-  state.rev = (state.rev || 0) + 1;
-  const v = JSON.stringify(state);
-  try { localStorage.setItem(GAME_KEY, v); } catch (e) {}
-  if (inTG && tg.CloudStorage && v.length < 4000) { clearTimeout(gameSave.t); gameSave.t = setTimeout(() => tg.CloudStorage.setItem(GAME_KEY, v, () => {}), 800); }
-  if (GAME_API && inTG && action) {
-    fetch(GAME_API + "/action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData: tg.initData, action }) })
-      .then(r => r.json()).then(x => { if (x && x.state) { G = { ...gFresh(), ...x.state }; gRenderAll(); } }).catch(() => {});
-  }
-  try { avSync(); } catch (e) {}       // боец сверяет засчитанное (тред «Аватар»; идемпотентно, без аватара — ничего)
-}
-
-// ---------- правила (из плана игры) ----------
-const R = { task: 40, chest: 60, weight: 20, weightMon: 50, weightMonTok: 2, plate: 15, plateMax: 3, workout: 30, workoutSec: 180,
-            repsFull: 250, repsTail: .25, streakReps: 20, streakHold: 20, tokMax: 150, frzMax: 2, frzCost: 10, restoreCost: 30, swapCost: 3 };
-const DMG = { rep: 1, holdSec: .5, task: 30, weight: 20, plate: 10 };          // урон боссу
-const MILES = [[3, "Пережил учебку", 0, 0], [7, "Неделя без самоволки", 100, 5], [14, "Две недели на передовой", 150, 7], [21, "Привычка завербована", 0, 0],
-               [30, "Ветеран месяца", 300, 15], [50, "Полсотни в строю", 400, 20], [70, "Ветеран Операции «Подъём»", 500, 25], [100, "Сотня в строю", 700, 40]];
-const NEWBIE = { squat: 20, pushup: 15, lunge: 20, calf: 30, plank: 30, raise: 30, thruster: 20, climber: 30, wallsit: 30 };   // новичок: 14 дней или до 5-го уровня
-// пределы цели для опытного (повторения или секунды) — по протоколам Паши: махи 3×50, присед с жимом 3×20–30, скалолаз по минуте, стульчик до минуты
-const LIMIT = { plank: [30, 120], wallsit: [20, 60], raise: [30, 150], thruster: [20, 90], climber: [30, 120] };
-// упражнение дня — по кругу из EX_ORDER (только те, для которых есть тексты); воскресенье — планка; скалолаз — только в замену, пока не проверен вживую
-const NOT_IN_ORDER = ["climber"];
-const LEAGUES = ["Учебка", "Окоп", "Передовая", "Спецназ", "Генштаб"];
-const SQUADS = ["Рота Без Отмазок", "Десант с Дивана", "Спецназ Гречки", "Ночной дозор Холодильника", "Штрафбат Понедельника", "Партизаны Режима",
-                "Кавалерия на Носках", "Морпехи Протокола 50", "Танковые войска Тапка", "Разведрота Прожарки", "Железный взвод Планки", "Отдельный полк «Так Точно»"];
-const BOSSES = [["Прапорщик Будильник", "Шесть раз по «ещё пять минуточек»", "подъёмы на носки", "Призыв"],
-  ["Капрал Плед", "Обнимает и не отпускает до обеда", "планка", "Учебка"], ["Сержант Диван", "Мягкий, тёплый, засасывает до вечера", "приседания", "Окопы"],
-  ["Майор Доширак", "Пять минут, кипяток и ноль угрызений совести", "выпады", "Полевая кухня"], ["Полковник Сериал", "«Ещё одна серия», а на часах три ночи", "отжимания", "Марш-бросок"],
-  ["Лейтенант Отмазка", "Всегда то погода, то колено, то Меркурий", "приседания", "Разведка боем"], ["Адмирал Холодильник", "Светится в темноте и зовёт по имени", "выпады — уходим широким шагом", "Ночной рейд"],
-  ["Генерал Завтра", "Финальный и самый живучий", "«Протокол 50»", "Штурм"]];
-const SEASON_MON = "2026-09-28";     // понедельник недели, в которую стартовал поток (01.10.2026) — неделя 1 сезона
-const EX_N = { squat: ["приседание", "приседания", "приседаний"], pushup: ["отжимание", "отжимания", "отжиманий"], lunge: ["выпад", "выпада", "выпадов"],
-               calf: ["подъём на носки", "подъёма на носки", "подъёмов на носки"], plank: ["секунда", "секунды", "секунд"] ,
-               raise: ["мах", "маха", "махов"], thruster: ["присед с жимом", "приседа с жимом", "приседов с жимом"],
-               climber: ["шаг «Скалолаза»", "шага «Скалолаза»", "шагов «Скалолаза»"], wallsit: ["секунда", "секунды", "секунд"] };
-const plural = (n, f) => f[n % 10 === 1 && n % 100 !== 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2];
-const exWord = (ex, n) => EX_N[ex] ? `${n} ${plural(n, EX_N[ex])}` : `${EX[ex]?.name || ex}: ${n}`;
-const isHold = ex => EX[ex]?.kind === "hold";
-// текст задачи; нет текста — короткая подпись, а не падение
-const exTask = (tone, ex, n) => (TONE[tone]?.t[ex] || (k => exWord(ex, k)))(n);
-// упражнения для приказа дня и для замены: из EX_ORDER, только с текстами во всех трёх тонах
-function gExList(forOrder) {
-  return EX_ORDER.filter(k => EX[k] && NEWBIE[k] && EX_N[k] && ["sarge", "coach", "buddy"].every(t => TONE[t].t[k]) && !(forOrder && NOT_IN_ORDER.includes(k)));
-}
-
-// ---------- тон Паши: Сержант / Тренер / Напарник ----------
-// Красные линии во всех тонах: никаких шуток про тело, вес и внешность; жёсткость — только к лени и отговоркам.
-const TONE = {
-  sarge: { name: "Сержант", sign: "сержант Паша", note: "Жёстко и с юмором. Достаётся лени и отговоркам, не тебе. Мат — позже, по отдельному включению 18+.",
-    hi: ["Подъём, боец! Приказ на столе, а Генерал Завтра уже точит отмазки.", "Боец, в строй! Отмазки сдать на входе.", "Генерал Завтра шепчет «с понедельника». А мы начинаем сегодня."],
-    w: "Встань на весы до завтрака и запиши цифру. Без переговоров", p: "Прожарь любую тарелку. Кофе с печенькой — не завтрак, а алиби",
-    t: { squat: n => `${exWord("squat", n)}. Камера смотрит, я считаю`, pushup: n => `${exWord("pushup", n)}. С колен честно, с дивана нет`,
-         lunge: n => `${exWord("lunge", n)}. Шире шаг, боец`, calf: n => `${exWord("calf", n)}. Икры тоже давали присягу`, plank: n => `Планка ${exWord("plank", n)}. Держи строй`,
-         raise: n => `${exWord("raise", n)} в стороны. Плечи вверх, отговорки вниз`, thruster: n => `${exWord("thruster", n)}. Присел, выжал — доложил`,
-         climber: n => `${exWord("climber", n)}. Боком к камере, колени в атаку`, wallsit: n => `Стульчик ${exWord("wallsit", n)}. Сидим ровно, как на построении` },
-    chest: "Три из трёх! Сундук твой, а Генерал Завтра рыдает в плед.", done: "Приказ выполнен. Вольно, боец. До завтра.",
-    lost: "Серия обнулилась, опыт остался. Погнали заново, уже ветераном." },
-  coach: { name: "Тренер", sign: "тренер Паша", note: "Бодро и требовательно, без мата.",
-    hi: ["Доброе утро! Три задачи — и день засчитан.", "Работаем! Сегодня три понятных шага.", "Новый день — новый приказ. Начнём с простого."],
-    w: "Запиши вес без трагедии. Это сводка, а не приговор", p: "Сфоткай любую тарелку — разберём вместе",
-    t: { squat: n => `${exWord("squat", n)} — в своём темпе, но до конца`, pushup: n => `${exWord("pushup", n)}. С колен — тоже честно`,
-         lunge: n => `${exWord("lunge", n)}. Спина ровно, шаг широкий`, calf: n => `${exWord("calf", n)}. Медленно вверх, медленно вниз`, plank: n => `Планка ${exWord("plank", n)}. Тело одной линией`,
-         raise: n => `${exWord("raise", n)} в стороны. Локти чуть согнуты, плавно`, thruster: n => `${exWord("thruster", n)}. Глубоко присел — мощно выжал`,
-         climber: n => `${exWord("climber", n)}. Боком к камере, корпус ровно`, wallsit: n => `Стульчик ${exWord("wallsit", n)}. Спина к стене, колени над стопами` },
-    chest: "Все три задачи закрыты — забирай сундук!", done: "Отличный день. Завтра — следующий шаг.",
-    lost: "Серия обнулилась, опыт остался. Начинаем новую — уже с опытом." },
-  buddy: { name: "Напарник", sign: "Паша", note: "Мягко и с поддержкой. Включается сам после пропусков — чтобы вернуться было легко.",
-    hi: ["Привет! Давай сегодня понемногу — я рядом.", "Как ты? Три маленьких шага, без спешки.", "Рад тебя видеть. Сделаем сегодня сколько получится."],
-    w: "Встань на весы, когда удобно. Это просто цифра для дневника", p: "Сфоткай любую тарелку — просто посмотрим, что сегодня на столе",
-    t: { squat: n => `Давай вместе: ${exWord("squat", n)}. Не спеша`, pushup: n => `${exWord("pushup", n)}. Можно с колен — это нормально`,
-         lunge: n => `${exWord("lunge", n)}. Держись за стул, если нужно`, calf: n => `${exWord("calf", n)}. Спокойно, в своём ритме`, plank: n => `Планка ${exWord("plank", n)}. Можно с колен`,
-         raise: n => `${exWord("raise", n)} в стороны. Можно с бутылками воды`, thruster: n => `${exWord("thruster", n)}. В своём темпе, можно без веса`,
-         climber: n => `${exWord("climber", n)}. Медленно — тоже засчитывается`, wallsit: n => `Стульчик ${exWord("wallsit", n)}. Дыши спокойно, ты справишься` },
-    chest: "Все три готовы — это правда круто. Открывай сундук!", done: "День засчитан. Отдых — тоже часть плана.",
-    lost: "Серия начнётся заново, а весь опыт с тобой. Вернуться — тоже победа." },
-};
-
-// ---------- даты: игровой день закрывается в 03:00 по местному времени ----------
-const gDay = (t = Date.now()) => new Date(t - 3 * 3600e3).toLocaleDateString("sv-SE");
-const dAdd = (d, n) => { const x = new Date(d + "T12:00:00"); x.setDate(x.getDate() + n); return x.toLocaleDateString("sv-SE"); };
-const dDiff = (a, b) => Math.round((new Date(a + "T12:00:00") - new Date(b + "T12:00:00")) / 864e5);
-const dow = d => new Date(d + "T12:00:00").getDay();            // 0 — воскресенье, 1 — понедельник
-const weekOf = d => dAdd(d, -((dow(d) + 6) % 7));                 // понедельник этой недели
-
-const gFresh = () => ({ v: 1, rev: 0, born: gDay(), tone: null, tok: 0, frz: 1, frzWeek: weekOf(gDay()), streak: 0, best: 0, last: "",
-                        act: [], lost: null, soft: "", onb: 0, badges: [], chests: 0, wLast: null, hist: {}, day: null, week: null, league: 0, respect: {} });
-let G = gFresh();
-
-// ---------- новый день и новая неделя ----------
-function gNewDay(d) {
-  const y = dAdd(d, -1), old = G.day;
-  const sunday = dow(d) === 0;                                   // воскресенье — день восстановления: планка 30 с
-  const rota = gExList(true), ex = sunday || !rota.length ? "plank" : rota[Math.abs(dDiff(d, SEASON_MON)) % rota.length];
-  // не выполнил вчера задачу «Движение» — сегодня цель на 20% ниже: поддержка вместо наказания
-  const yMiss = d !== G.born && !(old && old.d === y && old.done.t);
-  return { d, ex, n: gTarget(ex, d, yMiss, sunday), yMiss, swaps: 0, w: 0, p: 0, reps: 0, exr: {}, hold: 0, exh: {}, wk: 0, done: { w: 0, p: 0, t: 0 }, chest: null };
-}
-function gTarget(ex, d, yMiss, sunday) {
-  if (sunday) return 30;
-  const newbie = dDiff(d, G.born) < 14 || lvl(S.xp).l < 5;
-  let n = NEWBIE[ex] || 20;
-  if (!newbie) {               // опытный: медиана за 7 дней × 1,1, в пределах 20–150 (планка — 30–120 с)
-    const v = Object.entries(G.hist).filter(([k]) => k < d && dDiff(d, k) <= 7).map(([, h]) => isHold(ex) ? h[1] : h[0]).filter(x => x > 0).sort((a, b) => a - b);
-    if (v.length) n = Math.round(v[v.length >> 1] * 1.1);
-    const [lo, hi] = LIMIT[ex] || [20, 150]; n = Math.min(hi, Math.max(lo, n));
-  }
-  if (yMiss) n = Math.round(n * .8);
-  return isHold(ex) ? Math.max(20, Math.round(n / 5) * 5) : Math.max(10, n);
-}
-function gRoll() {
-  const d = gDay(), wk = weekOf(d);
-  let changed = false;
-  if (!G.week || G.week.w !== wk) { G.week = { w: wk, xp: 0, dmg: 0 }; changed = true; }
-  if (G.frzWeek !== wk) { G.frzWeek = wk; G.frz = Math.min(R.frzMax, G.frz + 1); changed = true; }      // раз в неделю — заморозка, не больше двух
-  // пропущенные дни: заморозки срабатывают сами; не хватило — серия сгорает, 48 часов на восстановление
-  if (G.last && G.streak && G.last < dAdd(d, -1)) {
-    const gap = dDiff(d, G.last) - 1;
-    if (gap <= G.frz) { G.frz -= gap; G.last = dAdd(d, -1); G.frozeAt = d; }
-    else { G.best = Math.max(G.best, G.streak); G.lost = { n: G.streak, d: dAdd(G.last, 1) }; G.streak = 0; }
-    G.soft = d; changed = true;                                  // после пропуска тон сам становится мягче
-  }
-  if (G.lost && dDiff(d, G.lost.d) > 2) { G.lost = null; changed = true; }
-  if (!G.day || G.day.d !== d) {
-    G.day = gNewDay(d); changed = true;
-    for (const k of Object.keys(G.hist)) if (dDiff(d, k) > 10) delete G.hist[k];
-  }
-  if (!EX[G.day.ex]) { G.day.ex = "squat"; G.day.n = gTarget("squat", d, G.day.yMiss, false); changed = true; }   // упражнение исчезло из списка — не падаем
-  if (changed) gameSave(G, { t: "day" });
-}
-const gTone = () => (G.soft && dDiff(gDay(), G.soft) <= 1) ? "buddy" : (G.tone || "coach");   // после пропуска — «Напарник» на 2 дня
-const gDone = () => (G.day.done.w ? 1 : 0) + (G.day.done.p ? 1 : 0) + (G.day.done.t ? 1 : 0);
-const monthActive = () => { const m = gDay().slice(0, 7); return G.act.filter(x => x.startsWith(m)).length; };
-const MONTHS = ["январе", "феврале", "марте", "апреле", "мае", "июне", "июле", "августе", "сентябре", "октябре", "ноябре", "декабре"];
-
-// ---------- начисления ----------
-function gWeekXp(n) { if (G.week) G.week.xp += n; }
-function gTok(n) { G.tok = Math.max(0, Math.min(R.tokMax, G.tok + n)); }
-function heroXp(n) {                 // опыт за действия вне повторений (задачи, сундук, вес, тарелка)
-  const before = lvl(S.xp).l; S.xp += n; gWeekXp(n); save();
-  const after = lvl(S.xp).l;
-  if (after > before) {
-    const t = `Уровень ${after} — ${rankOf(after)}`;
-    if (onScreen("workout")) { sess?.ups.unshift(`Герой: ${t}`); setTimeout(() => { levelUpFx(t); Coach.say("level", true); }, 700); }
-    else setTimeout(() => gToast(`⭐ Новое звание! ${t}`), 1600);
-  }
-}
-let toastT = 0;
-function gToast(html) {
-  const t = $("toast"); t.innerHTML = html; t.classList.add("on");
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("on"), 2800);
-}
-function gNote(text) {               // в тренировке — в итоги подхода, иначе — всплывашкой
-  if (onScreen("workout")) sess?.ups.push(text); else gToast(text);
-}
-function gActive() {                 // серию засчитывает любое одно действие за день
-  const d = gDay(); if (G.last === d) return;
-  G.streak = G.last === dAdd(d, -1) ? G.streak + 1 : 1; G.last = d; G.best = Math.max(G.best, G.streak);
-  if (!G.act.includes(d)) G.act = [...G.act, d].slice(-62);
-  for (const [n, name, xp, tok] of MILES) if (G.streak === n) {
-    if (!G.badges.includes(name)) G.badges.push(name);
-    if (xp) heroXp(xp); if (tok) gTok(tok);
-    gNote(`🔥 ${n} ${plural(n, ["день", "дня", "дней"])} подряд — значок «${name}»${xp ? ` · +${xp} XP` : ""}${tok ? ` · +${tok} 🪙` : ""}`);
-  }
-}
-function gCheck(quiet = false) {     // отмечает выполненные задачи приказа; возвращает опыт за них. quiet — без всплывашек (у вызвавшего своя карточка)
-  const D = G.day, alt = gPlateAlt();
-  const ok = { w: D.w > 0, p: alt ? (D.ex === "plank" ? (D.exr.calf || 0) >= 20 : gHeld(D, "plank") >= 30) : D.p > 0, t: gTrain().have >= D.n };
-  let xp = 0;
-  for (const k of ["w", "p", "t"]) if (ok[k] && !D.done[k]) {
-    D.done[k] = 1; xp += R.task; G.week.dmg += DMG.task; heroXp(R.task);
-    if (!quiet) gNote(`📜 Задача приказа выполнена · +${R.task} XP`);
-    if (gDone() === 3 && !quiet) onScreen("workout") ? sess?.ups.push("🎁 Все три задачи — сундук ждёт в «Приказе дня»") : setTimeout(() => gToast(`🎁 ${TONE[gTone()].chest}`), 1200);
-  }
-  if (xp) gRenderAll();
-  return xp;
-}
-function gTrain() {                  // задача «Движение»: сколько сделано из скольких
-  const D = G.day, have = isHold(D.ex) ? gHeld(D, D.ex) : (D.exr[D.ex] || 0);
-  return { have: Math.min(have, D.n), need: D.n, done: !!D.done.t, title: exTask(gTone(), D.ex, D.n) };
-}
-function gHeld(D, ex) {                // секунды удержания по упражнению; в старых днях (до стульчика) всё — планка
-  return D.exh ? (D.exh[ex] || 0) : ex === "plank" ? D.hold : 0;
-}
-const gPlateAlt = () => !RS.allowed;      // прожарка не открыта — вместо тарелки «Вызов»
-function gOnReps(ex, n) {
-  gRoll(); const D = G.day;
-  D.reps += n; D.exr[ex] = (D.exr[ex] || 0) + n; G.week.dmg += n * DMG.rep;
-  G.hist[D.d] = [D.reps, D.hold];
-  if (D.reps >= R.streakReps) gActive();
-  const xp = gCheck() + gMission(ex, n); gameSave(G, { t: "reps", ex, n });
-  return { xp };
-}
-function gOnHold(sec, ex = sess?.ex) {  // ex — какое удержание (планка, стульчик); по умолчанию — текущая тренировка
-  gRoll(); const D = G.day;
-  if (!isHold(ex)) ex = "plank";
-  if (!D.exh) D.exh = { plank: D.hold };
-  D.exh[ex] = (D.exh[ex] || 0) + sec; D.hold += sec; G.week.dmg += sec * DMG.holdSec; G.hist[D.d] = [D.reps, D.hold];
-  if (D.hold >= R.streakHold) gActive();
-  const xp = gCheck() + gMission(ex, sec); gameSave(G, { t: "hold", ex, sec });
-  return { xp };
-}
-function gOnWorkout(sec, reps) {         // тренировка от 3 минут (и хоть какое-то движение) — +30 XP раз в день
-  gRoll(); const D = G.day;
-  if (D.wk || sec < R.workoutSec || reps < 10) return { xp: 0 };
-  D.wk = 1; heroXp(R.workout); gNote(`⏱ Тренировка от 3 минут · +${R.workout} XP`);
-  gameSave(G, { t: "workout", sec: Math.round(sec), reps });
-  return { xp: R.workout };
-}
-function gOnWeight(v) {
-  gRoll(); const D = G.day;
-  if (D.w) { G.wLast = { v, d: D.d }; gameSave(G, { t: "weight", v }); return; }      // повторный ввод — без награды
-  D.w = 1; G.wLast = { v, d: D.d }; G.week.dmg += DMG.weight;
-  const mon = dow(D.d) === 1;                  // понедельник — контрольное взвешивание
-  heroXp(mon ? R.weightMon : R.weight); if (mon) gTok(R.weightMonTok);
-  gToast(mon ? `⚖️ Контрольное взвешивание · +${R.weightMon} XP · +${R.weightMonTok} 🪙` : `⚖️ Вес записан · +${R.weight} XP`);
-  gActive(); gCheck(); gameSave(G, { t: "weight", v }); gRenderAll();
-}
-function gOnPlate(silent = false) {    // → {xp, n, max, task, taskNew, streakNew, streak} — что засчитано за эту тарелку
-  gRoll(); const D = G.day;
-  const xp0 = S.xp, task0 = !!D.done.p, today0 = G.last === D.d;
-  D.p++;
-  if (D.p <= R.plateMax) { heroXp(R.plate); G.week.dmg += DMG.plate; if (!silent) gToast(`🍽 Тарелка в рапорте · +${R.plate} XP`); }
-  gActive(); gCheck(silent); gameSave(G, { t: "plate" }); gRenderAll();
-  return { xp: S.xp - xp0, n: D.p, max: R.plateMax, task: !!D.done.p, taskNew: !!D.done.p && !task0, streakNew: G.last === D.d && !today0, streak: G.streak };
-}
-function gSyncPlates(m) {               // тарелки, прожаренные сегодня до открытия игры (сервер знает историю дня)
-  if (!gReady) { gPending = m; return; }
-  const n = Math.min(R.plateMax, (m && m.history || []).length);
-  gRoll(); while (G.day.p < n) gOnPlate(true);
-  let nb = false;                        // значки прожарки с сервера (повторный вызов ничего не дублирует)
-  for (const b of (m && m.badges) || []) if (b && b.done && b.name && !G.badges.includes(b.name)) { G.badges.push(b.name); nb = true; }
-  if (nb) gameSave(G, { t: "badges" });
-  gRenderAll();                          // прожарка открыта — в хабе вместо «Вызова» появляется тарелка
-}
-// бонус-миссия из прожарки: {ex, n, id, d} — цель на экране тренировки, +25 XP один раз за id
-const MISSION_XP = 25;
-let gMissionPending = null;
-const mKey = m => m.id ? "m" + m.id : `${m.d}-${m.ex}-${m.n}`;
-function gSetMission(m) {
-  if (!m || !EX[m.ex] || !(m.n > 0)) return;
-  if (!gReady) { gMissionPending = m; return; }
-  const d = m.d || gDay();
-  if (d !== gDay() || (G.mDone || []).includes(mKey({ ...m, d }))) return;      // вчерашняя или уже выполненная — не показываем
-  if (G.mission && mKey(G.mission) === mKey({ ...m, d })) return;
-  G.mission = { ex: m.ex, n: +m.n, id: +m.id || 0, d, have: 0 };
-  gameSave(G, { t: "mission", ex: m.ex, n: +m.n, id: +m.id || 0 }); gRenderAll();
-}
-function gMission(ex, n) {              // засчитать повторения (или секунды планки) в бонус-миссию; → опыт
-  const M = G.mission;
-  if (!M || M.d !== gDay() || M.ex !== ex) return 0;
-  M.have = Math.min(M.n, M.have + n);
-  if (M.have < M.n) return 0;
-  G.mDone = [...(G.mDone || []), mKey(M)].slice(-30); G.mission = null;
-  heroXp(MISSION_XP); gNote(`💪 Бонус-миссия выполнена · +${MISSION_XP} XP`);
-  return MISSION_XP;
-}
-function gOpenChest() {
-  const D = G.day; if (gDone() < 3 || D.chest) return null;
-  // в первый раз — гарантированно 3 жетона и заморозка; дальше 60% — 1, 30% — 2, 10% — 3 жетона и редкий значок
-  let tok, frz = 0, badge = null;
-  if (!G.chests) { tok = 3; frz = 1; }
-  else { const r = Math.random(); tok = r < .6 ? 1 : r < .9 ? 2 : 3; if (tok === 3) badge = "Счастливый сундук"; }
-  D.chest = { tok, frz, badge }; G.chests++;
-  gTok(tok); if (frz) G.frz = Math.min(R.frzMax, G.frz + frz);
-  if (badge && !G.badges.includes(badge)) G.badges.push(badge);
-  heroXp(R.chest); gameSave(G, { t: "chest" });
-  return D.chest;
-}
-function gSwap() {                       // заменить упражнение в задаче «Движение»: первая замена за день бесплатно, дальше 3 жетона
-  const D = G.day; if (D.done.t) return;
-  const cost = D.swaps ? R.swapCost : 0;
-  if (G.tok < cost) return gToast(`Нужно ${cost} 🪙 — жетоны дают сундук и вехи серии`);
-  const list = gExList(false).filter(k => k !== D.ex);
-  if (!list.length) return;
-  D.ex = list[Math.floor(Math.random() * list.length)]; D.n = gTarget(D.ex, D.d, D.yMiss, dow(D.d) === 0 && D.ex === "plank");
-  D.swaps++; gTok(-cost); gCheck(); gameSave(G, { t: "swap" }); gRenderAll(); haptic("select");
-}
-function gBuyFreeze() {
-  if (G.frz >= R.frzMax) return gToast("❄️ В запасе уже две заморозки — больше не нужно");
-  if (G.tok < R.frzCost) return gToast(`Нужно ${R.frzCost} 🪙, у тебя ${G.tok}`);
-  gTok(-R.frzCost); G.frz++; gameSave(G, { t: "freeze_buy" }); gRenderAll(); gToast("❄️ Заморозка в запасе. Сработает сама, если пропустишь день");
-}
-function gRestore() {
-  if (!G.lost || G.tok < R.restoreCost) return;
-  const d = gDay(); gTok(-R.restoreCost);
-  G.streak += G.lost.n; if (G.last !== d) G.last = dAdd(d, -1);
-  G.best = Math.max(G.best, G.streak); G.lost = null;
-  gameSave(G, { t: "restore" }); gRenderAll(); gToast(`🔥 Серия восстановлена: ${G.streak}`);
-}
-function gSetTone(t) { G.tone = t; G.soft = ""; gameSave(G, { t: "tone", tone: t }); gRenderAll(); haptic("select"); }
-
-// ---------- экран «Приказ дня» ----------
-function gOpen(id) { show(id); tg?.BackButton?.show(); gRenderAll(); }
-function gRenderAll() {
-  if (!G.day) return;
-  mnRender();
-  if (onScreen("order")) orRender();
-  if (onScreen("league")) lgRender();
-  if (onScreen("home")) render();
-}
-function orRender() {
-  gRoll();
-  const D = G.day, T = TONE[gTone()], L = lvl(S.xp), n = gDone();
-  emblem($("oEmb"), L.l, L.rest / L.need);
-  $("oRank").textContent = rankOf(L.l); $("oXp").textContent = fmt(S.xp);
-  $("oNext").textContent = L.l < RANKS.length ? `до «${rankOf(L.l + 1)}»: ${fmt(L.need - L.rest)}` : `до ${L.l + 1} ур.: ${fmt(L.need - L.rest)}`;
-  $("oBar").style.width = (L.rest / L.need * 100) + "%";
-  $("oStreak").textContent = G.streak; $("oFire").classList.toggle("on", G.last === D.d);
-  $("oStreakT").textContent = `Серия: ${G.streak} ${plural(G.streak, ["день", "дня", "дней"])}` + (G.last === D.d ? " ✓" : "");
-  const next = MILES.find(m => m[0] > G.streak);
-  $("oStreakS").textContent = G.last === D.d ? (next ? `До вехи «${next[1]}» — ${next[0] - G.streak} ${plural(next[0] - G.streak, ["день", "дня", "дней"])}` : "Все вехи взяты!")
-                                             : "Любое действие сегодня продлит серию";
-  $("oMiles").innerHTML = MILES.slice(0, 5).map(m => `<i class="${G.streak >= m[0] ? "done" : ""}" title="${m[0]}"></i>`).join("");
-  $("oChips").innerHTML = `<span class="gm-chip">📅 В строю в ${MONTHS[+D.d.slice(5, 7) - 1]}: ${monthActive()}</span>` +
-    `<span class="gm-chip">❄️ Заморозки: ${G.frz}/${R.frzMax}</span><span class="gm-chip">🪙 ${G.tok}</span>` + (G.best > G.streak ? `<span class="gm-chip">🏅 Рекорд: ${G.best}</span>` : "");
-  $("oLost").innerHTML = G.lost ? `<div class="gm-lost">💔 <b>Серия ${G.lost.n} ${plural(G.lost.n, ["день", "дня", "дней"])} сгорела.</b> ${esc(T.lost)}<br>
-      Можно вернуть в течение 48 часов.${G.tok >= R.restoreCost ? "" : ` Нужно ${R.restoreCost} 🪙, у тебя ${G.tok}.`}
-      ${G.tok >= R.restoreCost ? `<button class="btn btn-gold" id="oRestore">🔥 ВЕРНУТЬ СЕРИЮ · ${R.restoreCost} 🪙</button>` : ""}</div>`
-    : (G.frozeAt === D.d ? `<div class="gm-lost" style="border-color:var(--gold-dim);background:var(--card)">❄️ Заморозка сработала — серия цела. Место в строю за тобой.</div>` : "");
-  $("oRestore") && ($("oRestore").onclick = gRestore);
-  const hi = T.hi[(+D.d.slice(8)) % T.hi.length];
-  $("oSay").innerHTML = `${esc(n === 3 ? (D.chest ? T.done : T.chest) : hi)}<i>— ${T.sign}${gTone() !== (G.tone || "coach") ? " · тон смягчён после пропуска" : ""}</i>`;
-  $("oBadges").innerHTML = G.badges.length ? `<h2>Значки</h2><div class="gm-badges">${G.badges.map(b => `<span>🎖 ${esc(b)}</span>`).join("")}</div>` : "";
-  document.querySelectorAll("#toneSeg button").forEach(b => b.classList.toggle("on", b.dataset.tone === (G.tone || "coach")));
-  $("toneNote").textContent = TONE[G.tone || "coach"].note;
-  $("oBuyFrz").disabled = G.frz >= R.frzMax; $("oBuyFrz").style.opacity = G.frz >= R.frzMax ? .5 : 1;
-  $("oTokNote").textContent = `Жетоны: ${G.tok} из ${R.tokMax}. Дают сундук, вехи серии и контрольное взвешивание. Тратятся на заморозку (${R.frzCost}), возврат серии (${R.restoreCost}) и замену задачи (${R.swapCost}).`;
-}
-// ---------- хаб: три задачи приказа ведут прямо в тренировку, прожарку и вес ----------
-function hubTasks(tone = gTone()) {
-  const D = G.day, T = TONE[tone], tr = gTrain(), alt = gPlateAlt(), mon = dow(D.d) === 1;
-  const altEx = D.ex === "plank" ? "calf" : "plank", altN = altEx === "calf" ? 20 : 30, altHave = altEx === "calf" ? Math.min(20, D.exr.calf || 0) : Math.min(30, gHeld(D, "plank"));
-  return [
-    { k: "t", ic: "🏋️", name: "ТРЕНИРОВКА", sub: `${EX[D.ex].ico} ${exTask(tone, D.ex, D.n)}${D.yMiss && !tr.done ? " · сегодня полегче" : ""}`,
-      st: tr.done ? "✓" : `${tr.have}/${tr.need}`, bar: tr.done ? null : tr.have / tr.need, swap: !tr.done, go: () => hubTrain(D.ex) },
-    alt ? { k: "p", ic: EX[altEx].ico, name: "ВЫЗОВ", sub: `${altEx === "calf" ? T.t.calf(20) : T.t.plank(30)} · прожарка тарелки откроется позже`,
-            st: D.done.p ? "✓" : `${altHave}/${altN}`, bar: D.done.p ? null : altHave / altN, go: () => hubTrain(altEx) }
-        : { k: "p", ic: "🍽", name: "ТАРЕЛКА", sub: D.done.p ? `Прожарено: ${D.p}${D.p >= R.plateMax ? " · опыт за тарелки на сегодня взят" : ` · ещё тарелка — +${R.plate} XP`}` : T.p,
-            st: D.done.p ? "✓" : `+${R.task}`, go: () => { unlockAudio(); rsOpen(); } },
-    { k: "w", ic: "⚖️", name: "ВЕС", sub: D.done.w ? "Записано · можно поправить" : `${T.w}${mon ? ` · понедельник: контрольное, +${R.weightMonTok} 🪙` : ""}`,
-      st: D.done.w ? "✓" : `+${R.task}`, go: wtOpen },
-  ];
-}
-const hubTile = (t, swap) => `<button class="hub-t ${G.day.done[t.k] ? "done" : ""}" data-k="${t.k}"><div class="ic">${t.ic}</div><div class="m"><b>${t.name}</b><small>${esc(t.sub)}</small>
-  ${t.bar != null ? `<div class="bar"><i style="width:${Math.min(100, t.bar * 100)}%"></i></div>` : ""}
-  ${swap && t.swap ? `<span class="gm-swap" data-swap="1">🔄 Другое упражнение · ${G.day.swaps ? `${R.swapCost} 🪙` : "бесплатно"}</span>` : ""}</div><div class="st">${t.st}</div></button>`;
-function hubTrain(ex) { S.ex = ex; if (EX[ex].kind !== "hold") S.mode = "free"; save(); openTrain(); }
-function hubRender() {
-  if (!G.day) return;
-  const D = G.day, n = gDone(), L = lvl(S.xp);
-  $("hubCount").textContent = D.chest ? "выполнен ✓" : `${n} из 3`;
-  $("hub").innerHTML = (G.lost ? `<button class="gm-lost" data-lost="1" style="width:100%;text-align:left;color:inherit">💔 <b>Серия ${G.lost.n} ${plural(G.lost.n, ["день", "дня", "дней"])} сгорела</b> — её можно вернуть в течение 48 часов. Открыть ›</button>` : "") +
-    hubTasks().map(t => hubTile(t, true)).join("");
-  const ch = $("hubChest");
-  ch.className = "gm-chest" + (D.chest ? " open" : n === 3 ? " ready" : "");
-  ch.innerHTML = `<div class="ic">${D.chest ? "📭" : "🎁"}</div><div><b>${D.chest ? "СУНДУК ОТКРЫТ" : n === 3 ? "СУНДУК ЖДЁТ!" : "СУНДУК ДНЯ"}</b><small>${
-    D.chest ? `+${R.chest} XP · +${D.chest.tok} 🪙${D.chest.frz ? " · ❄️ заморозка" : ""}${D.chest.badge ? ` · значок «${esc(D.chest.badge)}»` : ""}. Новый — завтра`
-    : n === 3 ? "Нажми, чтобы открыть" : `Закрой все три задачи: +${R.chest} XP и 1–3 жетона${G.chests ? "" : " · первый — 3 жетона и заморозка"}`}</small></div>`;
-  $("hubStreak").innerHTML = `<div class="ic">🔥</div><b>${G.streak}</b><span>${plural(G.streak, ["день", "дня", "дней"])} подряд${G.last === D.d ? " ✓" : ""}</span>`;
-  $("hubRank").innerHTML = `<div class="ic">⭐</div><b>${L.l}</b><span>${esc(rankOf(L.l))}</span>`;
-  $("hubLeague").innerHTML = `<div class="ic">🛡</div><b>${fmt(Math.round(G.week.xp))}</b><span>XP за неделю · «${LEAGUES[G.league]}»</span>`;
-  const av = $("avCard"); if (av && av.parentNode !== $("avSlot")) $("avSlot").append(av);   // приказ дня — первым, боец — под ним
-}
-$("hub").addEventListener("click", e => {
-  if (e.target.closest("[data-swap]")) { e.stopPropagation(); return gSwap(); }
-  if (e.target.closest("[data-lost]")) return gOpen("order");
-  const b = e.target.closest(".hub-t"); if (!b) return;
-  haptic("select"); hubTasks().find(t => t.k === b.dataset.k)?.go();
-});
-$("hubChest").onclick = () => {
-  if (G.day.chest) return gToast("Сундук уже открыт. Новый — завтра");
-  if (gDone() < 3) return gToast(`Осталось задач: ${3 - gDone()}`);
-  chOpen();
-};
-$("hubStreak").onclick = $("hubRank").onclick = () => { haptic("select"); gOpen("order"); };
-$("hubLeague").onclick = () => { haptic("select"); gOpen("league"); };
-$("hubHelp").onclick = () => { haptic("select"); onbOpen(); };
-
-// ---------- обучение при первом входе: 3 экрана, в конце — выбор тона и сразу первая задача ----------
-let onbTone = "coach";
-function onbOpen() { onbTone = G.tone || "coach"; onbStep(0); $("onbOv").classList.add("on"); }
-function onbStep(i) {
-  document.querySelectorAll("#onbOv .onb-step").forEach(x => x.classList.toggle("on", +x.dataset.s === i));
-  document.querySelectorAll("#onbDots i").forEach((d, j) => d.classList.toggle("on", j <= i));
-  if (i === 2) onbToneView();
-}
-function onbToneView() {                // плитки задач сразу говорят выбранным тоном
-  document.querySelectorAll("#onbTone button").forEach(b => b.classList.toggle("on", b.dataset.tone === onbTone));
-  $("onbGo").innerHTML = hubTasks(onbTone).map(t => hubTile(t, false)).join("");
-}
-$("onbOv").addEventListener("click", e => {
-  const nx = e.target.closest("[data-next]");
-  if (nx) { haptic("select"); return onbStep(+nx.closest(".onb-step").dataset.s + 1); }
-  const tb = e.target.closest("#onbTone button");
-  if (tb) { onbTone = tb.dataset.tone; onbToneView(); haptic("select"); return; }
-  const go = e.target.closest("#onbGo .hub-t, [data-go]"); if (!go) return;
-  $("onbOv").classList.remove("on"); G.onb = 1; gSetTone(onbTone);
-  if (go.dataset.k) hubTasks().find(t => t.k === go.dataset.k)?.go();
-});
-$("toneSeg").addEventListener("click", e => { const b = e.target.closest("button"); if (b) gSetTone(b.dataset.tone); });
-$("oBuyFrz").onclick = gBuyFreeze;
-$("orBack").onclick = () => { haptic("select"); goMenu(); };
-
-// ---------- сундук ----------
-function chOpen() {
-  $("chTitle").textContent = "СУНДУК ДНЯ"; $("chSay").textContent = TONE[gTone()].chest;
-  $("chLoot").classList.remove("on"); $("chLoot").innerHTML = ""; $("chOk").style.display = "none"; $("chHint").style.display = "";
-  $("chBox").classList.remove("boom"); $("chBox").firstElementChild.textContent = "🎁";
-  $("chestOv").classList.add("on"); unlockAudio();
-}
-$("chBox").onclick = () => {
-  if ($("chLoot").classList.contains("on")) return;
-  const c = gOpenChest(); if (!c) return $("chestOv").classList.remove("on");
-  retrigger($("chBox"), "boom"); $("chBox").firstElementChild.textContent = "✨"; $("chHint").style.display = "none";
-  chord(); haptic("level");
-  $("chLoot").innerHTML = `<div>+${R.chest} XP</div><div>+${c.tok} 🪙</div>${c.frz ? "<div>❄️ заморозка</div>" : ""}${c.badge ? `<div>🎖 «${esc(c.badge)}»</div>` : ""}`;
-  setTimeout(() => { $("chLoot").classList.add("on"); $("chOk").style.display = ""; }, 350);
-};
-$("chOk").onclick = () => { $("chestOv").classList.remove("on"); gRenderAll(); };
-
-// ---------- ввод веса ----------
-function wtOpen() {
-  $("wtSub").textContent = TONE[gTone()].w + ".";
-  $("wtIn").value = G.wLast ? String(G.wLast.v) : ""; $("wtErr").textContent = "";
-  $("wtOv").classList.add("on"); setTimeout(() => $("wtIn").focus(), 100);
-}
-$("wtOk").onclick = () => {
-  const v = parseFloat(String($("wtIn").value).replace(",", "."));
-  if (!(v >= 30 && v <= 300)) { $("wtErr").textContent = "Введи вес в килограммах, например 82,4"; return; }
-  $("wtOv").classList.remove("on"); haptic("level"); gOnWeight(Math.round(v * 10) / 10);
-};
-$("wtNo").onclick = () => $("wtOv").classList.remove("on");
-
-// ---------- выбор тона при первом входе ----------
-
-// ---------- лига и отряд (пока демо-соперники; очки и урон бойца — настоящие) ----------
-function seeded(str) { let h = 1779033703 ^ str.length; for (let i = 0; i < str.length; i++) { h = Math.imul(h ^ str.charCodeAt(i), 3432918353); h = h << 13 | h >>> 19; }
-  return () => { h = Math.imul(h ^ h >>> 16, 2246822507); h = Math.imul(h ^ h >>> 13, 3266489909); return ((h ^= h >>> 16) >>> 0) / 4294967296; }; }
-const NAMES = ["Андрей", "Ольга", "Сергей", "Марина", "Дмитрий", "Анна", "Игорь", "Светлана", "Алексей", "Наталья", "Роман", "Юлия", "Максим", "Ирина",
-               "Павел", "Екатерина", "Артём", "Татьяна", "Денис", "Ксения", "Илья", "Виктория", "Олег", "Алина"];
-function weekFrac() { const now = Date.now(), mon = new Date(weekOf(gDay()) + "T03:00:00").getTime(); return Math.min(1, Math.max(.05, (now - mon) / (7 * 864e5))); }
-function bots(key, n, lo, hi) {        // демо-бойцы: имена и очки стабильны в пределах недели и растут к воскресенью
-  const rnd = seeded(key + (tg?.initDataUnsafe?.user?.id || "")), used = new Set(), out = [];
-  for (let i = 0; i < n; i++) {
-    let nm; do nm = NAMES[Math.floor(rnd() * NAMES.length)]; while (used.has(nm)); used.add(nm);
-    out.push({ nm: `${nm} ${"АБВГДЕЖЗИКЛМНОПРСТ"[Math.floor(rnd() * 18)]}.`, base: lo + Math.pow(rnd(), 1.6) * (hi - lo) });
-  }
-  return out;
-}
-function lgRender() {
-  gRoll();
-  const wk = G.week.w, f = weekFrac(), nm = tg?.initDataUnsafe?.user?.first_name, me = nm ? `${nm} (ты)` : "Ты";
-  // лига: 20 бойцов, очки = XP за неделю; видно топ-5 и соседей ±5, низ таблицы не показываем
-  const rows = bots("lg" + wk, 19, 300, 3200).map(b => ({ nm: b.nm, pt: Math.round(b.base * f) }));
-  rows.push({ nm: me, pt: Math.round(G.week.xp), me: 1 });
-  rows.sort((a, b) => b.pt - a.pt || (a.me ? -1 : 1));
-  const my = rows.findIndex(r => r.me);
-  const end = dDiff(dAdd(wk, 7), gDay());
-  let html = `<div class="gm-ladder">${LEAGUES.map((l, i) => `<span class="${i === G.league ? "on" : ""}">${l}</span>`).join("")}</div>
-    <div class="gm-lhead"><b class="goldtext">Лига «${LEAGUES[G.league]}»</b><span>итоги в пн 03:00 · ${end} ${plural(end, ["день", "дня", "дней"])}</span></div>`;
-  let prev = -1;
-  rows.forEach((r, i) => {
-    if (!(i < 5 || Math.abs(i - my) <= 5)) return;
-    if (prev >= 0 && i - prev > 1) html += `<div class="gm-gap">• • •</div>`;
-    html += `<div class="gm-row ${i < 5 ? "top" : ""} ${r.me ? "me" : ""}"><span class="n">${i + 1}</span><span class="nm">${esc(r.nm)}</span><span class="pt">${fmt(r.pt)} XP</span></div>`;
-    if (i === 4) html += `<div class="gm-up">▲ ТОП-5 ПЕРЕХОДЯТ В «${LEAGUES[Math.min(G.league + 1, 4)].toUpperCase()}» · +100 XP · +5 🪙</div>`;
-    prev = i;
-  });
-  html += `<div class="gm-note">Очки — опыт за неделю: повторения, задачи приказа, вес, тарелки. Килограммы очков не дают — шанс есть у всех.
-    Последние места не показываем. Ещё две награды недели: «Прорыв недели» (больше всего действий сверх прошлой недели) и «Опора отряда».</div>`;
-  $("lgLeague").innerHTML = html;
-  // отряд и босс недели: HP = 1 200 × бойцов; один боец закрывает не больше 35% HP — победа всегда общая
-  const sw = Math.min(8, Math.max(1, Math.floor(dDiff(wk, SEASON_MON) / 7) + 1)), B = BOSSES[sw - 1];
-  const sq = SQUADS[Math.floor(seeded("sq" + (tg?.initDataUnsafe?.user?.id || ""))() * SQUADS.length)];
-  const HP = 1200 * 5, cap = HP * .35;
-  const mates = bots("sq" + wk, 4, 250, 1500).map(b => ({ nm: b.nm, dmg: Math.round(b.base * f) }));
-  mates.unshift({ nm: me, dmg: Math.round(G.week.dmg), me: 1 });
-  const total = mates.reduce((s, m) => s + Math.min(cap, m.dmg), 0), left = Math.max(0, HP - total);
-  const d = gDay(), resp = G.respect[d] || [];
-  $("lgSquad").innerHTML = `<div class="gm-lhead"><b class="goldtext">${esc(sq)}</b><span>5 бойцов</span></div>
-    <div class="gm-boss"><div class="wk">НЕДЕЛЯ ${sw} · ${B[3].toUpperCase()} · БОСС</div><b>${B[0]}</b><small>${B[1]}</small><small>Слабость: ${B[2]}</small>
-      <div class="gm-hp"><i style="width:${left / HP * 100}%"></i><span>${left ? `${fmt(Math.round(left))} / ${fmt(HP)} HP` : "ПОВЕРЖЕН!"}</span></div></div>
-    <div class="stats" style="margin-top:10px"><div class="stat"><b>${fmt(Math.round(G.week.dmg))}</b><span>твой урон</span></div>
-      <div class="stat"><b>${Math.round(total / HP * 100)}%</b><span>отряд снёс</span></div><div class="stat"><b>${end}</b><span>${plural(end, ["день", "дня", "дней"])} до конца</span></div></div>
-    <h2>Бойцы</h2>` + mates.sort((a, b) => b.dmg - a.dmg).map(m => `<div class="gm-row ${m.me ? "me" : ""}"><span class="nm">${esc(m.nm)}</span>
-      <span class="pt">${fmt(m.dmg)} урона</span>${m.me ? "" : `<button class="rsp ${resp.includes(m.nm) ? "on" : ""}" data-who="${esc(m.nm)}">👊 Респект</button>`}</div>`).join("") +
-    `<div class="gm-note">Урон: повторение — 1, секунда планки — 0,5, задача приказа — 30, вес — 20, тарелка — 10. От 300 урона за победу: +150 XP, +5 🪙 и трофей
-      (начислим, когда отряд станет настоящим). «Респект» — только реакция, без комментариев.</div>`;
-}
-$("lgSeg").addEventListener("click", e => {
-  const b = e.target.closest("button"); if (!b) return;
-  document.querySelectorAll("#lgSeg button").forEach(x => x.classList.toggle("on", x === b));
-  document.querySelectorAll("#league .gm-pane").forEach(p => p.classList.toggle("on", p.id === b.dataset.p)); haptic("select");
-});
-$("lgSquad").addEventListener("click", e => {
-  const b = e.target.closest(".rsp"); if (!b) return;
-  const d = gDay(), r = G.respect = { [d]: G.respect[d] || [] };      // храним только сегодняшние
-  if (!r[d].includes(b.dataset.who)) { r[d].push(b.dataset.who); gameSave(G, { t: "respect", who: b.dataset.who }); haptic("select"); lgRender(); }
-});
-$("lgBack").onclick = () => { haptic("select"); goMenu(); };
-
-// первый запуск игры: состояние из хранилища, перенос старой серии, выбор тона
-async function gInit() {
-  const g = await gameGet();
-  if (g) G = g;
-  else {                                   // игры ещё не было — переносим серию из прежнего прогресса
-    G = gFresh();
-    const y = dAdd(gDay(), -1);
-    if (S.streak && (S.lastDay === gDay() || S.lastDay === y)) { G.streak = G.best = S.streak; G.last = S.lastDay; }
-    gReady = true; gameSave(G, { t: "init" });
-  }
-  gReady = true;
-  gRoll(); render(); mnRender();
-  if (gPending) { gSyncPlates(gPending); gPending = null; }
-  if (!gMissionPending) try { gMissionPending = JSON.parse(localStorage.getItem("rs_mission") || "null"); } catch (e) {}   // миссия, сохранённая прожаркой
-  if (gMissionPending) { gSetMission(gMissionPending); gMissionPending = null; }
-  const tab = new URLSearchParams(location.search).get("tab");
-  if (tab === "profile") gOpen("order"); else if (tab === "league") gOpen("league");     // tab=order — это и есть хаб
-  if (!G.onb && !new URLSearchParams(location.search).get("ex") && !tab) onbOpen();
-}
 
 // ================= меню =================
 function goMenu() { Coach.stop(); show("menu"); mnRender(); tg?.BackButton?.hide(); }
 function openTrain() { show("home"); render(); tg?.BackButton?.show(); }
 function mnRender() {
   const L = lvl(S.xp), name = tg?.initDataUnsafe?.user?.first_name;
-  $("mnHi").firstChild.textContent = name ? `Привет, ${name}!` : "Привет, боец!";
+  $("mnHi").firstChild.textContent = name ? `Привет, ${name}! Что сегодня?` : "Привет! Что сегодня?";
   $("mnLvl").textContent = `Уровень ${L.l} · ${fmt(S.xp)} XP`;
-  if (!G.day) return;
-  const n = gDone(), T = TONE[gTone()];
-  $("mnHi").querySelector("span").textContent = n === 3 ? (G.day.chest ? T.done : T.chest) : T.hi[(+G.day.d.slice(8)) % T.hi.length];
-  $("mnStrip").innerHTML = `<span class="gm-chip">❄️ Заморозки: ${G.frz}</span><span class="gm-chip">🪙 Жетоны: ${G.tok}</span>`;
-  hubRender();
 }
 function mnPlates(m) {
   const n = (m && m.history || []).length;
-  $("mnPlates").textContent = n ? `Сегодня ${n} ${n === 1 ? "тарелка" : n < 5 ? "тарелки" : "тарелок"}${RS.hideK || !m.kcal_today ? "" : ` · ≈${m.kcal_today[0]}–${m.kcal_today[1]} ккал`}` : "Сегодня ещё ни одной тарелки";
+  $("mnPlates").textContent = n ? `Сегодня ${n} ${n === 1 ? "тарелка" : n < 5 ? "тарелки" : "тарелок"} · ≈${m.kcal_today[0]}–${m.kcal_today[1]} ккал` : "Сегодня ещё ни одной тарелки";
 }
 $("mnTrain").onclick = () => { haptic("select"); openTrain(); };
-$("quest").onclick = () => { haptic("select"); goMenu(); };
 $("homeMenu").onclick = () => { haptic("select"); goMenu(); };
 $("mnRoast").onclick = () => { haptic("select"); rsOpen(); };
 
 // ================= «Прожарка тарелки» =================
 // Фото уходит на наш сервер (ключ нейросети там, а не в приложении); кто прислал — сервер проверяет по подписи Telegram.
-// Игра: тарелка засчитывается через хуки gOnPlate() / gSyncPlates(m) — за то, что зафиксирована, а не за калории и оценку.
 const RS_API = "https://kodtela.era-print.com/api/roast";
-const RS = { tone: null, allowed: false, blob: null, url: null, last: null, tick: 0, m: null, tab: "day", wd: null, open: 0, mission: null,
-             hideK: (() => { try { return localStorage.getItem("rs_hidek") === "1"; } catch (e) { return false; } })() };
+const RS = { tone: null, allowed: false, blob: null, url: null, last: null, tick: 0 };
 const RS_V = { ok: ["var(--gold)", "#15120d"], meh: ["#ffb547", "#15120d"], off: ["#ff6a3d", "#fff"] };
-const RS_VL = { ok: "В СТРОЮ", meh: "НА ДОРАБОТКУ", off: "ВНЕ ПЛАНА" };
 const RS_EX = { squat: "приседаний", pushup: "отжиманий", lunge: "выпадов", calf: "подъёмов на носки", plank: "сек. планки" };
 const RS_VOICE = { ok: 12, meh: 12, off: 12, notfood: 6 };
-const RS_BI = { scout: "🔭", green: "🥦", protein: "🎯", kitchen: "🍲", honest: "📋" };
-const RS_WD = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
-const rsDayKey = (t = Date.now()) => new Date(t - 3 * 3600e3).toLocaleDateString("sv-SE");   // игровой день: до 03:00 — ещё вчера
-const rsPl = (n, f) => f[n % 10 === 1 && n % 100 !== 11 ? 0 : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ? 1 : 2];
-const rsPlates = n => `${n} ${rsPl(n, ["тарелка", "тарелки", "тарелок"])}`;
 async function rsApi(path, body, form = false) {
   const opt = { method: "POST" };
-  if (form) { body.append("initData", tg.initData); body.append("day", rsDayKey()); opt.body = body; }
-  else { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ ...body, day: rsDayKey(), initData: tg.initData }); }
+  if (form) { body.append("initData", tg.initData); opt.body = body; }
+  else { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ ...body, initData: tg.initData }); }
   const r = await fetch(RS_API + path, opt);
   return r.json();
 }
 function rsShow(id) { ["rsTone", "rsPickBox", "rsLoad", "rsRes"].forEach(b => $(b).classList.toggle("on", b === id)); }
-let rsToastT = 0;
-function rsToast(html) {
-  const t = $("toast"); t.innerHTML = html; t.classList.add("on");
-  clearTimeout(rsToastT); rsToastT = setTimeout(() => t.classList.remove("on"), 3200);
-}
-function rsMissionSet(ex, n, id) {          // бонус-миссия: упражнение и количество — на экран тренировки
-  if (!EX[ex]) return null;
-  S.ex = ex; if (EX[ex].kind !== "hold") S.mode = "free"; save();
-  n = Math.max(1, Math.min(120, +n || 0)) || null;
-  RS.mission = { ex, n, id: +id || 0, d: rsDayKey() };
-  try { localStorage.setItem("rs_mission", JSON.stringify(RS.mission)); } catch (e) {}
-  if (typeof gSetMission === "function") gSetMission(RS.mission);     // хук игрового слоя: +25 XP за выполнение (делает тред «Игра»)
-  return RS.mission;
-}
-function rsGo(ex, n, id) {
-  if (!rsMissionSet(ex, n, id)) return;
-  haptic("select"); openTrain();
-  rsToast(`💪 Бонус-миссия: <b>${n} ${RS_EX[ex]}</b>. Жми «Начать тренировку»`);
-}
 async function rsInit() {
-  // бот открывает приложение с ?ex=squat&n=20&mission=ID — бонус-миссия из прожарки в чате
-  const q = new URLSearchParams(location.search);
-  if (q.get("ex") && q.get("n") && rsMissionSet(q.get("ex"), q.get("n"), q.get("mission")))
-    setTimeout(() => rsToast(`💪 Бонус-миссия: <b>${RS.mission.n} ${RS_EX[RS.mission.ex]}</b>. Жми «Начать тренировку»`), 900);
   if (!inTG) return;
-  const want = q.get("tab") === "roast";
+  const want = new URLSearchParams(location.search).get("tab") === "roast";
   try {
     const m = await rsApi("/me", {}); RS.allowed = !!m.allowed; RS.tone = m.tone;
-    if (RS.allowed) { $("mnRoast").style.display = ""; rsMe(m); if (want) rsOpen(); }
+    if (RS.allowed) { $("mnRoast").style.display = ""; rsDay(m); mnPlates(m); if (want) rsOpen(); }
   } catch (e) { if (want) { rsOpen(); rsResult({ status: "error" }); } }
-}
-function rsMe(m, quiet = false) {           // свежие данные с сервера: история, неделя, значки → экран, меню и игра
-  if (!m || m.allowed === false) return;
-  RS.m = m; rsDay(m); mnPlates(m);
-  gSyncPlates(m);                           // игра досчитывает тарелки дня (из чата бота) и видит m.badges
-  const fresh = rsBadgesNew(m);
-  if (fresh.length && !quiet) rsToast(fresh.map(b => `${RS_BI[b.id] || "🎖"} Новый значок «${esc(b.name)}»`).join("<br>"));
-  return fresh;
-}
-function rsBadgesNew(m) {                    // полученные значки, которые человек ещё не видел
-  let seen = []; try { seen = JSON.parse(localStorage.getItem("rs_badges_seen") || "[]"); } catch (e) {}
-  const fresh = (m.badges || []).filter(b => b.done && !seen.includes(b.id));
-  if (fresh.length) try { localStorage.setItem("rs_badges_seen", JSON.stringify([...seen, ...fresh.map(b => b.id)])); } catch (e) {}
-  return fresh;
 }
 function rsOpen() {
   unlockAudio(); show("roast"); tg?.BackButton?.show();
   rsShow(RS.tone ? "rsPickBox" : "rsTone");
-  if (RS.m) rsDay(RS.m);
 }
 function rsClose() { goMenu(); }
 async function rsCompress(file) {          // ≤1280 px, JPEG — быстрее уходит и меньше трафика
@@ -2155,20 +1135,6 @@ async function rsSend(file) {
     clearInterval(RS.tick); rsResult({ status: "error" });
   }
 }
-// что игра засчитала за тарелку: хук отдаёт {xp, n, max, task, taskNew, streakNew, streak}; silent — итог показываем сами
-function rsCount() { const g = gOnPlate(true); return g && typeof g === "object" ? g : null; }
-function rsGot(c, fresh) {
-  if (!c) return `<div class="rs-got"><div class="h">📜 ТАРЕЛКА В РАПОРТЕ</div><small>Оценка на награду не влияет — засчитано то, что тарелка зафиксирована.</small></div>`;
-  const ln = [];
-  ln.push(c.taskNew ? `<div class="ln ok">✓ Задача «Тарелка» в приказе дня выполнена</div>`
-        : c.task ? `<div class="ln">✓ Задача «Тарелка» сегодня уже закрыта</div>` : "");
-  ln.push(c.n <= c.max ? `<div class="ln">🍽 Тарелка ${c.n} из ${c.max} за день — с опытом</div>`
-        : `<div class="ln">🍽 Тарелка ${c.n} за день — в рапорте. Опыт дают первые ${c.max}, дальше — для себя</div>`);
-  if (c.streakNew) ln.push(`<div class="ln ok">🔥 День в серии засчитан · ${c.streak} ${rsPl(c.streak, ["день", "дня", "дней"])} подряд</div>`);
-  for (const b of fresh || []) ln.push(`<div class="ln ok">${RS_BI[b.id] || "🎖"} Новый значок «${esc(b.name)}»</div>`);
-  return `<div class="rs-got"><div class="h">📜 ТАРЕЛКА В РАПОРТЕ${c.xp > 0 ? `<b>+${fmt(c.xp)} XP</b>` : ""}</div>${ln.join("")}
-    <small>Опыт — за то, что тарелка зафиксирована. Оценка и калории на награду не влияют.</small></div>`;
-}
 function rsResult(r) {
   RS.last = r; rsShow("rsRes");
   const box = $("rsRes"), again = `<button class="btn btn-gold" id="rsMore">🍽 ЕЩЁ ТАРЕЛКУ</button>`;
@@ -2183,22 +1149,17 @@ function rsResult(r) {
   } else {
     const [vc, vi] = RS_V[r.verdict] || RS_V.meh;
     const ex = r.mission_ex, amt = r.mission_amount;
-    const c = rsCount(), fresh = r.me ? rsMe(r.me, true) : [];
-    const honest = r.verdict === "off" && !(r.me?.badges || []).find(b => b.id === "honest" && b.done);
-    box.innerHTML = rsGot(c, fresh) + `
+    box.innerHTML = `
       <div class="rs-card" style="--vc:${vc};--vi:${vi}"><img src="${RS.url}" alt="">
         <div class="rs-verdict">${esc(r.verdict_label)}</div><div class="rs-score">${r.score}<small>/10</small></div></div>
-      <div class="card rs-kcal">${RS.hideK ? `<div><small>КАЛОРИИ</small><b style="font-size:15px">скрыты</b></div>` : `<div><small>КАЛОРИИ</small><b>≈ ${r.kcal_min}–${r.kcal_max}</b></div>`}
-        <span>Б ~${r.protein} · Ж ~${r.fat} · У ~${r.carbs} г<em>${r.veg ? "🥦 овощи есть · " : ""}${r.protein_src ? "🍗 белок есть · " : ""}примерно, ±30%</em></span></div>
+      <div class="card rs-kcal"><div><small>КАЛОРИИ</small><b>≈ ${r.kcal_min}–${r.kcal_max}</b></div>
+        <span>Б ~${r.protein} · Ж ~${r.fat} · У ~${r.carbs} г<em>примерно, ±30% · масло не видно</em></span></div>
       <div class="rs-quote">${esc(r.roast)}<i>— тренер Паша · ${esc(r.dish || "")}</i></div>
       <div class="rs-tip">💡 ${esc(r.tip)}</div>
-      ${honest ? `<div class="rs-note">📋 Оставь эту тарелку в рапорте до конца дня — будет значок «Честный рапорт». Честность тоже засчитывается.</div>` : ""}
-      ${EX[ex] ? `<div class="rs-mis"><div class="t">БОНУС-МИССИЯ</div><b>${amt} ${RS_EX[ex]}</b>
-        <small>Не за еду — просто бонус к дню${typeof gSetMission === "function" ? " · +25 XP за выполнение" : ". Повторения идут в приказ дня и навыки"}</small>
-        <button class="btn btn-gold" id="rsMission">💪 ВЫПОЛНИТЬ</button></div>` : ""}
+      <button class="btn btn-gold" id="rsMission" style="font-size:15px">💪 МИССИЯ: ${amt} ${(RS_EX[ex] || "").toUpperCase()}</button>
       <div class="rs-fb"><button data-fb="up">ккал больше ⬆️</button><button data-fb="ok">👌 точно</button><button data-fb="down">ккал меньше ⬇️</button></div>
       <div class="rs-row2"><button class="btn btn-ghost" id="rsShare">📤 В чат</button><button class="btn btn-ghost" id="rsMore">🍽 Ещё тарелку</button></div>`;
-    $("rsMission") && ($("rsMission").onclick = () => rsGo(ex, amt, r.id));
+    $("rsMission").onclick = () => { if (EX[ex]) { S.ex = ex; if (EX[ex].kind !== "hold") S.mode = "free"; save(); } tg?.BackButton?.hide(); start(false); };
     box.querySelectorAll("[data-fb]").forEach(b => b.onclick = async () => {
       box.querySelectorAll("[data-fb]").forEach(x => x.classList.toggle("on", x === b)); haptic("select");
       try { await rsApi("/fb", { id: r.id, fb: b.dataset.fb }); } catch (e) {}
@@ -2209,73 +1170,16 @@ function rsResult(r) {
             const x = await rsApi("/share", fd, true); b.textContent = x.ok ? "✅ В чате" : "Не вышло"; } catch (e) { b.textContent = "Не вышло"; }
     };
     haptic(r.verdict === "ok" ? "level" : "rep"); rsVoice(r.verdict);
-    if (!r.me) rsApi("/me", {}).then(m => rsMe(m)).catch(() => {});
+    rsApi("/me", {}).then(m => { rsDay(m); mnPlates(m); }).catch(() => {});
   }
   const more = $("rsMore"); if (more) more.onclick = () => { $("rsCap").value = ""; rsShow("rsPickBox"); $("rsFile").click(); };
 }
-// ---------- рапорт по тарелкам: сегодня / неделя, значки за еду ----------
-function rsItem(x) {
-  const [vc, vi] = RS_V[x.v] || RS_V.meh, open = RS.open === x.id;
-  return `<button class="rs-it ${open ? "on" : ""}" data-id="${x.id}" style="--vc:${vc};--vi:${vi}"><span class="tm">${esc(x.at)}</span>
-      <span class="nm">${esc(x.dish || "Тарелка")}${x.veg ? " 🥦" : ""}${x.prot ? " 🍗" : ""}</span>
-      ${RS.hideK ? "" : `<span class="k">≈${x.kcal_min}–${x.kcal_max}</span>`}<span class="vc">${RS_VL[x.v] || ""}</span></button>` +
-    (open ? `<div class="rs-more">${x.roast ? `«${esc(x.roast)}»` : ""}${x.tip ? `<div>💡 ${esc(x.tip)}</div>` : ""}
-      ${x.mission_ex && EX[x.mission_ex] && x.d === rsDayKey() ? `<button data-go="${x.id}">💪 Миссия: ${x.mission_amount} ${RS_EX[x.mission_ex]}</button>` : ""}
-      <button data-del="${x.id}">Убрать из рапорта</button></div>` : "");
-}
-function rsSum(list) {
-  const n = list.length, veg = list.filter(x => x.veg).length, pr = list.filter(x => x.prot).length;
-  return `<span class="rs-chip">🍽 ${rsPlates(n)}</span><span class="rs-chip">🥦 с овощами: ${veg}</span><span class="rs-chip">🍗 с белком: ${pr}</span>`;
-}
 function rsDay(m) {
-  const box = $("rsDay"); if (!m) { box.innerHTML = ""; return; }
-  const h = m.history || [], wk = m.week || [], today = m.day || rsDayKey();
-  let html = `<h2>Рапорт по тарелкам</h2><div class="seg seg2 rs-tabs"><button data-t="day" class="${RS.tab === "day" ? "on" : ""}">Сегодня · ${h.length}</button>
-    <button data-t="week" class="${RS.tab === "week" ? "on" : ""}">Неделя · ${wk.length}</button></div>`;
-  if (RS.tab === "day") {
-    html += h.length ? h.map(rsItem).join("") + `<div class="rs-sum">${rsSum(h)}</div>` +
-        (RS.hideK ? "" : `<div class="tot"><span>Всего за день, примерно</span><span>≈ ${m.kcal_today[0]}–${m.kcal_today[1]} ккал</span></div>`)
-      : `<div class="rs-empty">Сегодня тарелок в рапорте ещё нет. Сфоткай любую — задача «Тарелка» в приказе дня закроется сама.</div>`;
-  } else {
-    const days = Array.from({ length: 7 }, (_, i) => rsDayKey(Date.parse(today + "T12:00:00") + 3 * 3600e3 - (6 - i) * 864e5));
-    const by = Object.fromEntries(days.map(d => [d, wk.filter(x => x.d === d)])), top = Math.max(3, ...days.map(d => by[d].length));
-    const sel = RS.wd && by[RS.wd] ? RS.wd : null, act = days.filter(d => by[d].length).length;
-    html += `<div class="rs-wk">${days.map(d => `<button data-wd="${d}" class="${d === sel ? "on" : ""} ${d === today ? "td" : ""}">
-        <div class="col">${by[d].length ? `<b>${by[d].length}</b>` : ""}<i style="height:${by[d].length / top * 100}%"></i></div>
-        <span>${d === today ? "сег." : RS_WD[new Date(d + "T12:00:00").getDay()]}</span></button>`).join("")}</div>
-      <div class="rs-sum"><span class="rs-chip">📅 дней с рапортом: ${act} из 7</span>${rsSum(wk)}</div>` +
-      (sel ? `<h2>${sel === today ? "Сегодня" : new Date(sel + "T12:00:00").toLocaleDateString("ru-RU", { weekday: "long", day: "numeric", month: "long" })}</h2>` +
-             (by[sel].length ? by[sel].map(rsItem).join("") : `<div class="rs-empty">В этот день тарелок в рапорте нет.</div>`)
-           : `<div class="rs-empty">Нажми на день — покажу тарелки.</div>`);
-  }
-  const bd = m.badges || [];
-  if (bd.length) html += `<h2>Значки за еду</h2><div class="rs-bdg">${bd.map(b => `<div class="${b.done ? "done" : ""}">
-      <span class="ic">${RS_BI[b.id] || "🎖"}</span>${b.done ? `<em>✓</em>` : ""}<b>${esc(b.name)}</b><small>${esc(b.cond)}</small>
-      ${b.done ? `<small class="g">Получен${b.at ? " " + new Date(b.at + "T12:00:00").toLocaleDateString("ru-RU", { day: "numeric", month: "short" }) : ""}</small>`
-        : b.wait ? `<small class="g">Засчитается после 03:00, если тарелка останется в рапорте</small>`
-        : b.need > 1 ? `<div class="bar"><i style="width:${b.have / b.need * 100}%"></i></div><small>${b.have} из ${b.need}</small>` : ""}</div>`).join("")}</div>`;
-  html += `<button class="rs-hk" id="rsHideK">${RS.hideK ? "👁 Показывать калории" : "🙈 Скрыть калории"}</button>`;
-  box.innerHTML = html;
+  const h = (m && m.history) || [];
+  if (!h.length) { $("rsDay").innerHTML = ""; return; }
+  $("rsDay").innerHTML = `<h2>Итог дня</h2>` + h.map(x => `<div class="card"><span>${x.at} · ${esc(x.dish || "тарелка")}</span><b>${x.score}/10 · ≈${x.kcal_min}–${x.kcal_max}</b></div>`).join("") +
+    `<div class="tot"><span>Всего за день</span><span>≈ ${m.kcal_today[0]}–${m.kcal_today[1]} ккал</span></div>`;
 }
-$("rsDay").addEventListener("click", async e => {
-  const t = e.target.closest("[data-t]"), wd = e.target.closest("[data-wd]"), go = e.target.closest("[data-go]"), del = e.target.closest("[data-del]");
-  const it = e.target.closest(".rs-it"), all = [...(RS.m?.history || []), ...(RS.m?.week || [])];
-  if (t) { RS.tab = t.dataset.t; haptic("select"); return rsDay(RS.m); }
-  if (wd) { RS.wd = RS.wd === wd.dataset.wd ? null : wd.dataset.wd; haptic("select"); return rsDay(RS.m); }
-  if (e.target.id === "rsHideK") {
-    RS.hideK = !RS.hideK; try { localStorage.setItem("rs_hidek", RS.hideK ? "1" : "0"); } catch (x) {}
-    haptic("select"); return rsDay(RS.m);
-  }
-  if (go) { const x = all.find(p => p.id === +go.dataset.go); return x && rsGo(x.mission_ex, x.mission_amount, x.id); }
-  if (del) {
-    const ask = "Убрать тарелку из рапорта? Опыт за неё останется, но в значки она считаться не будет.";
-    const yes = await new Promise(ok => tg?.showConfirm ? tg.showConfirm(ask, ok) : ok(confirm(ask)));
-    if (!yes) return;
-    try { const m = await rsApi("/del", { id: +del.dataset.del }); if (m.history) { RS.open = 0; rsMe({ ...RS.m, ...m }); } } catch (x) { rsToast("Не вышло — попробуй ещё раз"); }
-    return;
-  }
-  if (it) { RS.open = RS.open === +it.dataset.id ? 0 : +it.dataset.id; haptic("select"); rsDay(RS.m); }
-});
 const esc = t => String(t ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 $("rsBack").onclick = rsClose;
 $("rsFile").onchange = e => { const f = e.target.files && e.target.files[0]; e.target.value = ""; if (f) rsSend(f); };
@@ -2284,388 +1188,12 @@ document.querySelectorAll("#rsTone [data-tone]").forEach(b => b.onclick = async 
   try { await rsApi("/tone", { tone: RS.tone }); } catch (e) {}
   rsShow("rsPickBox");
 });
-load();
 rsInit();
+load();
 // бонус-миссия из «Прожарки тарелки»: бот открывает приложение с ?ex=squat — сразу нужное упражнение
-{ const ex = new URLSearchParams(location.search).get("ex"); if (ex && EX[ex]) { S.ex = ex; if (EX[ex].kind !== "hold") S.mode = "free"; } }
-gRoll(); render(); mnRender();
+{ const ex = new URLSearchParams(location.search).get("ex"); if (ex && EX[ex]) { S.ex = ex; if (EX[ex].kind === "hold") S.mode = "free"; } }
+render(); mnRender();
 if (new URLSearchParams(location.search).get("ex")) openTrain();
-gInit();
-// ================= аватар бойца (тред «Аватар») =================
-// Личный боец: старт и цель — из пола, роста, веса и цели; дальше он крепнет только за ДЕЙСТВИЯ — засчитанную тренировку,
-// закрытый приказ, тарелку в прожарке, вехи серии. Цифра на весах на него не влияет. Виден только самому человеку.
-// Рисует avatar.js (window.Avatar); что рисовать на 100% — честную цель или «фигуру мечты» — Avatar.GOAL_MODE там же.
-// Игровой слой не правим: события берём из уже засчитанного в G (с id против повторов) и сверяем,
-// когда открываются меню, итоги тренировки и экран бойца, и когда меню перерисовывается после действия.
-const AV_KEY = "kodtela_avatar_v1";
-const AV = { st: null, shown: null, skip: "", ready: false, form: null };   // shown — что человек видел в прошлый раз: {p, l}
-const avLevel = () => lvl(S.xp).l;
-const avPct = x => (Math.round(x * 1000) / 10).toString().replace(".", ",") + "%";
-function avSave() {
-  if (sess && sess.saved) return;                    // идёт демо — ничего не сохраняем
-  const v = JSON.stringify({ st: AV.st, shown: AV.shown, skip: AV.skip, t: Date.now() });
-  try { localStorage.setItem(AV_KEY, v); } catch (e) {}
-  if (inTG && tg.CloudStorage && v.length < 4000) {
-    clearTimeout(avSave.t); avSave.t = setTimeout(() => { try { tg.CloudStorage.setItem(AV_KEY, v, () => {}); } catch (e) {} }, 800);
-  }
-}
-async function avLoad() {
-  let best = null;
-  try { best = JSON.parse(localStorage.getItem(AV_KEY) || "null"); } catch (e) {}
-  if (inTG && tg.CloudStorage) {                     // копия в аккаунте Telegram — берём более свежую
-    const cloud = await new Promise(ok => {
-      const t = setTimeout(() => ok(null), 1500);
-      try { tg.CloudStorage.getItem(AV_KEY, (err, val) => { clearTimeout(t); try { ok(!err && val ? JSON.parse(val) : null); } catch (e) { ok(null); } }); }
-      catch (e) { clearTimeout(t); ok(null); }
-    });
-    if (cloud && (!best || (cloud.t || 0) > (best.t || 0))) best = cloud;
-  }
-  if (best) { AV.st = best.st || null; AV.shown = best.shown || null; AV.skip = best.skip || ""; }
-}
-
-// ---------- события: что уже засчитано сегодня в игре ----------
-function avEvents() {
-  const D = G.day; if (!D) return [];
-  const ev = [];
-  if (D.wk) ev.push({ type: "workout", id: "wk-" + D.d });                                  // тренировка от 3 минут
-  if (D.done.w && D.done.p && D.done.t) ev.push({ type: "order", id: "or-" + D.d });         // приказ закрыт
-  for (let i = 1; i <= Math.min(D.p, R.plateMax); i++) ev.push({ type: "plate", id: `pl-${D.d}-${i}` });
-  if (G.last === D.d) for (const n of [3, 7, 30]) if (G.streak === n) ev.push({ type: "streak" + n, id: `st${n}-${D.d}` });
-  return ev;
-}
-function avSync() {                  // true — боец изменился (окреп или сменил форму)
-  if (!AV.ready || !AV.st || !gReady || (sess && sess.saved)) return false;
-  let st = AV.st;
-  for (const e of avEvents()) st = Avatar.progress(st, e).state;
-  if (st.level !== avLevel()) st = Avatar.progress(st, { type: "level", level: avLevel() }).state;
-  if (st === AV.st) return false;
-  AV.st = st; avSave(); return true;
-}
-// рисует бойца; если с прошлого показа он окреп или получил новую форму — анимация «боец окреп»
-function avPaint(el, animate = true, onDone) {
-  const l = avLevel(), p = AV.st.progress, sh = AV.shown || { p, l };
-  const grew = p > sh.p + 1e-6 || l > sh.l;
-  if (grew && animate) Avatar.render(el, AV.st, { level: l, from: { ...AV.st, progress: sh.p, level: sh.l }, fromLevel: sh.l, duration: 1400, onDone });
-  else Avatar.render(el, AV.st, { level: l, animate: false });
-  if (animate) { AV.shown = { p, l }; avSave(); }
-  return { grew, gain: Math.max(0, p - sh.p), stageUp: Avatar.stage({ progress: p }).index > Avatar.stage({ progress: sh.p }).index, lvUp: l > sh.l };
-}
-function avNews() {                 // есть ли что показать: окреп или новая форма с прошлого показа (avSync зовёт и gameSave)
-  const sh = AV.shown; return !!(AV.ready && AV.st && (!sh || AV.st.progress > sh.p + 1e-6 || avLevel() > sh.l));
-}
-function avGhost(el) {               // силуэт, пока бойца нет
-  const sex = AV.form?.sex || "m";
-  Avatar.render(el, Avatar.create({ sex }), { level: 1, animate: false });
-}
-
-// ---------- карточка в меню ----------
-function avMenu() {
-  const c = $("avCard"); if (!c || !AV.ready) return;
-  c.classList.toggle("av-empty", !AV.st);
-  if (!AV.st) {
-    avGhost($("avFig"));
-    $("avRank").textContent = "СОЗДАЙ БОЙЦА"; $("avStage").textContent = "Он будет крепнуть с каждой тренировкой";
-    $("avBar").style.width = "0%"; $("avMsg").textContent = ""; return;
-  }
-  avSync();
-  const st = Avatar.stage(AV.st, { level: avLevel() });
-  $("avRank").textContent = rankOf(st.level); $("avStage").textContent = `${st.name} · путь ${st.percent}%`;
-  $("avBar").style.width = Math.max(2, st.percent) + "%";
-  if (avNews() && !avInView(c)) {    // карточка за краем экрана — показываем прежнего бойца и зовём всплывашкой, анимация — когда доскроллят
-    const sh = AV.shown || { p: AV.st.progress, l: avLevel() };
-    Avatar.render($("avFig"), AV.st, { level: sh.l, progress: sh.p, animate: false });
-    return avNudge(st);
-  }
-  const r = avPaint($("avFig"));
-  if (r.grew) {
-    haptic("level");
-    $("avMsg").textContent = r.lvUp ? "🎖 Новая форма по званию!" : r.stageUp ? `💪 Новая ступень: «${st.name}»` : `💪 Боец окреп · +${avPct(r.gain)}`;
-    clearTimeout(avMenu.t); avMenu.t = setTimeout(() => { if ($("avMsg")) $("avMsg").textContent = ""; }, 6000);
-  }
-}
-function avInView(el) { const b = el.getBoundingClientRect(); return b.height > 0 && b.top >= 0 && b.bottom <= innerHeight; }
-function avNudge(st) {               // «💪 Боец окреп» всплывашкой игры; не перебиваем чужую — ждём ~1,5 с после неё
-  const sh = AV.shown || { p: 0, l: 1 }, gain = AV.st.progress - sh.p;
-  const msg = avLevel() > sh.l ? "🎖 У бойца новая форма" : st.index > Avatar.stage({ progress: sh.p }).index ? `💪 Новая ступень: «${st.name}»` : `💪 Боец окреп · +${avPct(gain)}`;
-  clearTimeout(AV.nt);
-  let other = false;
-  const go = () => {
-    if (!onScreen("menu") || !avNews() || avInView($("avCard"))) return;
-    if ($("toast").classList.contains("on") && Date.now() - (AV.toastAt || 0) > 3000) { other = true; AV.nt = setTimeout(go, 300); return; }
-    if (other) { other = false; AV.nt = setTimeout(go, 1500); return; }
-    gToast(`${msg} <u data-av style="opacity:.75">посмотреть ›</u>`); AV.toastAt = Date.now();
-  };
-  AV.nt = setTimeout(go, 1500);
-}
-
-// ---------- блок в итогах тренировки ----------
-function avResult() {
-  const box = $("avRes"); if (!box || !AV.ready) return;
-  const demo = !!(sess && sess.gSaved);
-  box.classList.remove("up");
-  if (!AV.st) {
-    box.innerHTML = `<div class="av-fig" style="opacity:.38;filter:grayscale(1)"></div><div class="av-txt"><small>ТВОЙ БОЕЦ</small>
-      <b>Боец ещё не создан</b><span>Создай — и он будет крепнуть после каждой тренировки</span><button id="avResGo">Создать бойца</button></div>`;
-    avGhost(box.firstElementChild); $("avResGo").onclick = () => avOpen(true); return;
-  }
-  box.innerHTML = `<div class="av-fig"></div><div class="av-txt"><small>ТВОЙ БОЕЦ</small><b></b><span></span><div class="xpbar"><i></i></div></div>`;
-  if (!demo) avSync();
-  const fig = box.firstElementChild, b = box.querySelector("b"), sp = box.querySelector("span"), bar = box.querySelector(".xpbar i");
-  const r = avPaint(fig, !demo), st = Avatar.stage(AV.st, { level: avLevel() });
-  bar.style.width = Math.max(2, st.percent) + "%";
-  if (demo) { b.textContent = "Демо"; sp.textContent = "В демо боец не меняется — только на настоящей тренировке"; return; }
-  if (r.grew) {
-    box.classList.add("up"); haptic("level");
-    b.className = "goldtext"; b.textContent = "💪 БОЕЦ ОКРЕП";
-    sp.textContent = r.lvUp ? `Новая форма: ${rankOf(st.level)}${r.gain > 0 ? ` · путь +${avPct(r.gain)}` : ""}` : r.stageUp ? `Новая ступень: «${st.name}» · путь ${st.percent}%` : `Путь бойца ${avPct(st.progress)} · +${avPct(r.gain)}`;
-    return;
-  }
-  b.textContent = `${st.name} · ${st.percent}%`;
-  const D = G.day;
-  sp.textContent = !D ? "" : D.wk ? (gDone() < 3 ? "За тренировку сегодня боец уже окреп. Закрой приказ — окрепнет ещё" : "Сегодня боец своё взял. Завтра — новый шаг")
-    : "Тренировка от 3 минут — и боец окрепнет";
-}
-
-// ---------- экран бойца: путь и данные ----------
-// ---------- экран бойца: путь, данные и лицо ----------
-// Создание обязательно до игры (до обучения и хаба). Исключения: ?t=1 — тестеры (можно «Позже»);
-// ?ex= из бота — сначала тренировка, после итогов предлагаем создать, в меню — уже обязательно.
-const AVQ = new URLSearchParams(location.search);
-AV.test = AVQ.has("t");
-const AV_PROFILE_API = "https://kodtela.era-print.com/api/profile/me";
-const avGateNeeded = () => AV.ready && !AV.st && !AV.test && !(sess && sess.saved);
-function avOpen(edit = false, pane) {
-  show("avatar");
-  AV.must = !AV.st && !AV.test;                   // обязательное создание: назад не уйти
-  $("avBack").style.visibility = AV.must ? "hidden" : "";
-  AV.must ? tg?.BackButton?.hide() : tg?.BackButton?.show();
-  if (edit || !AV.st) avEditOpen(pane); else avView();
-}
-function avView(first = false) {
-  $("avView").style.display = ""; $("avEdit").style.display = "none";
-  $("avBack").style.visibility = ""; tg?.BackButton?.show();
-  avSync();
-  const st = Avatar.stage(AV.st, { level: avLevel() }), c = AV.st.counts || {};
-  const r = avPaint($("avBig"));
-  if (r.grew) haptic("level");
-  $("avVRank").textContent = rankOf(st.level);
-  $("avVStage").textContent = `${st.name} · путь к цели ${st.percent}%`;
-  $("avVBar").style.width = Math.max(2, st.percent) + "%";
-  $("avSteps").innerHTML = Avatar.STAGES.map((n, i) => `<i class="${i < st.index ? "done" : i === st.index ? "cur" : ""}">${n}</i>`).join("");
-  $("avCW").textContent = c.workout || 0; $("avCO").textContent = c.order || 0; $("avCP").textContent = c.plate || 0;
-  $("avGo").style.display = first ? "" : "none";
-}
-function avProfile() {               // анкета из бота: только данные самого человека, по подписи Telegram; нет анкеты — null
-  if (!AV.profP) AV.profP = !(inTG && tg.initData) ? Promise.resolve(null)
-    : fetch(AV_PROFILE_API, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ initData: tg.initData }) })
-        .then(r => r.json()).then(x => (x && x.ok && x.profile) || null).catch(() => null);
-  return AV.profP;
-}
-function avEditOpen(pane) {
-  $("avView").style.display = "none"; $("avEdit").style.display = "";
-  const s = AV.st, wl = G.wLast && G.wLast.v;
-  AV.form = s ? { sex: s.sex, skin: s.skin || 0, face: Avatar.faceOf(s), from: {} }
-    : { sex: AV.form?.sex || "m", skin: 1, face: Avatar.faceOf({ sex: AV.form?.sex || "m" }), from: {} };
-  AV.cat = AV.cat || "shape";
-  $("avH").value = s ? s.height_cm : "";
-  $("avW").value = s ? s.weight_kg : (wl || "");
-  $("avG").value = s && s.goalSet ? s.goal_kg : "";
-  $("avErr").textContent = "";
-  avPane(pane || "data");
-  if (!s) avProfile().then(p => {             // подставляем анкету, пока человек ничего не ввёл сам
-    if (!p || AV.st || !onScreen("avatar") || AV.form.touched) return;
-    const F = AV.form;
-    if (p.sex === "m" || p.sex === "f") { avSetSex(p.sex); F.from.sex = 1; }
-    if (p.height_cm) { $("avH").value = p.height_cm; F.from.avH = 1; }
-    if (p.weight_kg) { $("avW").value = p.weight_kg; F.from.avW = 1; }
-    if (p.goal_kg) { $("avG").value = p.goal_kg; F.from.avG = 1; }
-    avForm();
-  });
-}
-function avPane(p) {
-  AV.pane = p;
-  $("avPData").style.display = p === "data" ? "" : "none"; $("avPFace").style.display = p === "face" ? "" : "none";
-  document.querySelectorAll("#avTabs button").forEach(b => b.classList.toggle("on", b.dataset.p === p));
-  $("avSave").textContent = AV.st ? "СОХРАНИТЬ" : p === "data" ? "ДАЛЕЕ — ЛИЦО ›" : "СОЗДАТЬ БОЙЦА";
-  $("avLater").style.display = AV.st || AV.test ? "" : "none";
-  $("avLater").textContent = AV.st ? "Отмена" : "Позже";
-  p === "face" ? avFace() : avForm();
-  scrollTo(0, 0);
-}
-function avRead() {                  // данные формы → параметры для Avatar.create; err — что не так
-  const num = id => parseFloat(String($(id).value).replace(",", "."));
-  const h = num("avH"), w = num("avW"), g = num("avG"), F = AV.form, sex = F.sex;
-  const o = { sex, skin: F.skin, hair: F.face.hairColor, face: F.face,
-    height_cm: h >= 130 && h <= 215 ? h : null, weight_kg: w >= 35 && w <= 250 ? w : null, goal_kg: null, err: "" };
-  if ($("avH").value && !o.height_cm) o.err = "Рост — от 130 до 215 см";
-  else if ($("avW").value && !o.weight_kg) o.err = "Вес — от 35 до 250 кг";
-  if ($("avG").value) {
-    const hm = (o.height_cm || (sex === "f" ? 165 : 176)) / 100, min = Math.ceil(18.5 * hm * hm);
-    if (!(g >= 35 && g <= 250)) o.err = o.err || "Цель — от 35 до 250 кг";
-    else if (g < min) o.err = o.err || `Цель ниже здоровой нормы для твоего роста. Ставь от ${min} кг`;
-    else o.goal_kg = Math.round(g * 10) / 10;
-  }
-  return o;
-}
-function avSetSex(sex) {             // при смене пола — причёска по умолчанию для пола, у женщин без бороды и усов
-  const F = AV.form, d = Avatar.faceOf({ sex: F.sex }).hair;
-  if (F.face.hair === d) F.face.hair = Avatar.faceOf({ sex }).hair;
-  if (sex === "f") { F.face.beard = 0; F.face.mustache = 0; }
-  F.sex = sex;
-}
-function avForm() {                  // живое превью «старт → цель» по мере ввода
-  const F = AV.form, o = avRead();
-  document.querySelectorAll("#avSex button").forEach(b => b.classList.toggle("on", b.dataset.v === F.sex));
-  const p = Avatar.create(o), l = avLevel();
-  Avatar.render($("avNow"), p, { level: l, progress: 0, animate: false });
-  Avatar.render($("avGoal"), p, { level: l, progress: 1, animate: false });
-  $("avGoalCap").textContent = o.weight_kg ? `Цель · ${String(p.goal_kg).replace(".", ",")} кг${o.goal_kg ? "" : " (авто)"}` : "Цель";
-  $("avErr").textContent = o.err;
-  ["avH", "avW", "avG"].forEach(id => $(id).parentNode.classList.toggle("from", !!F.from[id]));
-  const fromAny = F.from.avH || F.from.avW || F.from.avG || F.from.sex;
-  $("avFrom").textContent = fromAny ? "📋 Из твоей анкеты — проверь и поправь, если что-то изменилось" : "";
-  const wl = G.wLast && G.wLast.v, cur = parseFloat(String($("avW").value).replace(",", "."));
-  $("avHint").innerHTML = wl && cur !== wl ? `<button id="avUseW">Подставить вес из игры: ${String(wl).replace(".", ",")} кг</button>`
-    : wl && cur === wl && !F.from.avW ? "Вес — из твоей последней записи в игре" : AV.st ? "Изменишь данные — пересчитаем старт и цель, пройденный путь сохранится" : "";
-  $("avUseW") && ($("avUseW").onclick = () => { $("avW").value = wl; F.from.avW = 0; avForm(); });
-}
-
-// ---------- конструктор лица ----------
-const AV_CATS = [["shape", "Лицо"], ["skin", "Кожа"], ["eyes", "Глаза"], ["eyeColor", "Цвет глаз"], ["brows", "Брови"], ["nose", "Нос"], ["mouth", "Рот"],
-  ["hair", "Причёска"], ["hairColor", "Волосы"], ["beard", "Борода", "m"], ["mustache", "Усы", "m"], ["glasses", "Очки"], ["extra", "Детали"]];
-const AV_SKIN_ORDER = [4, 0, 1, 2, 3, 5];
-function avFaceState(face) {         // боец для превью лица: фигура — по введённым данным, на старте
-  const o = avRead(), F = AV.form;
-  return Avatar.create({ ...o, face: face || F.face, hair: (face || F.face).hairColor, skin: F.skin });
-}
-function avFace() {
-  const F = AV.form, fem = F.sex === "f";
-  const cats = AV_CATS.filter(c => !(c[2] === "m" && fem));
-  if (!cats.some(c => c[0] === AV.cat)) AV.cat = "shape";
-  $("avFaceBig").innerHTML = Avatar.svg(avFaceState(), { head: true, level: 1, progress: 0 });
-  Avatar.render($("avFaceBody"), avFaceState(), { level: avLevel(), progress: 0, animate: false });
-  $("avCats").innerHTML = cats.map(c => `<button data-c="${c[0]}" class="${c[0] === AV.cat ? "on" : ""}">${c[1]}</button>`).join("");
-  const k = AV.cat, box = $("avOpts");
-  const colors = { skin: AV_SKIN_ORDER.map(i => [i, Avatar.SKINS[i]]), eyeColor: Avatar.EYE_COLORS.map((c, i) => [i, c]), hairColor: Avatar.HAIRS.map((c, i) => [i, c]) }[k];
-  box.classList.toggle("sw", !!colors);
-  if (colors) {
-    const cur = k === "skin" ? F.skin : F.face[k], names = k === "skin" ? null : Avatar.FACE[k];
-    box.innerHTML = colors.map(([i, c]) => `<button data-v="${i}" class="${i === cur ? "on" : ""}" style="background:${c}" aria-label="${names ? names[i] : "Тон кожи " + (i + 1)}"></button>`).join("");
-    return;
-  }
-  const opts = k === "extra" ? [["freckles", 1, "Веснушки"], ["mole", 1, "Родинка"]] : Avatar.FACE[k].map((n, i) => [k, i, n]);
-  box.innerHTML = opts.map(([kk, v, n]) => {
-    const on = k === "extra" ? !!F.face[kk] : F.face[kk] === v;
-    const face = { ...F.face, [kk]: k === "extra" ? (on ? 0 : 1) : v };
-    const prev = k === "extra" ? F.face : face;          // у деталей превью — с включённой деталью
-    return `<button data-k="${kk}" data-v="${v}" class="${on ? "on" : ""}"><div class="th">${Avatar.svg(avFaceState(k === "extra" ? { ...prev, [kk]: 1 } : face), { head: true, level: 1, progress: 0 })}</div>${n}</button>`;
-  }).join("");
-}
-function avFacePick(e) {
-  const b = e.target.closest("button"); if (!b) return;
-  const F = AV.form, k = AV.cat;
-  if (k === "skin") F.skin = +b.dataset.v;
-  else if (k === "extra") F.face[b.dataset.k] = F.face[b.dataset.k] ? 0 : 1;
-  else F.face[b.dataset.k || k] = +b.dataset.v;
-  haptic("select"); avFace();
-}
-function avRandom() {
-  const F = AV.form, r = Avatar.randomFace(F.sex);
-  F.skin = r.skin; delete r.skin; F.face = r;
-  haptic("select"); avFace();
-}
-
-function avSubmit() {
-  const o = avRead();
-  if (o.err || !o.height_cm || !o.weight_kg) {
-    if (AV.pane !== "data") avPane("data");
-    $("avErr").textContent = o.err || "Укажи рост и вес — по ним нарисуем стартовую фигуру"; haptic("select"); return;
-  }
-  if (!AV.st && AV.pane === "data") { haptic("select"); return avPane("face"); }   // новый боец: сначала данные, потом лицо
-  const old = AV.st, st = Avatar.create(o);
-  st.goalSet = !!o.goal_kg;
-  if (old) for (const k of ["points", "progress", "level", "day", "dayRaw", "counts", "seen", "created"]) st[k] = old[k];   // путь сохраняется
-  AV.st = st; AV.skip = ""; AV.must = false;
-  if (!old) { avSync(); AV.shown = { p: AV.st.progress, l: avLevel() }; }       // уже сделанное сегодня — сразу в зачёт, без анимации
-  avSave(); haptic("level");
-  if (!old) gToast("🪖 Боец в строю! Он крепнет за тренировки, приказы и прожарку");
-  avView(!old);
-}
-function avBoot() {
-  // карточка в меню — перед «Приказом дня»; блок в итогах — над кнопками
-  const card = document.createElement("button");
-  card.className = "av-card"; card.id = "avCard";
-  card.innerHTML = `<div class="av-fig" id="avFig"></div><div class="av-txt"><small>ТВОЙ БОЕЦ</small><b id="avRank"></b><span id="avStage"></span>
-    <div class="xpbar"><i id="avBar"></i></div><em id="avMsg"></em></div><div class="go">›</div>`;
-  // карточка — в #avSlot (место от треда «Игра»: под приказом, рядом с серией и званием); запасные якоря — на случай переделки меню
-  const slot = $("avSlot"), anchor = $("mnStrip") || document.querySelector("#menu .mn-hi");
-  slot ? slot.append(card) : anchor ? anchor.after(card) : $("menu").prepend(card);
-  const res = document.createElement("div"); res.className = "av-res"; res.id = "avRes";
-  const again = $("againBtn");
-  again ? again.before(res) : document.querySelector("#result .result")?.append(res);
-  card.onclick = () => { haptic("select"); avOpen(); };
-  $("avBack").onclick = () => { haptic("select"); goMenu(); };
-  $("avEditBtn").onclick = () => { haptic("select"); avEditOpen("data"); };
-  $("avFaceBtn").onclick = () => { haptic("select"); avEditOpen("face"); };
-  $("avGo").onclick = () => { haptic("select"); goMenu(); };
-  $("avSave").onclick = avSubmit;
-  $("avLater").onclick = () => { haptic("select"); if (AV.st) return avView(); AV.skip = gDay(); avSave(); goMenu(); };
-  $("avTabs").onclick = e => { const b = e.target.closest("button"); if (b) { haptic("select"); avPane(b.dataset.p); } };
-  $("avSex").onclick = e => { const b = e.target.closest("button"); if (b) { avSetSex(b.dataset.v); AV.form.from.sex = 0; AV.form.touched = 1; haptic("select"); avForm(); } };
-  ["avH", "avW", "avG"].forEach(id => $(id).addEventListener("input", () => { AV.form.from[id] = 0; AV.form.touched = 1; avForm(); }));
-  $("avCats").onclick = e => { const b = e.target.closest("button"); if (b) { AV.cat = b.dataset.c; haptic("select"); avFace(); } };
-  $("avOpts").onclick = avFacePick;
-  $("avRnd").onclick = avRandom;
-  const so = new MutationObserver(avOnShow);
-  document.querySelectorAll(".screen").forEach(x => so.observe(x, { attributes: true, attributeFilter: ["class"], attributeOldValue: true }));
-  // меню перерисовалось после действия (тарелка, вес, звание) — сверяем бойца
-  new MutationObserver(ms => {
-    if (!onScreen("menu") || ms.every(m => card.contains(m.target))) return;
-    clearTimeout(avBoot.t); avBoot.t = setTimeout(() => { avSync(); if (avNews()) avMenu(); }, 150);
-  }).observe($("menu"), { subtree: true, childList: true, characterData: true });
-  // тап по нашей всплывашке — плавно к карточке; карточка показалась на экране — анимация «окреп»
-  const toast = $("toast");           // всплывашка игры не ловит нажатия — включаем их только для нашей
-  new MutationObserver(() => toast.classList.toggle("av-tap", !!toast.querySelector("[data-av]"))).observe(toast, { childList: true });
-  toast.addEventListener("click", () => {
-    if (toast.querySelector("[data-av]") && onScreen("menu")) { haptic("select"); toast.classList.remove("on"); card.scrollIntoView({ behavior: "smooth", block: "center" }); }
-  });
-  if (window.IntersectionObserver) new IntersectionObserver(es => {
-    if (es.some(e => e.isIntersecting) && onScreen("menu") && avNews()) setTimeout(() => { if (avInView(card)) avMenu(); }, 250);
-  }, { threshold: 1 }).observe(card);
-  // обучение игры (onbOv) — только после создания бойца: пока бойца нет (или не загрузился), окно ждёт
-  const onb = $("onbOv");
-  if (onb) new MutationObserver(() => {
-    if (onb.classList.contains("on") && !AV.test && (!AV.ready || avGateNeeded() || onScreen("avatar") && AV.must)) { onb.classList.remove("on"); AV.onbHeld = true; }
-  }).observe(onb, { attributes: true, attributeFilter: ["class"] });
-  const oo = new MutationObserver(avOffer);         // закрылось окно игры — тестерам можно предложить бойца
-  document.querySelectorAll(".gm-ov").forEach(x => oo.observe(x, { attributes: true, attributeFilter: ["class"] }));
-}
-function avOnShow(ms) {             // какой экран открылся — там и показываем бойца
-  if (!AV.ready) return;
-  const cur = document.querySelector(".screen.on")?.id || "";
-  if (ms && !ms.some(m => m.target.id === cur && !/\bon\b/.test(m.oldValue || ""))) return;   // экран не менялся
-  if (["menu", "order", "league"].includes(cur) && avGateNeeded()) return avOpen(true);      // без бойца в игру не пускаем
-  if (cur === "menu") {
-    avMenu(); avOffer();
-    if (AV.onbHeld && AV.st) { AV.onbHeld = false; $("onbOv")?.classList.add("on"); }      // теперь — обучение игры
-  } else if (cur === "result") avResult();
-}
-function avOffer() {                 // тестерам (?t=1): предложить бойца один раз, можно «Позже»
-  if (!AV.test || !AV.ready || AV.st || AV.skip || !onScreen("menu") || document.querySelector(".gm-ov.on")) return;
-  if (AVQ.get("ex") || AVQ.get("tab")) return;
-  avOpen(true);
-}
-if (window.Avatar) {
-  avBoot();
-  (async () => {
-    await avLoad();
-    while (!gReady) await new Promise(ok => setTimeout(ok, 100));
-    AV.ready = true; avSync();
-    if (AV.onbHeld && !avGateNeeded()) { AV.onbHeld = false; $("onbOv")?.classList.add("on"); }   // боец уже есть — обучение как обычно
-    avOnShow();
-    if (avGateNeeded()) avProfile();               // анкету — заранее, пока человек смотрит на экран
-  })();
-}
 </script>
 </body>
 </html>
