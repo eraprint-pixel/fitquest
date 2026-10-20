@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>FitQuest · Код тела</title>
+<title>Код-Тренер · Код тела</title>
 <meta name="theme-color" content="#0b0b0b">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -264,7 +264,7 @@ canvas#fx { pointer-events: none; }
 
 <!-- ГЛАВНЫЙ ЭКРАН -->
 <section class="screen on" id="home">
-  <div class="brand"><img src="logo.png" alt="Код тела"><div class="app goldtext">FITQUEST</div></div>
+  <div class="brand"><img src="logo.png" alt="Код тела"><div class="app goldtext">КОД-ТРЕНЕР</div></div>
 
   <div class="hero">
     <div class="hero-top">
@@ -1034,7 +1034,11 @@ async function rsApi(path, body, form = false) {
 function rsShow(id) { ["rsTone", "rsPickBox", "rsLoad", "rsRes"].forEach(b => $(b).classList.toggle("on", b === id)); }
 async function rsInit() {
   if (!inTG) return;
-  try { const m = await rsApi("/me", {}); RS.allowed = !!m.allowed; RS.tone = m.tone; if (RS.allowed) { $("rsEntry").classList.add("on"); rsDay(m); } } catch (e) {}
+  const want = new URLSearchParams(location.search).get("tab") === "roast";
+  try {
+    const m = await rsApi("/me", {}); RS.allowed = !!m.allowed; RS.tone = m.tone;
+    if (RS.allowed) { $("rsEntry").classList.add("on"); rsDay(m); if (want) rsOpen(); }
+  } catch (e) { if (want) { rsOpen(); rsResult({ status: "error" }); } }
 }
 function rsOpen() {
   unlockAudio(); show("roast"); tg?.BackButton?.show();
