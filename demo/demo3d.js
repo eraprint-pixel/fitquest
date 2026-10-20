@@ -1,8 +1,11 @@
-/* «Код тела» · 3D-демонстрация упражнения (5 с) перед первым подходом.
- * Фигура — скелет «как видит камера»: золотые кости, светлые суставы, голова-круг; камера облетает фигуру.
- * Траектории — moves/<ex>.json (из видео Паши через MediaPipe или по ключевым позам).
+/* «Код тела» · 3D-демонстрация упражнения (6–11 с, два повтора) перед первым подходом.
+ * Фигура — объёмный скелет: золотые кости-капсулы, суставы и голова — шары со светом сверху; камера облетает фигуру.
+ * За фигурой — блёклый логотип (../logo-mark.png; не загрузился — без него). В удержаниях — золотой счётчик секунд.
+ * Траектории — moves/<ex>.json (ключевые позы, темп и фазы — по видео Паши).
  *
- * API:  Demo3D.show(el, exId, { onDone })  → true, если демо есть и показано
+ * API:  Demo3D.show(el, exId, { onDone, onStart, startLabel })  → true, если демо есть и показано
+ *         золотая кнопка: «Понятно»; если передан onStart (или startLabel) — «Начать тренировку» (или startLabel).
+ *         По нажатию: отметить «видел», закрыть, вызвать onDone(exId), затем onStart(exId). «Ещё раз» — повтор показа.
  *       Demo3D.close()                      — остановить и убрать (без onDone); можно звать сколько угодно раз
  *       Demo3D.mount(el, exId, opts)        — независимый экземпляр (для preview.html), вернёт { close, replay }
  *       Demo3D.seen(exId) / Demo3D.markSeen(exId)
@@ -10,10 +13,10 @@
  * Работает без сборки, без CDN, классическим <script>. Повторный show() сам закрывает прежний. */
 (function () {
   "use strict";
-  var BASE = "demo/", VER = "2";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
+  var BASE = "demo/", VER = "3";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
   try { if (document.currentScript && document.currentScript.src) BASE = new URL(".", document.currentScript.src).href; } catch (e) {}
 
-  var GOLD = "#d4b47a", GOLD2 = "#f3dcaa", RED = "#D9232A", BG = "#0f0f12";
+  var GOLD = "#d4b47a", GOLD2 = "#f3dcaa", HI = "#fff4da", DEEP = "#5e4a2a", BG = "#0f0f12";
   var J = ["head", "lsh", "rsh", "lel", "rel", "lwr", "rwr", "lhp", "rhp", "lkn", "rkn", "lan", "ran", "lft", "rft"];
   var JI = {}; J.forEach(function (n, i) { JI[n] = i; });
   // кости: [от, до, группа]; 15 — середина плеч («шея»), 16 — середина таза (считаются на лету)
@@ -21,50 +24,54 @@
     [1, 3, "arm"], [3, 5, "arm"], [2, 4, "arm"], [4, 6, "arm"],
     [7, 9, "leg"], [9, 11, "leg"], [11, 13, "foot"], [8, 10, "leg"], [10, 12, "leg"], [12, 14, "foot"]];
 
-  /* Тексты: 2–3 пояснения (в одну строку на 360 px), когда появляются (с), как поставить телефон.
-   * cam — облёт: [время, азимут°, высота°]; 0° — спереди (или со стороны головы), 90° — слева сбоку.
-   * hl — подсвеченные группы костей, hj — подсвеченные суставы, arrow — сустав для красных стрелок ↑↓. */
+  /* tips — три позиции движения по порядку: [с, текст] (1 — старт, 2 — рабочая фаза, 3 — возврат/главная ошибка),
+   * появляются вместе с движением; каждая — в одну строку на 360 px. phone — как поставить телефон.
+   * cam — облёт: [с, азимут°, высота°]; 0° — спереди (или со стороны головы), 90° — слева сбоку.
+   * hl — подсвеченные группы костей, hj — подсвеченные суставы, hold — с какой секунды идёт счётчик удержания. */
   var EX = {
     squat: { name: "Приседания", phone: "Телефон в 2–3 м, всё тело в кадре",
-      tips: [[0.3, "Спина ровная"], [1.2, "Колени по стопам"], [2.4, "Таз назад и вниз"]],
-      cam: [[0, 25, 10], [2.2, 80, 12], [5, 40, 14]], hl: ["leg"], hj: ["lkn", "rkn", "lhp", "rhp"], arrow: "hip" },
+      tips: [[0.2, "Стопы на ширине плеч"], [1.2, "Бёдра параллельно полу"], [2.4, "Вставай, колени по стопам"]],
+      cam: [[0, 35, 10], [3.6, 80, 7], [7.4, 55, 10]], hl: ["leg"], hj: ["lkn", "rkn", "lhp", "rhp"] },
     pushup: { name: "Отжимания", phone: "Телефон на пол сбоку, в 1,5–2 м",
-      tips: [[0.3, "Тело — одна прямая"], [1.3, "Локти назад, не в стороны"], [2.6, "Грудь почти до пола"]],
-      cam: [[0, 35, 16], [2.4, 88, 10], [5, 60, 18]], hl: ["arm", "core"], hj: ["lel", "rel"], arrow: "chest" },
+      tips: [[0.2, "Тело — одна прямая"], [1.2, "Грудь почти до пола"], [2.2, "Локти назад, не в стороны"]],
+      cam: [[0, 45, 16], [3.2, 85, 9], [6.5, 65, 14]], hl: ["arm", "core"], hj: ["lel", "rel"] },
     lunge: { name: "Выпады", phone: "Встань боком, в 2–3 м от телефона",
-      tips: [[0.3, "Шаг назад, широко"], [1.3, "Колено почти до пола"], [2.6, "Корпус держи прямо"]],
-      cam: [[0, 30, 10], [2.4, 85, 10], [5, 45, 14]], hl: ["leg"], hj: ["lkn", "rkn"], arrow: "hip" },
-    plank: { name: "Планка", phone: "Телефон на пол сбоку, в 1,5–2 м",
-      tips: [[0.3, "Локти под плечами"], [1.4, "Тело — одна линия"], [2.6, "Живот подтянут, дыши"]],
-      cam: [[0, 30, 16], [2.4, 88, 10], [5, 55, 18]], hl: ["core"], hj: ["lhp", "rhp"], arrow: "hip" },
+      tips: [[0.2, "Стойка, корпус прямо"], [1.2, "Шаг назад, колено к полу"], [2.6, "Переднее колено над стопой"]],
+      cam: [[0, 60, 10], [4.3, 88, 7], [8.6, 70, 10]], hl: ["leg"], hj: ["lkn", "rkn"] },
+    plank: { name: "Планка", phone: "Телефон на пол сбоку, в 1,5–2 м", hold: 0,
+      tips: [[0.2, "Локти под плечами"], [1.6, "Тело — одна линия"], [3.2, "Таз не роняй и не задирай"]],
+      cam: [[0, 55, 15], [3.6, 88, 8], [7.2, 68, 14]], hl: ["core"], hj: ["lhp", "rhp"] },
     climber: { name: "Скалолаз", phone: "Телефон на пол сбоку, в 1,5–2 м",
-      tips: [[0.3, "Упор на прямых руках"], [1.3, "Колено к груди, по очереди"], [2.6, "Таз не задирай"]],
-      cam: [[0, 35, 16], [2.4, 88, 10], [5, 60, 18]], hl: ["leg", "core"], hj: ["lkn", "rkn"] },
-    wallsit: { name: "Стульчик у стены", phone: "Спиной к стене, боком к камере",
-      tips: [[0.3, "Спина прижата к стене"], [1.4, "Колени над стопами"], [2.6, "Бёдра параллельно полу"]],
-      cam: [[0, 25, 10], [2.4, 80, 12], [5, 45, 14]], hl: ["leg"], hj: ["lkn", "rkn"], arrow: "hip" },
-    shtap: { name: "Касания плеч", phone: "Телефон на пол перед собой, в 1,5–2 м",
-      tips: [[0.3, "Упор на прямых руках"], [1.2, "Ладонь к другому плечу"], [2.6, "Таз не раскачивай"]],
-      cam: [[0, 10, 18], [2.4, 45, 16], [5, 75, 14]], hl: ["arm", "core"], hj: ["lwr", "rwr"] },
-    updown: { name: "Вверх-вниз", phone: "Телефон на пол перед собой, в 1,5–2 м",
-      tips: [[0.3, "Старт — упор на прямых"], [1.2, "По одной руке — на локти"], [2.6, "И так же обратно вверх"]],
-      cam: [[0, 15, 16], [2.4, 70, 12], [5, 45, 16]], hl: ["arm"], hj: ["lel", "rel"], arrow: "chest" },
+      tips: [[0.2, "Упор на прямых руках"], [0.9, "Колено к груди, по очереди"], [3.0, "Таз не задирай"]],
+      cam: [[0, 70, 24], [6.7, 86, 20]], hl: ["leg"], hj: ["lkn", "rkn"] },
+    wallsit: { name: "Стульчик у стены", phone: "Спиной к стене, боком к камере", hold: 2.1,
+      tips: [[0.2, "Спиной к стене"], [1.3, "Бёдра параллельно полу"], [3.0, "Колени над стопами, держи"]],
+      cam: [[0, 40, 10], [3.2, 85, 7], [8.3, 65, 10]], hl: ["leg"], hj: ["lkn", "rkn"] },
+    shtap: { name: "Касания плеч", phone: "Телефон на пол спереди, в 1,5–2 м",
+      tips: [[0.2, "Упор на прямых руках"], [1.0, "Ладонь к другому плечу"], [3.0, "Таз не раскачивай"]],
+      cam: [[0, 122, 34], [4.2, 148, 40], [8.5, 128, 36]], hl: ["arm"], hj: ["lwr", "rwr"] },
+    updown: { name: "Вверх-вниз", phone: "Телефон на пол спереди, в 1,5–2 м",
+      tips: [[0.2, "Упор на прямых руках"], [1.0, "По одной руке — на локти"], [2.7, "И так же обратно вверх"]],
+      cam: [[0, 25, 18], [4.4, 62, 14], [8.7, 40, 16]], hl: ["arm"], hj: ["lel", "rel"] },
     quad: { name: "Ротация в упоре", phone: "Телефон сбоку, всё тело в кадре",
-      tips: [[0.3, "Упор на ладони и колени"], [1.2, "Рука вверх — смотри на неё"], [2.8, "Плавно верни вниз"]],
-      cam: [[0, -25, 16], [2.4, -70, 14], [5, -40, 18]], hl: ["arm", "sh"], hj: ["lsh", "rsh"] },
+      tips: [[0.2, "Упор на ладони и колени"], [1.0, "Рука вверх — смотри на неё"], [2.3, "Вниз — и другой рукой"]],
+      cam: [[0, 125, 28], [5, 150, 32], [10, 132, 28]], hl: ["arm"], hj: ["lwr", "rwr"] },
     kneel: { name: "Ротация с колена", phone: "Телефон в 2–3 м, всё тело в кадре",
-      tips: [[0.3, "Встань на одно колено"], [1.2, "Руки вперёд, корпус прямо"], [2.4, "Рука через верх в сторону"]],
-      cam: [[0, 15, 10], [2.4, 55, 12], [5, 30, 14]], hl: ["arm", "sh"], hj: ["lsh", "rsh"] },
+      tips: [[0.2, "Встань на одно колено"], [0.8, "Рука через верх в сторону"], [7.8, "Потом смени колено"]],
+      cam: [[0, 32, 22], [6.9, 42, 22], [8.2, 55, 15], [10.4, 65, 12]], hl: ["arm"], hj: ["lwr", "rwr"] },
     book: { name: "Открытая книга", phone: "Телефон сбоку, в 1,5–2 м",
       tips: [[0.3, "Ляг на бок, колени согнуты"], [1.3, "Верхняя рука — дугой назад"], [2.8, "Колени прижаты к полу"]],
       cam: [[0, 45, 52], [2.4, 12, 46], [5, 32, 52]], hl: ["arm", "sh"], hj: ["lsh", "rsh"] },
-    hipabd: { name: "Отведение бедра лёжа", phone: "Телефон на полу, ты целиком в кадре",
-      tips: [[0.3, "Ляг на бок, колени согнуты"], [0.9, "Верхнее колено — вверх, до упора"], [2.4, "Колени вместе, таз не заваливай"]],
-      cam: [[0, 70, 42], [2.4, 105, 36], [5, 80, 42]], hl: ["leg", "hp"], hj: ["lhp", "lkn"] },
+    hipabd: { name: "Отведение бедра лёжа", phone: "Телефон на полу сбоку, в 2 м",
+      tips: [[0.2, "Ляг на бок, колени согнуты"], [1.0, "Колено вверх до упора"], [2.3, "Стопы вместе, таз ровно"]],
+      cam: [[0, 75, 36], [3.4, 100, 30], [6.8, 85, 34]], hl: ["leg"], hj: ["lkn"] },
     crunch: { name: "Скручивания", phone: "Телефон на пол сбоку, ляг на спину",
       tips: [[0.3, "Колени согнуты, стопы на полу"], [1.3, "Оторви лопатки от пола"], [2.6, "Поясница прижата"]],
-      cam: [[0, 65, 18], [2.4, 95, 10], [5, 75, 16]], hl: ["core"], hj: ["lsh", "rsh"], arrow: "chest" }
+      cam: [[0, 65, 18], [2.4, 95, 10], [5, 75, 16]], hl: ["core"], hj: ["lsh", "rsh"] }
   };
+  // неразрывные пробелы: после коротких слов и перед тире
+  function nb(t) { for (var i = 0; i < 2; i++) t = nb1(t); return t; }
+  function nb1(t) { return String(t).replace(/(^|[\s\u00a0])(в|к|с|у|о|и|а|на|по|до|не|за|от|из|над|под)\s/gi, "$1$2\u00a0").replace(/\s—/g, "\u00a0—"); }
   var ALIAS = { taps: "shtap", shouldertap: "shtap", quadrot: "quad", kneelrot: "kneel", openbook: "book", hip: "hipabd", hipabduction: "hipabd", wall_sit: "wallsit", mountain: "climber" };
   function key(id) { id = String(id || ""); return EX[id] ? id : (ALIAS[id] || id); }
 
@@ -116,20 +123,23 @@
       ".d3-stage canvas{position:absolute;left:0;top:0;width:100%;height:100%;display:block}",
       ".d3-bar{position:absolute;left:12px;right:12px;bottom:10px;height:3px;border-radius:2px;background:rgba(212,180,122,.16)}",
       ".d3-bar i{display:block;height:100%;width:0;border-radius:2px;background:" + GOLD + "}",
-      ".d3-tips{list-style:none;margin:12px 0 0;padding:0;min-height:calc(3 * 1.35em + 12px)}",
-      ".d3-tips li{display:flex;align-items:center;gap:10px;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;",
+      ".d3-tips{list-style:none;margin:12px 0 0;padding:0 10px;min-height:calc(3 * 22px + 12px)}",
+      ".d3-tips li{display:flex;align-items:center;gap:10px;font-size:16px;line-height:22px;white-space:nowrap;overflow:hidden;",
       "margin:0 0 6px;opacity:0;transform:translateY(6px);transition:opacity .35s ease,transform .35s ease}",
       ".d3-tips li.on{opacity:1;transform:none}",
       ".d3-static .d3-tips li{transition:none}",
-      ".d3-tips b{flex:0 0 auto;width:20px;height:20px;border-radius:50%;border:1.5px solid " + GOLD + ";color:" + GOLD2 + ";",
-      "font:600 12px/17px -apple-system,sans-serif;text-align:center}",
-      ".d3-phone{display:flex;align-items:center;gap:8px;margin-top:6px;padding:9px 10px;border-radius:12px;background:#17161a;",
-      "color:#cfc6b6;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}",
-      ".d3-phone svg{flex:0 0 auto}",
+      // общая левая колонка 22 px: кружки 1/2/3 и значок телефона на одной вертикали, текст — с одной вертикали
+      ".d3-tips b{flex:0 0 22px;width:22px;height:22px;border-radius:50%;border:1.5px solid " + GOLD + ";color:" + GOLD2 + ";",
+      "font:600 12px/19px -apple-system,sans-serif;text-align:center}",
+      ".d3-tips span{min-width:0;overflow:hidden;text-overflow:ellipsis}",
+      ".d3-phone{display:flex;align-items:center;gap:10px;margin-top:6px;padding:9px 10px;border-radius:12px;background:#17161a;",
+      "color:#cfc6b6;font-size:15px;line-height:22px;white-space:nowrap;overflow:hidden}",
+      ".d3-phone svg{flex:0 0 22px;display:block}",
+      ".d3-phone span{min-width:0;overflow:hidden;text-overflow:ellipsis}",
       ".d3-btns{display:flex;gap:10px;margin-top:12px}",
-      ".d3-btns button{flex:1;min-height:48px;border-radius:14px;font:600 16px/1 -apple-system,sans-serif;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}",
-      ".d3-again{background:#211f24;color:" + GOLD2 + ";box-shadow:inset 0 0 0 1px #3a3530}",
-      ".d3-ok{background:linear-gradient(180deg,#f3dcaa," + GOLD + " 60%,#a8854b);color:#1a1408}",
+      ".d3-btns button{min-height:48px;border-radius:14px;font:600 16px/1 -apple-system,sans-serif;border:0;cursor:pointer;-webkit-tap-highlight-color:transparent}",
+      ".d3-again{flex:0 0 auto;padding:0 18px;background:#211f24;color:" + GOLD2 + ";box-shadow:inset 0 0 0 1px #3a3530}",
+      ".d3-ok{flex:1 1 auto;padding:0 12px;background:linear-gradient(180deg,#f3dcaa," + GOLD + " 60%,#a8854b);color:#1a1408}",
       ".d3-again[hidden]{display:none}",
       ".d3-done .d3-ok{animation:d3pulse 1.6s ease-in-out 2}",
       "@keyframes d3pulse{50%{box-shadow:0 0 0 6px rgba(243,220,170,.18)}}"
@@ -201,26 +211,28 @@
       '<div class="d3-card"><div class="d3-kick">Как делать</div><div class="d3-title"></div>' +
       '<div class="d3-stage"><canvas aria-hidden="true"></canvas><div class="d3-bar"><i></i></div></div>' +
       '<ul class="d3-tips"></ul>' +
-      '<div class="d3-phone"><svg width="16" height="22" viewBox="0 0 16 22" aria-hidden="true"><rect x="1.5" y="1" width="13" height="20" rx="3" fill="none" stroke="' + GOLD + '" stroke-width="1.6"/><circle cx="8" cy="17.3" r="1.2" fill="' + GOLD + '"/></svg><span></span></div>' +
+      '<div class="d3-phone"><svg width="22" height="22" viewBox="0 0 22 22" aria-hidden="true"><rect x="4.5" y="1" width="13" height="20" rx="3" fill="none" stroke="' + GOLD + '" stroke-width="1.6"/><circle cx="11" cy="17.3" r="1.2" fill="' + GOLD + '"/></svg><span></span></div>' +
       '<div class="d3-btns"><button type="button" class="d3-again">Ещё раз</button><button type="button" class="d3-ok">Понятно</button></div></div>';
     root.querySelector(".d3-title").textContent = ex.name;
-    root.querySelector(".d3-phone span").textContent = ex.phone;
+    root.querySelector(".d3-phone span").textContent = nb(ex.phone);
     var ul = root.querySelector(".d3-tips"), lis = [];
     ex.tips.forEach(function (tp, i) {
       var li = document.createElement("li"), b = document.createElement("b"), s = document.createElement("span");
-      b.textContent = String(i + 1); s.textContent = tp[1]; li.appendChild(b); li.appendChild(s); ul.appendChild(li); lis.push(li);
+      b.textContent = String(i + 1); s.textContent = nb(tp[1]); li.appendChild(b); li.appendChild(s); ul.appendChild(li); lis.push(li);
     });
     el.appendChild(root);
 
     var c = { id: id, ex: ex, root: root, canvas: root.querySelector("canvas"), bar: root.querySelector(".d3-bar i"),
-      lis: lis, t: 0, last: 0, playing: false, reduce: reduce, mq: mq, dead: false, at: opts.at };
+      lis: lis, t: 0, last: 0, playing: false, reduce: reduce, mq: mq, dead: false, at: opts.at,
+      camFix: opts.cam && opts.cam.length === 2 ? [+opts.cam[0], +opts.cam[1]] : null };   // cam: [азимут, высота] — служебное, для превью
     var again = root.querySelector(".d3-again"), ok = root.querySelector(".d3-ok");
+    ok.textContent = opts.startLabel ? String(opts.startLabel) : typeof opts.onStart === "function" ? "Начать тренировку" : "Понятно";
     if (reduce) again.hidden = true;
     ok.addEventListener("click", function () {
       markSeen(id);
-      var cb = opts.onDone;
+      var cbs = [opts.onDone, opts.onStart];
       destroy(c);
-      if (typeof cb === "function") try { cb(id); } catch (e) { setTimeout(function () { throw e; }); }
+      cbs.forEach(function (cb) { if (typeof cb === "function") try { cb(id); } catch (e) { setTimeout(function () { throw e; }); } });
     });
     again.addEventListener("click", function () { if (!c.dead) replay(c); });
 
@@ -244,6 +256,7 @@
       if (c.playing) c.raf = requestAnimationFrame(c.tick);
     };
 
+    logoReady(function () { if (!c.dead && !c.playing && c.clip) draw(c); });
     load(id).then(function (clip) {
       if (c.dead) return;
       prep(c, clip); size(c);
@@ -278,10 +291,10 @@
     c.bar.style.width = (100 * Math.min(1, t / c.dur)).toFixed(1) + "%";
   }
 
-  /* подготовка: границы, центр, скорость стрелок */
+  /* подготовка: границы и центр сцены */
   function prep(c, clip) {
     c.clip = clip; c.dur = (clip.n - 1) / clip.fps;
-    var p = clip.p, n = clip.n, mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
+    var p = clip.p, mn = [1e9, 1e9, 1e9], mx = [-1e9, -1e9, -1e9];
     for (var i = 0; i < p.length; i += 3) for (var k = 0; k < 3; k++) { var v = p[i + k]; if (v < mn[k]) mn[k] = v; if (v > mx[k]) mx[k] = v; }
     c.center = [(mn[0] + mx[0]) / 2, Math.max(0.35, (mn[1] + mx[1]) / 2 * 0.9), (mn[2] + mx[2]) / 2];
     var r = 0;
@@ -291,24 +304,7 @@
     }
     var pr = clip.props || {};
     if (pr.wall != null) r = Math.max(r, 1.05);
-    c.radius = r + 0.16;
-    // скорость сустава для стрелок (м/с, по вертикали), сглаженная
-    c.vy = null;
-    var a = c.ex.arrow;
-    if (a) {
-      var vy = new Float32Array(n), y = new Float32Array(n);
-      for (var f = 0; f < n; f++) y[f] = jointY(p, f, a);
-      for (f = 0; f < n; f++) vy[f] = (y[Math.min(n - 1, f + 1)] - y[Math.max(0, f - 1)]) * clip.fps / ((f > 0 && f < n - 1) ? 2 : 1);
-      var sm = new Float32Array(n);
-      for (f = 0; f < n; f++) { var s = 0, w = 0; for (var o = -2; o <= 2; o++) { var g = f + o; if (g < 0 || g >= n) continue; s += vy[g]; w++; } sm[f] = s / w; }
-      c.vy = sm;
-    }
-  }
-  function jointY(p, f, a) {
-    var b = f * 45;
-    if (a === "hip") return (p[b + 7 * 3 + 1] + p[b + 8 * 3 + 1]) / 2;
-    if (a === "chest") return (p[b + 1 * 3 + 1] + p[b + 2 * 3 + 1]) / 2;
-    return p[b + JI[a] * 3 + 1];
+    c.radius = r + 0.2;
   }
 
   function size(c) {
@@ -333,12 +329,31 @@
   }
   function mid(a, b) { return [(a[0] + b[0]) / 2, (a[1] + b[1]) / 2, (a[2] + b[2]) / 2]; }
 
+  /* ---------- логотип за фигурой (один на все показы; не загрузился — рисуем без него) ---------- */
+  var logo = null, logoOk = false, logoCbs = [];
+  function logoReady(cb) {
+    if (logoOk) return;
+    logoCbs.push(cb);
+    if (logo) return;
+    try {
+      logo = new Image();
+      logo.onload = function () { logoOk = !!logo.naturalWidth; var a = logoCbs.splice(0); if (logoOk) a.forEach(function (f) { try { f(); } catch (e) {} }); };
+      logo.onerror = function () { logoCbs.length = 0; };
+      logo.src = BASE + "../logo-mark.png?v=" + VER;
+    } catch (e) { logo = {}; }
+  }
+
+  /* ---------- объём: радиусы (м) ---------- */
+  var RB = { sh: 0.024, hp: 0.026, core: 0.026, neck: 0.021, arm: 0.027, leg: 0.032, foot: 0.02 };
+  var RJ = [0.105, 0.043, 0.043, 0.037, 0.037, 0.033, 0.033, 0.044, 0.044, 0.041, 0.041, 0.034, 0.034, 0.023, 0.023];
+
   /* ---------- отрисовка кадра ---------- */
   function draw(c) {
     var ctx = c.ctx; if (!ctx || !c.clip || !c.W) return;
-    var W = c.W, H = c.H, t = c.t, dpr = c.dpr;
-    var cm = c.stillMode ? [0, c.ex.still != null ? c.ex.still : c.ex.cam[c.ex.cam.length - 1][1], c.ex.cam[c.ex.cam.length - 1][2]]
-      : camAt(c.ex.cam, t * 5 / Math.max(c.dur, 0.1));
+    var W = c.W, H = c.H, t = c.t, dpr = c.dpr, cams = c.ex.cam;
+    var cm = c.camFix ? [0, c.camFix[0], c.camFix[1]]
+      : c.stillMode ? [0, c.ex.still != null ? c.ex.still : cams[cams.length - 1][1], cams[cams.length - 1][2]]
+      : camAt(cams, t);
     var yaw = cm[1] * Math.PI / 180, pit = cm[2] * Math.PI / 180;
     var fov = 38 * Math.PI / 180, F = Math.min(W, H) / 2 / Math.tan(fov / 2);
     var dist = c.radius / Math.sin(fov / 2) * 0.98;
@@ -355,10 +370,16 @@
     }
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.globalAlpha = 1;
     ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
     var g = ctx.createRadialGradient(cx, cy * 0.9, 0, cx, cy * 0.9, Math.max(W, H) * 0.6);
     g.addColorStop(0, "rgba(212,180,122,0.10)"); g.addColorStop(1, "rgba(212,180,122,0)");
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    // логотип «Кода тела» — блёкло, по центру за фигурой
+    if (logoOk) {
+      var lh = H * 0.74, lw = lh * logo.naturalWidth / logo.naturalHeight;
+      ctx.globalAlpha = 0.075; ctx.drawImage(logo, (W - lw) / 2, (H - lh) / 2, lw, lh); ctx.globalAlpha = 1;
+    }
     ctx.lineCap = "round"; ctx.lineJoin = "round";
 
     // пол: тонкая золотая сетка, гаснет к краям
@@ -382,67 +403,101 @@
 
     var pts = pose(c, t), sp = pts.map(P);
 
-    // тень: кости, спроецированные на пол
+    // тень на полу: мягкое пятно + кости, спроецированные на пол (толщина — по радиусу кости)
     var cen = pts[16], cs = P([cen[0], 0, cen[2]]);
-    var sg = ctx.createRadialGradient(cs[0], cs[1], 0, cs[0], cs[1], 0.75 * cs[3]);
+    var sg = ctx.createRadialGradient(cs[0], cs[1], 0, cs[0], cs[1], 0.8 * cs[3]);
     sg.addColorStop(0, "rgba(0,0,0,0.45)"); sg.addColorStop(1, "rgba(0,0,0,0)");
     ctx.save(); ctx.translate(cs[0], cs[1]); ctx.scale(1, 0.35 + 0.6 * Math.abs(Math.sin(pit))); ctx.translate(-cs[0], -cs[1]);
-    ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(cs[0], cs[1], 0.75 * cs[3], 0, 6.2832); ctx.fill(); ctx.restore();
-    ctx.strokeStyle = "rgba(0,0,0,0.42)";
+    ctx.fillStyle = sg; ctx.beginPath(); ctx.arc(cs[0], cs[1], 0.8 * cs[3], 0, 6.2832); ctx.fill(); ctx.restore();
     for (var i = 0; i < BONES.length; i++) {
       var p1 = pts[BONES[i][0]], p2 = pts[BONES[i][1]];
+      var hgt = Math.min(p1[1], p2[1]), sa = Math.max(0.08, 0.36 - hgt * 0.35);     // выше от пола — бледнее
       var s1 = P([p1[0], 0.002, p1[2]]), s2 = P([p2[0], 0.002, p2[2]]);
-      ctx.lineWidth = 0.07 * (s1[3] + s2[3]) / 2;
+      ctx.strokeStyle = "rgba(0,0,0," + sa.toFixed(3) + ")";
+      ctx.lineWidth = 2.6 * RB[BONES[i][2]] * (s1[3] + s2[3]) / 2;
       ctx.beginPath(); ctx.moveTo(s1[0], s1[1]); ctx.lineTo(s2[0], s2[1]); ctx.stroke();
     }
     var hs = P([pts[0][0], 0.002, pts[0][2]]);
-    ctx.fillStyle = "rgba(0,0,0,0.38)"; ctx.beginPath(); ctx.arc(hs[0], hs[1], 0.09 * hs[3], 0, 6.2832); ctx.fill();
+    ctx.fillStyle = "rgba(0,0,0," + Math.max(0.08, 0.34 - pts[0][1] * 0.3).toFixed(3) + ")";
+    ctx.beginPath(); ctx.arc(hs[0], hs[1], 0.1 * hs[3], 0, 6.2832); ctx.fill();
 
-    // фигура: кости, суставы и голова — от дальних к ближним
+    // фигура: кости-капсулы, суставы-шары, голова — от дальних к ближним
     var hl = {}, hj = {}, pulse = 0.5 + 0.5 * Math.sin(t * 5);
     (c.ex.hl || []).forEach(function (k) { hl[k] = 1; });
     (c.ex.hj || []).forEach(function (k) { hj[JI[k]] = 1; });
     var items = [], zmin = 1e9, zmax = -1e9;
     for (i = 0; i < 15; i++) { zmin = Math.min(zmin, sp[i][2]); zmax = Math.max(zmax, sp[i][2]); }
     var zr = Math.max(0.3, zmax - zmin);
-    for (i = 0; i < BONES.length; i++) items.push({ k: 0, b: BONES[i], z: (sp[BONES[i][0]][2] + sp[BONES[i][1]][2]) / 2 + 0.01 });
-    for (i = 1; i < 15; i++) items.push({ k: 1, j: i, z: sp[i][2] - 0.02 });
-    items.push({ k: 2, z: sp[0][2] });
+    for (i = 0; i < BONES.length; i++) items.push({ k: 0, b: BONES[i], z: (sp[BONES[i][0]][2] + sp[BONES[i][1]][2]) / 2 + 0.015 });
+    for (i = 0; i < 15; i++) items.push({ k: 1, j: i, z: sp[i][2] - (i ? 0.02 : 0) });
     items.sort(function (x, y) { return y.z - x.z; });
     for (i = 0; i < items.length; i++) {
-      var it = items[i], depth = Math.max(0, Math.min(1, (it.z - zmin) / zr)), dim = 1 - depth * 0.45;
+      var it = items[i], depth = Math.max(0, Math.min(1, (it.z - zmin) / zr)), dim = 1 - depth * 0.4;
       if (it.k === 0) {
-        var a1 = sp[it.b[0]], a2 = sp[it.b[1]], sc = (a1[3] + a2[3]) / 2, h = hl[it.b[2]];
-        var wdt = (it.b[2] === "neck" ? 0.026 : 0.034) * sc;
-        if (h) {
-          ctx.strokeStyle = "rgba(243,220,170," + (0.10 + 0.10 * pulse) * dim + ")"; ctx.lineWidth = wdt * 2.6;
-          line(ctx, a1, a2);
+        var a1 = sp[it.b[0]], a2 = sp[it.b[1]], rb = RB[it.b[2]], h = hl[it.b[2]];
+        if (h) {   // мягкое свечение рабочих костей
+          ctx.strokeStyle = "rgba(243,220,170," + ((0.07 + 0.07 * pulse) * dim).toFixed(3) + ")";
+          ctx.lineWidth = rb * 4.4 * (a1[3] + a2[3]) / 2; line(ctx, a1, a2);
         }
-        ctx.strokeStyle = shade(h ? GOLD2 : GOLD, dim); ctx.lineWidth = wdt; line(ctx, a1, a2);
-        ctx.strokeStyle = "rgba(255,244,216," + (0.35 * dim) + ")"; ctx.lineWidth = wdt * 0.28; line(ctx, a1, a2);
-      } else if (it.k === 1) {
-        var q = sp[it.j], rj = (it.j === 13 || it.j === 14 ? 0.018 : 0.03) * q[3], hh = hj[it.j];
-        if (hh) { ctx.fillStyle = "rgba(243,220,170," + (0.16 + 0.14 * pulse) * dim + ")"; dot(ctx, q, rj * 2.3); }
-        ctx.fillStyle = BG; dot(ctx, q, rj + 1.4 * dpr);
-        ctx.fillStyle = shade(GOLD2, dim); dot(ctx, q, rj);
+        capsule(ctx, a1, a2, rb * a1[3], rb * a2[3], dim, h);
       } else {
-        var hd = sp[0], rh = 0.105 * hd[3];
-        ctx.fillStyle = "#17161a"; dot(ctx, hd, rh);
-        ctx.strokeStyle = shade(GOLD, dim); ctx.lineWidth = 0.022 * hd[3]; ctx.beginPath(); ctx.arc(hd[0], hd[1], rh, 0, 6.2832); ctx.stroke();
-        ctx.fillStyle = "rgba(243,220,170," + 0.10 * dim + ")"; dot(ctx, hd, rh * 0.62);
+        var q = sp[it.j], rj = RJ[it.j] * q[3];
+        if (hj[it.j]) { ctx.fillStyle = "rgba(243,220,170," + ((0.12 + 0.12 * pulse) * dim).toFixed(3) + ")"; dot(ctx, q, rj * 2.1); }
+        ball(ctx, q[0], q[1], rj, it.j === 0 ? dim * 0.92 : dim, it.j === 0);
       }
     }
 
-    // красные стрелки вниз/вверх — только в движении
-    if (c.vy && !c.stillMode) {
-      var f = Math.max(0, Math.min(c.clip.n - 1, Math.round(t * c.clip.fps))), v = c.vy[f];
-      var al2 = Math.max(0, Math.min(1, (Math.abs(v) - 0.12) / 0.25));
-      if (al2 > 0.02) {
-        var an = c.ex.arrow, base = an === "hip" ? pts[16] : an === "chest" ? pts[15] : pts[JI[an]];
-        var off = 0.42, ap = P([base[0] + rt[0] * off, base[1], base[2] + rt[2] * off]);
-        arrow(ctx, ap[0], ap[1], v < 0 ? 1 : -1, 0.16 * ap[3], al2);
-      }
-    }
+    if (c.ex.hold != null) holdClock(c, ctx, t - c.ex.hold);
+  }
+
+  /* кость — капсула: свет сверху-слева, тёмный край, толщина с перспективой */
+  function capsule(ctx, a, b, ra, rb, dim, hi) {
+    var dx = b[0] - a[0], dy = b[1] - a[1], L = Math.sqrt(dx * dx + dy * dy);
+    if (L < 0.5) { ball(ctx, a[0], a[1], Math.max(ra, rb), dim); return; }
+    var nx = -dy / L, ny = dx / L;
+    if (nx * -0.45 + ny * -0.9 < 0) { nx = -nx; ny = -ny; }        // n — в сторону света
+    var rm = (ra + rb) / 2, mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
+    var g = ctx.createLinearGradient(mx + nx * rm, my + ny * rm, mx - nx * rm, my - ny * rm);
+    g.addColorStop(0, shade(GOLD, 0.8 * dim));
+    g.addColorStop(0.3, shade(hi ? HI : GOLD2, dim));
+    g.addColorStop(0.62, shade(GOLD, 0.93 * dim));
+    g.addColorStop(1, shade(DEEP, dim));
+    var an = Math.atan2(dy, dx);
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(a[0], a[1], Math.max(0.5, ra), an + Math.PI / 2, an + Math.PI * 1.5);
+    ctx.arc(b[0], b[1], Math.max(0.5, rb), an - Math.PI / 2, an + Math.PI / 2);
+    ctx.closePath(); ctx.fill();
+  }
+  /* сустав/голова — шар: блик сверху-спереди, мягкое затемнение к краю */
+  function ball(ctx, x, y, r, dim, head) {
+    r = Math.max(0.8, r);
+    var g = ctx.createRadialGradient(x - r * 0.36, y - r * 0.42, r * 0.06, x, y, r);
+    g.addColorStop(0, shade(HI, dim));
+    g.addColorStop(head ? 0.3 : 0.32, shade(GOLD2, dim));
+    g.addColorStop(head ? 0.72 : 0.7, shade(GOLD, 0.9 * dim));
+    g.addColorStop(1, shade(DEEP, dim));
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+  }
+  /* счётчик удержания: тихо, золотом, в правом верхнем углу сцены */
+  function holdClock(c, ctx, s) {
+    if (s < 0) return;
+    var dpr = c.dpr, sec = Math.floor(s + 1e-6), al = Math.min(1, s / 0.3 + 0.35);
+    var txt = Math.floor(sec / 60) + ":" + (sec % 60 < 10 ? "0" : "") + (sec % 60);
+    var x = c.W - 14 * dpr, y = 14 * dpr;
+    ctx.save();
+    ctx.globalAlpha = al;
+    ctx.textAlign = "right"; ctx.textBaseline = "top";
+    ctx.fillStyle = "rgba(179,173,164,0.9)"; ctx.font = "500 " + (12 * dpr) + "px -apple-system,'SF Pro Text','Segoe UI',Roboto,sans-serif";
+    ctx.fillText("держим", x, y);
+    ctx.fillStyle = GOLD2; ctx.font = (22 * dpr) + "px 'Russo One',-apple-system,'SF Pro Display',sans-serif";
+    ctx.fillText(txt, x, y + 16 * dpr);
+    // тонкое кольцо секунды слева от цифр
+    var w = ctx.measureText(txt).width, rr = 7 * dpr, ccx = x - w - 12 * dpr, ccy = y + 16 * dpr + 11 * dpr, fr = s - sec;
+    ctx.lineWidth = 1.6 * dpr; ctx.strokeStyle = "rgba(212,180,122,0.25)";
+    ctx.beginPath(); ctx.arc(ccx, ccy, rr, 0, 6.2832); ctx.stroke();
+    ctx.strokeStyle = GOLD; ctx.beginPath(); ctx.arc(ccx, ccy, rr, -Math.PI / 2, -Math.PI / 2 + 6.2832 * fr); ctx.stroke();
+    ctx.restore();
   }
   function norm3(v) { var l = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; }
   function line(ctx, a, b) { ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke(); }
@@ -450,14 +505,6 @@
   function shade(hex, k) {
     var r = parseInt(hex.substr(1, 2), 16), g = parseInt(hex.substr(3, 2), 16), b = parseInt(hex.substr(5, 2), 16);
     return "rgb(" + Math.round(15 + (r - 15) * k) + "," + Math.round(15 + (g - 15) * k) + "," + Math.round(18 + (b - 18) * k) + ")";
-  }
-  function arrow(ctx, x, y, dir, len, al) {   // dir 1 — вниз, -1 — вверх
-    ctx.save(); ctx.globalAlpha = al; ctx.strokeStyle = RED; ctx.fillStyle = RED;
-    ctx.lineWidth = Math.max(2, len * 0.16); ctx.lineCap = "round";
-    var y0 = y - dir * len / 2, y1 = y + dir * len / 2, hw = len * 0.32;
-    ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1 - dir * hw * 0.6); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(x - hw, y1 - dir * hw); ctx.lineTo(x, y1 + dir * 2); ctx.lineTo(x + hw, y1 - dir * hw); ctx.closePath(); ctx.fill();
-    ctx.restore();
   }
   function drawWall(ctx, P, z, dpr) {
     var x0 = -0.75, x1 = 0.75, h = 1.7;

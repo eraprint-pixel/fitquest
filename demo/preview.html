@@ -31,22 +31,26 @@ header button { margin-top: 10px; min-height: 40px; padding: 0 14px; border-radi
 <script>
 (function () {
   // служебное: ?modal=1 — как в приложении; ?ex=squat,lunge — только эти; ?at=1.5 — стоп-кадр; ?times=0.5,2,4 — несколько стоп-кадров; ?reduced=1
+  // ?cams=35:10,90:8 — те же стоп-кадры с неподвижной камерой [азимут:высота] (для контактных листов)
   var q = new URLSearchParams(location.search), at = q.get("at"), only = q.get("ex"), reduced = q.get("reduced");
   var times = q.get("times") ? q.get("times").split(",").map(Number) : [at != null ? +at : undefined];
+  var cams = q.get("cams") ? q.get("cams").split(",").map(function (x) { return x.split(":").map(Number); }) : [null];
   var ids = only ? only.split(",") : Demo3D.list, grid = document.getElementById("grid"), players = [];
-  ids.forEach(function (id) { times.forEach(function (tm) {
+  ids.forEach(function (id) { cams.forEach(function (cm) { times.forEach(function (tm) {
     var cell = document.createElement("div"); cell.className = "cell";
-    var tag = document.createElement("div"); tag.className = "id"; tag.textContent = id + (tm != null ? " · " + tm + " с" : ""); cell.appendChild(tag);
+    var tag = document.createElement("div"); tag.className = "id";
+    tag.textContent = id + (tm != null ? " · " + tm + " с" : "") + (cm ? " · " + cm[0] + "°/" + cm[1] + "°" : ""); cell.appendChild(tag);
     grid.appendChild(cell);
-    var p = Demo3D.mount(cell, id, { noButtons: true, at: tm, reduced: reduced != null ? reduced === "1" : undefined });
+    var p = Demo3D.mount(cell, id, { noButtons: true, at: tm, cam: cm || undefined, reduced: reduced != null ? reduced === "1" : undefined });
     if (p) { players.push(p); cell.addEventListener("click", function () { p.replay(); }); }
-  }); });
+  }); }); });
   document.getElementById("modal").addEventListener("click", function () {
     Demo3D.show(document.body, only ? ids[0] : "squat", { onDone: function (id) { console.log("onDone", id, Demo3D.seen(id)); } });
   });
   // ?modal=1 — сразу открыть первый ?ex как в приложении (для скриншотов; с ?at — стоп-кадр)
   if (q.get("modal")) Demo3D.show(document.body, ids[0], { at: at != null ? +at : undefined, reduced: reduced != null ? reduced === "1" : undefined,
-    onDone: function (id) { console.log("onDone", id, Demo3D.seen(id)); } });
+    onDone: function (id) { console.log("onDone", id, Demo3D.seen(id)); },
+    onStart: q.get("start") ? function (id) { console.log("onStart", id); } : undefined });
   window.__players = players;
 })();
 </script>

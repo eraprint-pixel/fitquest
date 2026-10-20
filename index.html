@@ -89,19 +89,39 @@ h2 { font-family: var(--disp); font-size: 13px; letter-spacing: .18em; text-tran
 .quest .q-sub { font-size: 12px; color: var(--muted); }
 .quest.done { border-color: var(--gold); box-shadow: 0 0 22px rgba(212,180,122,.2); }
 
-/* две колонки: «Ротация с колена» и «Отведение бедра» в 13 px (~120 px) не влезают в треть экрана 360 px (98 px) */
-.ex-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+/* три колонки (решение Эрнеста 20.10): длинные имена — в две строки внутри плитки */
+.ex-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
 .ex { min-height: 48px; background: var(--card); border: 1.5px solid var(--line); border-radius: 14px; padding: 8px 6px; text-align: center; }
 /* название — в одну строку на 360 px: ширина плитки ~161 px, самое длинное имя ~120 px */
-.ex .e-ico { font-size: 20px; line-height: 40px; height: 40px; } .ex .e-ico img { width: 40px; height: 40px; display: block; margin: 0 auto; }   /* значки ex-icons/; нет файла — эмодзи */ .ex .e-name { font-family: var(--disp); font-size: 13px; margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ex .e-skill { display: none; }
+.ex .e-ico { font-size: 20px; line-height: 40px; height: 40px; } .ex .e-ico img { width: 40px; height: 40px; display: block; margin: 0 auto; }   /* значки ex-icons/; нет файла — эмодзи */ .ex .e-name { font-family: var(--disp); font-size: 13px; line-height: 1.15; margin-top: 3px; min-height: 2.3em; display: flex; align-items: center; justify-content: center; overflow-wrap: anywhere; hyphens: auto; } .ex .e-skill { display: none; }
 /* экран тренировки по дизайн-стандартам: кнопки ≥ 44 px, текст ≥ 13 px, серый — светлый */
 #homeMenu { min-height: 44px; }
+/* в Telegram «назад» — только системная кнопка (дизайн-стандарты); своя «‹ Меню» — вне Telegram */
+body.in-tg #homeMenu, body.in-tg #rsBack { display: none; }
 #modeSeg button, #voiceSeg button { min-height: 44px; font-size: 13px; color: #b3ada4; }
 #modeSeg button.on, #voiceSeg button.on { color: #1a140b; }
 #modeNote, #voiceNote { font-size: 13px; color: #b3ada4; }
 #exTip, #demoBtn, #howBtn, #homeMenu { color: #b3ada4; }
 #demoBtn, #howBtn { min-height: 46px; }
-#home .brand .app { font-size: 13px; }
+/* «Начать» и «Как делать» всегда под пальцем — прилипают к низу экрана, листать до конца не нужно */
+.ex-act { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 18px 16px calc(12px + var(--safe-bot)); background: linear-gradient(180deg, rgba(11,11,11,0), var(--bg) 30%); }   /* fixed, не sticky: html и body с overflow-x — sticky не держится */
+#home { padding-bottom: calc(96px + var(--safe-bot)); }
+.ex-act .btn { margin: 0; min-height: 50px; white-space: nowrap; } .ex-act #startBtn { padding: 12px 8px; font-size: 15px; letter-spacing: .01em; } .ex-act #howBtn { width: auto; padding: 11px 12px; font-size: 14px; color: var(--gold2); border-color: #3a3530; background: #17161a; }
+/* шапка тренировки: крупный логотип с круглым свечением и искрами вверх — как заставка и прожарка */
+#home .tr-brand { margin: 0 0 14px; }
+#home .tr-logo { position: relative; width: 112px; margin: 2px auto 0; }
+#home .tr-logo::before { content: ""; position: absolute; left: -46px; right: -46px; top: -30px; bottom: -30px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(closest-side, rgba(212,180,122,.30), rgba(212,180,122,.08) 60%, transparent); }
+#home .tr-logo img { position: relative; display: block; width: 100%; height: auto; filter: drop-shadow(0 0 14px rgba(243,220,170,.35)); }
+#home .tr-logo .rs-spark { bottom: 46px; }
+#ktLock { position: fixed; inset: 0; z-index: 9500; display: flex; align-items: center; justify-content: center; padding: 24px 16px; background: var(--bg); text-align: center; }
+#ktLock .kl-box { width: 100%; max-width: 360px; } #ktLock .tr-logo { position: relative; width: 112px; margin: 0 auto 22px; }
+#ktLock .tr-logo::before { content: ""; position: absolute; left: -46px; right: -46px; top: -30px; bottom: -30px; border-radius: 50%; background: radial-gradient(closest-side, rgba(212,180,122,.30), rgba(212,180,122,.08) 60%, transparent); }
+#ktLock .tr-logo img { position: relative; display: block; width: 100%; height: auto; }
+#ktLock .kl-t { font-family: var(--disp); font-size: 17px; white-space: nowrap; color: var(--gold2); } #ktLock .kl-s { font-size: 15px; color: #b3ada4; margin-top: 8px; }
+#ktLock .btn { margin-top: 22px; text-decoration: none; text-align: center; }
+#home .brand .app { font-size: 18px; letter-spacing: .38em; padding-left: .38em; margin-top: 8px; }
+@media (prefers-reduced-motion: reduce) { #home .tr-logo .rs-spark { display: none; } }
 #home .rank, #home .q-sub { font-size: 13px; }
 #home .stat span, #home .skill-row span { font-size: 13px; white-space: nowrap; }
 #home .stat span, #home .q-sub, #hNext { color: #b3ada4; }
@@ -1299,7 +1319,7 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
 <!-- ТРЕНИРОВКА: главный экран -->
 <section class="screen" id="home">
   <div class="rs-head" style="margin-bottom:0"><button id="homeMenu">‹ Меню</button></div>
-  <div class="brand"><img src="logo.png" alt="Код тела"><div class="app goldtext">ТРЕНИРОВКА</div></div>
+  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"><i class="rs-spark" style="left:18%"></i><i class="rs-spark" style="left:44%;animation-delay:.6s"></i><i class="rs-spark" style="left:70%;animation-delay:1.2s"></i><i class="rs-spark" style="left:30%;animation-delay:1.8s"></i></div><div class="app goldtext">ТРЕНИРОВКА</div></div>
 
   <div class="hero">
     <div class="hero-top">
@@ -1352,11 +1372,13 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
   </div>
   <div class="seg-note" id="voiceNote"></div>
 
-  <button class="btn btn-gold" id="startBtn">НАЧАТЬ ТРЕНИРОВКУ</button>
-  <button class="btn btn-ghost" id="howBtn">▶&#xFE0E; Как делать</button>
-  <button class="btn btn-ghost" id="demoBtn">Демо без камеры</button>
   <div class="tip" id="exTip"></div>
   <div id="camErr"></div>
+  <button class="btn btn-ghost" id="demoBtn">Демо без камеры</button>
+  <div class="ex-act">
+    <button class="btn btn-gold" id="startBtn">НАЧАТЬ ТРЕНИРОВКУ</button>
+    <button class="btn btn-ghost" id="howBtn">▶&#xFE0E; Как делать</button>
+  </div>
 </section>
 
 <!-- ТРЕНИРОВКА -->
@@ -1499,7 +1521,7 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
 </section>
 
 <script src="avatar.js?v=15"></script>
-<script src="demo/demo3d.js?v=2"></script>
+<script src="demo/demo3d.js?v=3"></script>
 <script type="module">
 import { EX, EX_ORDER, RepCounter } from "./counter.js?v=21";   // v — поднимать при каждой правке counter.js (кэш WebView Telegram)
 // ВЫКЛЮЧАТЕЛЬ ИГРЫ (решение Эрнеста): игра (хаб, приказ дня, сундук, серия, звания, лига, сюжет) — только локально у Эрнеста.
@@ -1535,13 +1557,14 @@ const fresh = () => ({ xp: 0, skills: { str: 0, legs: 0, end: 0 }, reps: 0, best
 let S = fresh();
 const tg = window.Telegram?.WebApp;
 const inTG = !!(tg && tg.initData);
+if (inTG) document.body.classList.add("in-tg");
 
 function load() {
   try { const v = JSON.parse(localStorage.getItem(KEY) || "null"); if (v) S = { ...fresh(), ...v }; } catch (e) {}
   if (inTG && tg.CloudStorage) {             // в Telegram прогресс хранится в аккаунте — не теряется на другом телефоне
     tg.CloudStorage.getItem(KEY, (err, val) => {
       if (err || !val) return;
-      try { const c = JSON.parse(val); if ((c.xp || 0) > (S.xp || 0)) { S = { ...fresh(), ...c }; render(); } } catch (e) {}
+      try { const c = JSON.parse(val); if ((c.xp || 0) > (S.xp || 0)) { S = { ...fresh(), ...c }; render(); mnRender(); } } catch (e) {}   // и плитку меню — иначе «Уровень 1 · 0 XP» до первого перехода
     });
   }
 }
@@ -2261,12 +2284,12 @@ function stop(showResult = true) {
 }
 // 3D-демо (demo/demo3d.js): перед первым подходом нового упражнения — один раз, потом по кнопке «▶ Как делать»
 const D3 = () => window.Demo3D, d3Open = () => !!document.querySelector(".d3-root");
-const startSet = () => { const d = D3(); if (d?.has(S.ex) && !d.seen(S.ex)) d.show(document.body, S.ex, { onDone: () => start(false) }); else start(false); };
+const startSet = () => { const d = D3(); if (d?.has(S.ex) && !d.seen(S.ex)) d.show(document.body, S.ex, { onStart: () => start(false) }); else start(false); };
 $("startBtn").onclick = startSet;
-$("howBtn").onclick = () => D3()?.show(document.body, S.ex);
+$("howBtn").onclick = () => D3()?.show(document.body, S.ex, { onStart: () => start(false) });   // «Ещё раз» / «Начать тренировку»
 $("demoBtn").onclick = () => start(true);
-// «Демо без камеры» — только тестерам: бот открывает им приложение со ссылкой ?t=1 (и в обычном браузере — для проверки)
-if (inTG && !new URLSearchParams(location.search).has("t")) $("demoBtn").style.display = "none";
+// «Демо без камеры» — только Эрнесту, id 606925290 (решение 20.10; и в обычном браузере — для проверки)
+if (inTG && tg.initDataUnsafe?.user?.id !== 606925290) $("demoBtn").style.display = "none";
 $("stopBtn").onclick = () => stop(true);
 $("againBtn").onclick = startSet;
 $("homeBtn").onclick = () => { Coach.stop(); openTrain(); };
@@ -3488,12 +3511,33 @@ async function rsInit() {
   const q = new URLSearchParams(location.search);
   if (q.get("ex") && q.get("n") && rsMissionSet(q.get("ex"), q.get("n"), q.get("mission")))
     setTimeout(() => rsToast(`💪 Бонус-миссия: <b>${RS.mission.n} ${RS_EX[RS.mission.ex]}</b>. Жми «Начать тренировку»`), 900);
-  if (!inTG) return;
+  if (!inTG) return ktGate(null);
   const want = q.get("tab") === "roast";
   try {
     const m = await rsApi("/me", {}); RS.allowed = !!m.allowed; RS.tone = m.tone;
+    ktGate(m);
     if (RS.allowed) { $("mnRoast").style.display = ""; rsMe(m); if (want) rsOpen(); }
-  } catch (e) { if (want) { rsOpen(); rsResult({ status: "error" }); } }
+  } catch (e) { ktGate(undefined); if (want) { rsOpen(); rsResult({ status: "error" }); } }
+}
+// Доступ к приложению (решение Эрнеста 20.10): только тем, кому бот даёт кнопку — сейчас Эрнест, Лена, Паша; потом участники.
+// Сервер отвечает app: true/false по подписи Telegram. Вне Telegram — заглушка (кроме localhost и *.test для проверок).
+// Сервер недоступен — пускаем, если доступ подтверждался за последние 7 дней. Старый сервер без поля app — не мешаем.
+function ktGate(m) {
+  const h = location.hostname;
+  if (h === "localhost" || h === "127.0.0.1" || h.endsWith(".test")) return;
+  const K = "kt_access_ok";
+  if (m && m.app === true) { try { localStorage.setItem(K, String(Date.now())); } catch (e) {} return; }
+  if (m && m.app === undefined && m.ok) return;
+  if (m === undefined) { let t = 0; try { t = +localStorage.getItem(K) || 0; } catch (e) {} if (Date.now() - t < 7 * 864e5) return; }
+  const retry = m === undefined && inTG;
+  const ov = document.createElement("div"); ov.id = "ktLock";
+  ov.innerHTML = `<div class="kl-box"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div>
+    <div class="kl-t">Для участников «Кода тела»</div>
+    <div class="kl-s">${retry ? "Нет связи с сервером. Проверь интернет" : "Открой приложение через бота"}</div>
+    ${retry ? `<button class="btn btn-gold" id="klRetry">ПОВТОРИТЬ</button>` : `<a class="btn btn-gold" href="https://t.me/project_kod_tela_bot">ОТКРЫТЬ БОТА</a>`}</div>`;
+  document.body.appendChild(ov);
+  if (retry) $("klRetry").onclick = () => location.reload();
+  else if (inTG) ov.querySelector("a").onclick = e => { e.preventDefault(); tg.close(); };
 }
 function rsMe(m, quiet = false) {           // свежие данные с сервера: история, неделя, значки → экран, меню и игра
   if (!m || m.allowed === false) return;
