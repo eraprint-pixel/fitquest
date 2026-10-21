@@ -13,7 +13,7 @@
  * Работает без сборки, без CDN, классическим <script>. Повторный show() сам закрывает прежний. */
 (function () {
   "use strict";
-  var BASE = "demo/", VER = "7";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
+  var BASE = "demo/", VER = "9";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
   try { if (document.currentScript && document.currentScript.src) BASE = new URL(".", document.currentScript.src).href; } catch (e) {}
 
   var GOLD = "#d4b47a", GOLD2 = "#f3dcaa", HI = "#fff4da", DEEP = "#5e4a2a", BG = "#0f0f12";
@@ -316,7 +316,7 @@
     }
     var pr = clip.props || {};
     if (pr.wall != null) r = Math.max(r, 1.05);
-    c.radius = r + 0.2;
+    c.radius = Math.max(1.22, r + 0.2);          // один масштаб на все упражнения — человечек везде одного размера
   }
 
   function size(c) {
@@ -391,7 +391,7 @@
       : c.stillMode ? [0, c.ex.still != null ? c.ex.still : cams[cams.length - 1][1], cams[cams.length - 1][2]]
       : camAt(cams, t);
     var yaw = cm[1] * Math.PI / 180, pit = cm[2] * Math.PI / 180;
-    var fov = 38 * Math.PI / 180, F = Math.min(W, H) / 2 / Math.tan(fov / 2);
+    var fov = 24 * Math.PI / 180, F = Math.min(W, H) / 2 / Math.tan(fov / 2);
     var dist = c.radius / Math.sin(fov / 2) * 0.98;
     var T = c.center;
     var C = [T[0] + dist * Math.sin(yaw) * Math.cos(pit), T[1] + dist * Math.sin(pit), T[2] + dist * Math.cos(yaw) * Math.cos(pit)];
@@ -470,14 +470,9 @@
       var it = items[i], depth = Math.max(0, Math.min(1, (it.z - zc) / 1.6 + 0.5)), dim = 1 - depth * 0.3;
       if (it.k === 0) {
         var a1 = sp[it.b[0]], a2 = sp[it.b[1]], rb = RB[it.b[2]], h = hl[it.b[2]];
-        if (h) {   // мягкое свечение рабочих костей
-          ctx.strokeStyle = "rgba(243,220,170," + ((0.07 + 0.07 * pulse) * dim).toFixed(3) + ")";
-          ctx.lineWidth = rb * 4.4 * (a1[3] + a2[3]) / 2; line(ctx, a1, a2);
-        }
-        capsule(ctx, a1, a2, rb * a1[3], rb * a2[3], dim, h);
+        capsule(ctx, a1, a2, rb * a1[3], rb * a2[3], dim, false);       // человечек везде одинаковый: без подсветки «рабочих» костей
       } else {
         var q = sp[it.j], rj = RJ[it.j] * q[3];
-        if (hj[it.j]) { ctx.fillStyle = "rgba(243,220,170," + ((0.12 + 0.12 * pulse) * dim).toFixed(3) + ")"; dot(ctx, q, rj * 2.1); }
         ball(ctx, q[0], q[1], rj, it.j === 0 ? dim * 0.92 : dim, it.j === 0);
       }
     }
