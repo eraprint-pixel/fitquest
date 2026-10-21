@@ -13,7 +13,7 @@
  * Работает без сборки, без CDN, классическим <script>. Повторный show() сам закрывает прежний. */
 (function () {
   "use strict";
-  var BASE = "demo/", VER = "5";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
+  var BASE = "demo/", VER = "6";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
   try { if (document.currentScript && document.currentScript.src) BASE = new URL(".", document.currentScript.src).href; } catch (e) {}
 
   var GOLD = "#d4b47a", GOLD2 = "#f3dcaa", HI = "#fff4da", DEEP = "#5e4a2a", BG = "#0f0f12";
@@ -22,8 +22,8 @@
   // кости: [от, до, группа]; 15 — середина плеч («шея»), 16 — середина таза (считаются на лету)
   var BONES = [[1, 2, "sh"], [7, 8, "hp"], [1, 7, "core"], [2, 8, "core"], [15, 0, "neck"],
     [1, 3, "arm"], [3, 5, "arm"], [2, 4, "arm"], [4, 6, "arm"],
-    [7, 9, "leg"], [9, 11, "leg"], [11, 17, "foot"], [17, 13, "foot"], [8, 10, "leg"], [10, 12, "leg"], [12, 18, "foot"], [18, 14, "foot"]];
-  // 17, 18 — пятки (считаются из лодыжки и носка): без них стопа — палка вниз, и стоя кажется, что человек на носочках
+    [7, 9, "leg"], [9, 11, "leg"], [11, 13, "foot"], [8, 10, "leg"], [10, 12, "leg"], [12, 14, "foot"]];
+  // стопа — одна ровная палка от «пятки» (11/12 — опускаем под лодыжку, к подошве) до носка: стоя лежит на полу, не «на носочках»
 
   /* tips — три позиции движения по порядку: [с, текст] (1 — старт, 2 — рабочая фаза, 3 — возврат/главная ошибка),
    * появляются вместе с движением; каждая — в одну строку на 360 px. phone — как поставить телефон.
@@ -330,14 +330,14 @@
   /* поза в момент t (Catmull-Rom между кадрами) → 17 точек (+ шея, таз) */
   function pose(c, t) {
     var clip = c.clip, p = clip.p, n = clip.n, f = Math.max(0, Math.min(n - 1, t * clip.fps)), i = Math.floor(f), u = f - i;
-    var i0 = Math.max(0, i - 1), i1 = i, i2 = Math.min(n - 1, i + 1), i3 = Math.min(n - 1, i + 2), out = new Array(19);
+    var i0 = Math.max(0, i - 1), i1 = i, i2 = Math.min(n - 1, i + 1), i3 = Math.min(n - 1, i + 2), out = new Array(17);
     for (var j = 0; j < 15; j++) {
       var q = [0, 0, 0];
       for (var k = 0; k < 3; k++) { var o = j * 3 + k; q[k] = cr(p[i0 * 45 + o], p[i1 * 45 + o], p[i2 * 45 + o], p[i3 * 45 + o], u); }
       out[j] = q;
     }
     out[15] = mid(out[1], out[2]); out[16] = mid(out[7], out[8]);
-    out[17] = heel(out[11], out[13], out[9], out[7], out[8]); out[18] = heel(out[12], out[14], out[10], out[7], out[8]);
+    out[11] = heel(out[11], out[13], out[9], out[7], out[8]); out[12] = heel(out[12], out[14], out[10], out[7], out[8]);
     return out;
   }
   /* пятка: стопа — жёсткая. Стоя ровно линия лодыжка→носок идёт вниз на ~23°, подошва горизонтальна, пятка на полу
@@ -358,7 +358,7 @@
     var H = [0, 0, 0];
     for (var m = 0; m < 3; m++) {
       var sole = d[m] * c1 + kd[m] * s1, nrm = d[m] * c2 + kd[m] * s2;
-      H[m] = A[m] - sole * 0.05 - nrm * 0.058;
+      H[m] = A[m] - nrm * 0.058;                                                 // точка подошвы прямо под лодыжкой
     }
     if (H[1] < 0.015) H[1] = 0.015;                                                   // не ниже пола
     return H;
@@ -381,7 +381,7 @@
 
   /* ---------- объём: радиусы (м) ---------- */
   var RB = { sh: 0.024, hp: 0.026, core: 0.026, neck: 0.021, arm: 0.027, leg: 0.032, foot: 0.02 };
-  var RJ = [0.105, 0.043, 0.043, 0.037, 0.037, 0.033, 0.033, 0.044, 0.044, 0.041, 0.041, 0.034, 0.034, 0.023, 0.023];
+  var RJ = [0.105, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04];   // все суставы одного размера (кроме головы)
 
   /* ---------- отрисовка кадра ---------- */
   function draw(c) {
@@ -458,17 +458,16 @@
     ctx.beginPath(); ctx.arc(hs[0], hs[1], 0.1 * hs[3], 0, 6.2832); ctx.fill();
 
     // фигура: кости-капсулы, суставы-шары, голова — от дальних к ближним
-    var hl = {}, hj = {}, pulse = 0.5 + 0.5 * Math.sin(t * 5);
+    var hl = {}, hj = {}, pulse = 0.5;                          // без пульса — не мерцает
     (c.ex.hl || []).forEach(function (k) { hl[k] = 1; });
     (c.ex.hj || []).forEach(function (k) { hj[JI[k]] = 1; });
-    var items = [], zmin = 1e9, zmax = -1e9;
-    for (i = 0; i < 15; i++) { zmin = Math.min(zmin, sp[i][2]); zmax = Math.max(zmax, sp[i][2]); }
-    var zr = Math.max(0.3, zmax - zmin);
+    var items = [];
+    var zc = sp[16][2];                                               // центр таза — опора для глубины
     for (i = 0; i < BONES.length; i++) items.push({ k: 0, b: BONES[i], z: (sp[BONES[i][0]][2] + sp[BONES[i][1]][2]) / 2 + 0.015 });
     for (i = 0; i < 15; i++) items.push({ k: 1, j: i, z: sp[i][2] - (i ? 0.02 : 0) });
     items.sort(function (x, y) { return y.z - x.z; });
     for (i = 0; i < items.length; i++) {
-      var it = items[i], depth = Math.max(0, Math.min(1, (it.z - zmin) / zr)), dim = 1 - depth * 0.4;
+      var it = items[i], depth = Math.max(0, Math.min(1, (it.z - zc) / 1.6 + 0.5)), dim = 1 - depth * 0.3;
       if (it.k === 0) {
         var a1 = sp[it.b[0]], a2 = sp[it.b[1]], rb = RB[it.b[2]], h = hl[it.b[2]];
         if (h) {   // мягкое свечение рабочих костей
@@ -489,14 +488,14 @@
   /* кость — капсула: свет сверху-слева, тёмный край, толщина с перспективой */
   function capsule(ctx, a, b, ra, rb, dim, hi) {
     var dx = b[0] - a[0], dy = b[1] - a[1], L = Math.sqrt(dx * dx + dy * dy);
-    if (L < 0.5) { ball(ctx, a[0], a[1], Math.max(ra, rb), dim); return; }
-    var nx = -dy / L, ny = dx / L;
-    if (nx * -0.45 + ny * -0.9 < 0) { nx = -nx; ny = -ny; }        // n — в сторону света
+    if (L < 0.5) return;                                              // кость смотрит прямо в камеру — её закрывают суставы-шары
+    var nx = -dy / L, ny = dx / L;                                   // объём — симметрично от оси к краям: блик не «перескакивает» при повороте
     var rm = (ra + rb) / 2, mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
     var g = ctx.createLinearGradient(mx + nx * rm, my + ny * rm, mx - nx * rm, my - ny * rm);
-    g.addColorStop(0, shade(GOLD, 0.8 * dim));
-    g.addColorStop(0.3, shade(hi ? HI : GOLD2, dim));
-    g.addColorStop(0.62, shade(GOLD, 0.93 * dim));
+    g.addColorStop(0, shade(DEEP, dim));
+    g.addColorStop(0.28, shade(GOLD, 0.95 * dim));
+    g.addColorStop(0.5, shade(hi ? HI : GOLD2, dim));
+    g.addColorStop(0.72, shade(GOLD, 0.95 * dim));
     g.addColorStop(1, shade(DEEP, dim));
     var an = Math.atan2(dy, dx);
     ctx.fillStyle = g;
