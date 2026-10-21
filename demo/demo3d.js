@@ -13,7 +13,7 @@
  * Работает без сборки, без CDN, классическим <script>. Повторный show() сам закрывает прежний. */
 (function () {
   "use strict";
-  var BASE = "demo/", VER = "9";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
+  var BASE = "demo/", VER = "10";   // VER — поднять при обновлении траекторий (сброс кэша WebView)
   try { if (document.currentScript && document.currentScript.src) BASE = new URL(".", document.currentScript.src).href; } catch (e) {}
 
   var GOLD = "#d4b47a", GOLD2 = "#f3dcaa", HI = "#fff4da", DEEP = "#5e4a2a", BG = "#0f0f12";
@@ -457,57 +457,38 @@
     ctx.fillStyle = "rgba(0,0,0," + Math.max(0.08, 0.34 - pts[0][1] * 0.3).toFixed(3) + ")";
     ctx.beginPath(); ctx.arc(hs[0], hs[1], 0.1 * hs[3], 0, 6.2832); ctx.fill();
 
-    // фигура: кости-капсулы, суставы-шары, голова — от дальних к ближним
-    var hl = {}, hj = {}, pulse = 0.5;                          // без пульса — не мерцает
-    (c.ex.hl || []).forEach(function (k) { hl[k] = 1; });
-    (c.ex.hj || []).forEach(function (k) { hj[JI[k]] = 1; });
-    var items = [];
-    var zc = sp[16][2];                                               // центр таза — опора для глубины
-    for (i = 0; i < BONES.length; i++) items.push({ k: 0, b: BONES[i], z: (sp[BONES[i][0]][2] + sp[BONES[i][1]][2]) / 2 + 0.015 });
-    for (i = 0; i < 15; i++) items.push({ k: 1, j: i, z: sp[i][2] - (i ? 0.02 : 0) });
-    items.sort(function (x, y) { return y.z - x.z; });
-    for (i = 0; i < items.length; i++) {
-      var it = items[i], depth = Math.max(0, Math.min(1, (it.z - zc) / 1.6 + 0.5)), dim = 1 - depth * 0.3;
-      if (it.k === 0) {
-        var a1 = sp[it.b[0]], a2 = sp[it.b[1]], rb = RB[it.b[2]], h = hl[it.b[2]];
-        capsule(ctx, a1, a2, rb * a1[3], rb * a2[3], dim, false);       // человечек везде одинаковый: без подсветки «рабочих» костей
-      } else {
-        var q = sp[it.j], rj = RJ[it.j] * q[3];
-        ball(ctx, q[0], q[1], rj, it.j === 0 ? dim * 0.92 : dim, it.j === 0);
-      }
+    // фигура — плоско, без бликов и без затемнения по глубине (ничего не мерцает):
+    // сначала все кости (от дальних к ближним), потом поверх все кругляшки — одинаковые на всех суставах и концах рук и ног
+    var bones = [];
+    for (i = 0; i < BONES.length; i++) bones.push({ b: BONES[i], z: (sp[BONES[i][0]][2] + sp[BONES[i][1]][2]) / 2 });
+    bones.sort(function (x, y) { return y.z - x.z; });
+    for (i = 0; i < bones.length; i++) {
+      var a1 = sp[bones[i].b[0]], a2 = sp[bones[i].b[1]], rb = RB[bones[i].b[2]];
+      capsule(ctx, a1, a2, rb * a1[3], rb * a2[3]);
     }
+    var joints = [];
+    for (i = 0; i < 15; i++) joints.push({ j: i, z: sp[i][2] });
+    joints.sort(function (x, y) { return y.z - x.z; });
+    for (i = 0; i < joints.length; i++) { var q = sp[joints[i].j]; ball(ctx, q[0], q[1], RJ[joints[i].j] * q[3]); }
 
     if (c.ex.hold != null) holdClock(c, ctx, t - c.ex.hold);
   }
 
-  /* кость — капсула: свет сверху-слева, тёмный край, толщина с перспективой */
-  function capsule(ctx, a, b, ra, rb, dim, hi) {
+  /* кость — плоская капсула одного цвета (без градиентов и бликов) */
+  var BONE_C = "#c9a66b", JOINT_C = "#ecd29d";
+  function capsule(ctx, a, b, ra, rb) {
     var dx = b[0] - a[0], dy = b[1] - a[1], L = Math.sqrt(dx * dx + dy * dy);
-    if (L < 0.5) return;                                              // кость смотрит прямо в камеру — её закрывают суставы-шары
-    var nx = -dy / L, ny = dx / L;                                   // объём — симметрично от оси к краям: блик не «перескакивает» при повороте
-    var rm = (ra + rb) / 2, mx = (a[0] + b[0]) / 2, my = (a[1] + b[1]) / 2;
-    var g = ctx.createLinearGradient(mx + nx * rm, my + ny * rm, mx - nx * rm, my - ny * rm);
-    g.addColorStop(0, shade(DEEP, dim));
-    g.addColorStop(0.28, shade(GOLD, 0.95 * dim));
-    g.addColorStop(0.5, shade(hi ? HI : GOLD2, dim));
-    g.addColorStop(0.72, shade(GOLD, 0.95 * dim));
-    g.addColorStop(1, shade(DEEP, dim));
+    if (L < 0.5) return;
     var an = Math.atan2(dy, dx);
-    ctx.fillStyle = g;
+    ctx.fillStyle = BONE_C;
     ctx.beginPath();
     ctx.arc(a[0], a[1], Math.max(0.5, ra), an + Math.PI / 2, an + Math.PI * 1.5);
     ctx.arc(b[0], b[1], Math.max(0.5, rb), an - Math.PI / 2, an + Math.PI / 2);
     ctx.closePath(); ctx.fill();
   }
-  /* сустав/голова — шар: блик сверху-спереди, мягкое затемнение к краю */
-  function ball(ctx, x, y, r, dim, head) {
-    r = Math.max(0.8, r);
-    var g = ctx.createRadialGradient(x - r * 0.36, y - r * 0.42, r * 0.06, x, y, r);
-    g.addColorStop(0, shade(HI, dim));
-    g.addColorStop(head ? 0.3 : 0.32, shade(GOLD2, dim));
-    g.addColorStop(head ? 0.72 : 0.7, shade(GOLD, 0.9 * dim));
-    g.addColorStop(1, shade(DEEP, dim));
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+  /* сустав / голова — плоский кругляшок одного цвета */
+  function ball(ctx, x, y, r) {
+    ctx.fillStyle = JOINT_C; ctx.beginPath(); ctx.arc(x, y, Math.max(0.8, r), 0, 6.2832); ctx.fill();
   }
   /* счётчик удержания: тихо, золотом, в правом верхнем углу сцены */
   function holdClock(c, ctx, s) {
