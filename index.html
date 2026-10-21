@@ -2097,6 +2097,9 @@ function hud(gain = false) {
 }
 
 // ================= распознавание позы =================
+// модель позы: средняя (full) точнее лёгкой; если телефон не тянет (кадр дольше 75 мс) — сам переходит на lite и запоминает
+// full: sha256 4eaa5eb7… (совпала из двух источников: npm pose-landmarker-react-native и HF; официальный Google из РФ — 403)
+let poseModel = (() => { try { return localStorage.getItem("kt_pose_model") === "lite" ? "lite" : "full"; } catch (e) { return "full"; } })();
 let landmarker, video = $("video"), skel = $("skel"), sctx = skel.getContext("2d"), stream, raf, wake;
 async function initModel() {
   if (landmarker) return;
@@ -2107,7 +2110,7 @@ async function initModel() {
   try { mod = await import(`${base}/vision_bundle.mjs`); } catch (e) { base = cdn; mod = await import(`${cdn}/vision_bundle.mjs`); }
   const { FilesetResolver, PoseLandmarker } = mod;
   const files = await FilesetResolver.forVisionTasks(`${base}/wasm`);
-  const opts = d => ({ baseOptions: { modelAssetPath: new URL("pose_landmarker_lite.task", location.href).href, delegate: d },
+  const opts = d => ({ baseOptions: { modelAssetPath: new URL(`pose_landmarker_${poseModel}.task`, location.href).href, delegate: d },
                        runningMode: "VIDEO", numPoses: 1 });
   try { landmarker = await PoseLandmarker.createFromOptions(files, opts("GPU")); }
   catch (e) { landmarker = await PoseLandmarker.createFromOptions(files, opts("CPU")); }
@@ -2183,7 +2186,19 @@ function loop() {
   if (t - (sess.lastDetect || 0) < 33) return;           // ~30 кадров в секунду хватает
   sess.lastDetect = t;
   const res = landmarker.detectForVideo(video, t);
+  if (poseModel === "full") poseSpeed(performance.now() - t);
   processPose(res.landmarks?.[0]);
+}
+function poseSpeed(dt) {                 // первые 10 кадров — прогрев, по следующим 40 — медиана
+  const m = (sess.mt = sess.mt || []); m.push(dt);
+  if (m.length !== 50) return;
+  const v = m.slice(10).sort((a, b) => a - b), med = v[v.length >> 1];
+  if (med <= 75) return;
+  poseModel = "lite";
+  try { localStorage.setItem("kt_pose_model", "lite"); } catch (e) {}
+  const old = landmarker; landmarker = null;
+  try { old.close(); } catch (e) {}
+  initModel().catch(() => {});
 }
 function sizeCanvases() {
   for (const c of [skel, fx]) { c.width = innerWidth * devicePixelRatio; c.height = innerHeight * devicePixelRatio; }
