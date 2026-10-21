@@ -1523,7 +1523,7 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
 <script src="avatar.js?v=15"></script>
 <script src="demo/demo3d.js?v=13"></script>
 <script type="module">
-import { EX, EX_ORDER, RepCounter } from "./counter.js?v=21";   // v — поднимать при каждой правке counter.js (кэш WebView Telegram)
+import { EX, EX_ORDER, RepCounter } from "./counter.js?v=22";   // v — поднимать при каждой правке counter.js (кэш WebView Telegram)
 // ВЫКЛЮЧАТЕЛЬ ИГРЫ (решение Эрнеста): игра (хаб, приказ дня, сундук, серия, звания, лига, сюжет) — только локально у Эрнеста.
 // Везде, кроме localhost / 127.0.0.1 / *.localhost, приложение — прежнее: тренировка с камерой, прожарка, «Скоро».
 // Параметры адреса её НЕ включают — в бот не утечёт. g*-хуки при выключенной игре молча ничего не делают.
@@ -1853,11 +1853,15 @@ const Coach = {
   async play(name, force = false, text = null) {
     if (S.voice === "off") return false;
     if (!force && ctx().currentTime < this.busyUntil) return false;      // тренер не перебивает сам себя
+    const my = ++this.seq, num = /^n\d+$/.test(name);
+    if (num) this.numSeq = my;
     const b = await this.buf(name, true);          // то, что нужно сказать сейчас, — без очереди
     if (!b) return false;
+    if (!num && this.numSeq > my) return false;    // пока реплика грузилась, пошло новое число — реплику не говорим, число важнее
     if (force && this.src) { try { this.src.stop(); } catch (e) {} }
     const s = actx.createBufferSource(); s.buffer = b; s.connect(actx.destination); s.start();
     this.src = s; this.busyUntil = actx.currentTime + b.duration;
+    s.onended = () => { if (this.src === s && this.q.length) this.flush(); };   // договорил — следующая реплика из очереди
     if (text) subtitle(text, b.duration);
     return true;
   },
@@ -1874,8 +1878,21 @@ const Coach = {
     if (S.voice !== "hard" || !(i < (this.idx?.[cat] || 0)) || this.hold.has(`${cat}_${i}`)) return false;
     this.last[cat] = i; this.play(`${cat}_${i}`, force, this.phr?.[cat]?.[i]); return true;
   },
-  count(n, force = false) { if (S.voice !== "off" && n <= (this.idx?.numbers || 60)) this.play(`n${n}`, force); },
-  stop() { try { this.src?.stop(); } catch (e) {} this.busyUntil = 0; },
+  count(n, force = false) {
+    const p = S.voice !== "off" && n <= (this.idx?.numbers || 60) ? this.play(`n${n}`, force) : Promise.resolve(false);
+    if (force) this.numP = p;
+    return p;
+  },
+  // реплика после числа (QA 21.10: числа глотались длинными фразами — из 95 повторов озвучено 55, слышно «3, 4, …, 7, …, 11»).
+  // Число звучит всегда и сразу; особая реплика («пятёрка», уровень, приказ, отсечка) — когда число договорено.
+  // В очереди не больше двух реплик: быстрые повторы — важнее счёт
+  seq: 0, numSeq: 0, q: [], numP: null,
+  after(fn) {
+    this.q = [...this.q, fn].slice(-2);
+    Promise.resolve(this.numP).then(() => { if (ctx().currentTime >= this.busyUntil) this.flush(); });
+  },
+  flush() { const f = this.q.shift(); if (f) f(); },
+  stop() { try { this.src?.stop(); } catch (e) {} this.busyUntil = 0; this.q = []; },
 };
 function subtitle(text, dur) {
   const el = $("sub"); el.textContent = text; el.classList.add("on");
@@ -1997,7 +2014,7 @@ function startRest() {
     $("restT").textContent = Math.max(0, left);
     if (left <= 3 && left > 0 && p.beeped !== left) { p.beeped = left; tone(660, .12); }
     if (left <= 0) { p.resting = false; $("rest").classList.remove("on"); tone(990, .25); haptic("level"); Coach.say("rest_end", true);
-      sess.counter = new RepCounter(sess.ex); setHint("Погнали!"); return; }
+      sess.counter = new RepCounter(sess.ex); setHint("Погнали!", false, true); return; }
     p.timer = setTimeout(tick, 200);
   };
   tick();
@@ -2010,9 +2027,9 @@ function protoRep() {               // после засчитанного по�
     if (p.set >= P50.sets.length) {
       p.finished = true; sess.xp += P50.xp; sess.ups.push(`Протокол 50 выполнен: +${P50.xp} XP`);
       const ups = addXp(EX[sess.ex].skill, P50.xp); save(); animateSess(sess.xp); hud(true);
-      setTimeout(() => { levelUpFx(ups[0] || `+${P50.xp} XP за протокол`); Coach.say("proto_done", true); }, 300);
+      setTimeout(() => levelUpFx(ups[0] || `+${P50.xp} XP за протокол`), 300); Coach.after(() => Coach.say("proto_done", true));
     } else {
-      setTimeout(() => { startRest(); Coach.say("rest", true); }, 400);
+      setTimeout(startRest, 400); Coach.after(() => Coach.say("rest", true));
     }
   }
   protoView();
@@ -2042,28 +2059,26 @@ function onRep() {
   heartStream(18 + Math.min(sess.combo, 10) * 2, 550, 1 + Math.min(sess.combo, 10) * .06);   // сердечки — награда за повторение
   tone(440 * Math.pow(1.06, Math.min(sess.combo, 12)), .12); haptic("rep");
   animateSess(sess.xp); hud(true);
-  protoRep();
-  // голос: счёт, каждые 5 — реплика, длинное комбо, уровень, квест
-  // на особых повторениях вместо числа сразу фраза — иначе она не успевает начаться, пока звучит счёт
-  if (ups.length) setTimeout(() => { levelUpFx(ups[0]); Coach.say("level", true); }, 250);
-  else if (quest) Coach.say("quest", true);
-  else if (sess.combo >= 8 && sess.combo % 8 === 0) Coach.say("combo", true);
-  else if (repCue()) {}
-  else if (sess.reps % 5 === 0) Coach.say(Math.random() < .5 && Coach.idx?.[`ex_${sess.ex}`] ? `ex_${sess.ex}` : "five", true);
-  else Coach.count(sess.reps);
+  // голос: число — всегда и сразу (обрывает идущую фразу); каждые 5 — реплика, длинное комбо, уровень, квест — следом за числом
+  Coach.count(sess.reps, true);
+  protoRep();                          // реплики «Протокола 50» (отдых, выполнен) — тоже после числа
+  if (ups.length) { setTimeout(() => levelUpFx(ups[0]), 250); Coach.after(() => Coach.say("level", true)); }
+  else if (quest) Coach.after(() => Coach.say("quest", true));
+  else if (sess.combo >= 8 && sess.combo % 8 === 0) Coach.after(() => Coach.say("combo", true));
+  else if (repCueIdx() != null) { const i = repCueIdx(); Coach.after(() => Coach.sayAt("cue", i, true)); }
+  else if (sess.reps % 5 === 0) Coach.after(() => Coach.say(Math.random() < .5 && Coach.idx?.[`ex_${sess.ex}`] ? `ex_${sess.ex}` : "five", true));
 }
 // реплики-отсечки (cue): в «Протоколе 50» — сколько осталось в части (конец части — реплика отдыха), в свободном — 10, 20 … 50.
-// Номера — по sounds/phrases.json (cue); вернёт true, если реплика пошла вместо числа
+// Номера — по sounds/phrases.json (cue); вернёт номер (или список) реплики-отсечки для этого повтора, null — нет
 const CUE_LEFT = { 10: [2, 9, 17], 5: [3, 4, 10, 24], 3: [5, 13], 2: 14, 1: [6, 15] },
       CUE_FREE = { 10: 18, 20: [0, 19], 30: [1, 20], 40: [21, 32], 50: [22, 23] };
-function repCue() {
+function repCueIdx() {
   const p = sess.p50;
   if (p) {
-    if (p.finished || p.resting || !p.done) return false;
-    const left = P50.sets[p.set] - p.done;
-    return CUE_LEFT[left] != null && Coach.sayAt("cue", CUE_LEFT[left], true);
+    if (p.finished || p.resting || !p.done) return null;
+    return CUE_LEFT[P50.sets[p.set] - p.done] ?? null;
   }
-  return CUE_FREE[sess.reps] != null && Coach.sayAt("cue", CUE_FREE[sess.reps], true);
+  return CUE_FREE[sess.reps] ?? null;
 }
 // планка — отсчёт до минуты (plank_cd): секунда в позе → номер реплики
 const PLANK_CD = { 1: 0, 30: [1, 2], 40: 3, 45: 4, 50: [5, 6], 55: 7, 56: 8, 57: 9, 58: 10, 59: 11, 60: 12 };
@@ -2151,12 +2166,17 @@ function processPose(lm) {
     sess.lostSince = sess.lostSince || now;
     if (now - sess.lostSince > 4000 && now - (sess.lastNobody || 0) > 15000) { sess.lastNobody = now; Coach.say("nobody"); }
   } else sess.lostSince = 0;
-  // человек в кадре, но ничего не делает (или просто стоит вместо упора лёжа) — тренер подкалывает:
-  // первый раз через 6 секунд, дальше каждые 9
-  if (r.status === "ok" || r.status === "pose") {
+  // человек в кадре, но ничего не делает (или просто стоит вместо упора лёжа) — тренер подкалывает.
+  // QA 21.10: подкол звучал через 6 с после старта (ещё не дошёл до места) и посреди подхода, когда счёт не шёл.
+  // Теперь: не раньше 15 с от старта, 8 с без повтора и только если человек в кадре стоит на месте (motion);
+  // двигается, а повторы не идут — вместо подкола подсказка по технике на экране, не чаще раза в 12 с
+  const mv = lm ? motion(lm, now) : null;
+  if ((r.status === "ok" || r.status === "pose") && now - sess.startedAt > 15000 && !(e.kind === "hold" && r.holding)) {
     const since = now - Math.max(sess.lastRep, sess.startedAt);
-    if (since > 6000 && now - (sess.lastIdle || 0) > 9000 && !(EX[sess.ex].kind === "hold" && r.holding)) {
+    if (since > 8000 && mv === "still" && now - (sess.lastIdle || 0) > 12000) {
       sess.lastIdle = now; Coach.say(r.status === "pose" && Math.random() < .5 ? "pose" : "idle");
+    } else if (since > 8000 && mv === "moving" && now - (sess.lastTech || 0) > 12000) {
+      sess.lastTech = now; sess.techHint = r.poseHint || (r.status === "pose" ? e.hints.pose : e.tip); sess.techUntil = now + 3500;
     }
   }
   if (r.status === "nobody") { drawSkeleton(null); setHint("Не вижу тебя — отойди чуть дальше", true); return; }
@@ -2164,19 +2184,46 @@ function processPose(lm) {
   if (r.status === "lowvis") { setHint(e.tip, true); return; }
   if (r.status === "pose") { $("depth").style.height = "0%";
     if (e.kind === "hold" && r.holdMs != null) onHold(r);
-    setHint(e.hints.pose, true); return; }
+    setHint(r.poseHint || e.hints.pose, true); return; }
   if (e.kind === "hold") { $("depth").style.height = "100%"; onHold(r); setHint(sess.holdSteps ? "" : e.hints.start); return; }
   if (r.depth != null) {
     $("depth").style.height = (r.depth * 100) + "%";
   }
   if (sess.p50?.resting) { setHint("Отдых — повторы не считаются"); return; }
-  if (r.rep) { onRep(); setHint(sess.reps < 3 ? "Отлично, продолжай!" : ""); }
+  if (r.rep) { onRep(); setHint(sess.reps < 3 ? "Отлично, продолжай!" : "", false, true); }
   else if (r.state === "down") setHint(sess.reps < 3 ? e.hints.down || "Хорошо! Теперь вверх ⬆️" : "");
   else if (sess.reps === 0) setHint(e.hints.start);
 }
-function setHint(t, warn = false) {
-  if (sess && performance.now() < (sess.sideHintUntil || 0)) { t = sess.sideHint; warn = true; }    // «Смени сторону» важнее
+// Подсказка меняется, только если новое состояние держится ≥ 0,5 с (QA 21.10: одиночные кадры «не вижу ноги» перекрашивали
+// подсказку в красный до 170 раз в минуту). now = true — показать сразу (повтор засчитан, старт, «Смени сторону»)
+let hintCur = null, hintNext = null, hintAt = 0;
+function setHint(t, warn = false, now = false) {
+  const T = performance.now();
+  if (sess && T < (sess.sideHintUntil || 0)) { t = sess.sideHint; warn = true; now = true; }    // «Смени сторону» важнее
+  else if (sess && T < (sess.techUntil || 0)) { t = sess.techHint; warn = true; now = true; }   // подсказка по технике (вместо подкола)
+  const k = (warn ? "!" : "") + t;
+  if (k === hintCur) { hintNext = null; return; }
+  if (!now) { if (k !== hintNext) { hintNext = k; hintAt = T; return; } if (T - hintAt < 500) return; }
+  hintCur = k; hintNext = null;
   const h = $("hint"); h.textContent = t; h.style.display = t ? "" : "none"; h.classList.toggle("warn", warn);
+}
+// Движется ли человек: размах ключевых точек (плечи, локти, кисти, таз, колени, стопы) за 3 с в длинах корпуса.
+// "moving" — ≥ 0,25 корпуса (делает что-то, хоть и не засчитывается), "still" — < 0,1 (стоит/лежит), между — не ясно (null)
+function motion(lm, now) {
+  const ids = [11, 12, 13, 14, 15, 16, 23, 24, 25, 26, 27, 28], m = (a, b) => ({ x: (lm[a].x + lm[b].x) / 2, y: (lm[a].y + lm[b].y) / 2 });
+  const sh = m(11, 12), hp = m(23, 24), torso = Math.max(Math.hypot(sh.x - hp.x, sh.y - hp.y), .05);
+  const h = (sess.mv = (sess.mv || []).filter(q => now - q[0] <= 3000)); h.push([now, ids.map(i => [lm[i].x / torso, lm[i].y / torso])]);
+  if (now - h[0][0] < 2500) return null;
+  let span = 0;
+  for (let j = 0; j < ids.length; j++) for (const c of [0, 1]) { let lo = 1e9, hi = -1e9; for (const q of h) { lo = Math.min(lo, q[1][j][c]); hi = Math.max(hi, q[1][j][c]); } span = Math.max(span, hi - lo); }
+  return span >= .25 ? "moving" : span < .1 ? "still" : null;
+}
+// новый кадр камеры: распознаём только его (QA 21.10: при камере 15 к/с один и тот же кадр распознавался дважды — лишняя
+// нагрузка на телефон). requestVideoFrameCallback считает кадры; где его нет — сравниваем video.currentTime
+let vfN = 0;
+function watchFrames() {
+  if (!video.requestVideoFrameCallback || video.dataset.vfc) return;
+  video.dataset.vfc = "1"; const cb = () => { vfN++; video.requestVideoFrameCallback(cb); }; video.requestVideoFrameCallback(cb);
 }
 function loop() {
   raf = requestAnimationFrame(loop);
@@ -2184,6 +2231,8 @@ function loop() {
   if (sess.demo || !landmarker || video.readyState < 2) return;
   const t = performance.now();
   if (t - (sess.lastDetect || 0) < 33) return;           // ~30 кадров в секунду хватает
+  if (video.requestVideoFrameCallback ? vfN === sess.lastVf : video.currentTime === sess.lastVt) return;   // кадр тот же
+  sess.lastVf = vfN; sess.lastVt = video.currentTime;
   sess.lastDetect = t;
   const res = landmarker.detectForVideo(video, t);
   if (poseModel === "full") poseSpeed(performance.now() - t);
@@ -2237,7 +2286,7 @@ async function start(demo = false) {
     loadCreep(10, 90); await new Promise(r => setTimeout(r, 1300));
     if (!sess || sess.demo !== true) return;          // вышли, пока шла заставка
     await loadDone();
-    setHint("Демо: повторы идут сами, без камеры");
+    setHint("Демо: повторы идут сами, без камеры", false, true);
     Coach.say(sess.p50 ? "proto_go" : "start", true);
     let n = 0; const iv = setInterval(() => {
       if (!sess || sess.demo !== true || n >= (hold ? 30 : sess.p50 ? 18 : 14)) return clearInterval(iv);
@@ -2252,11 +2301,11 @@ async function start(demo = false) {
     if (!stream) {         // камеру берём один раз — на Android Telegram иначе спрашивает разрешение заново
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
     }
-    video.srcObject = stream; await video.play();
+    video.srcObject = stream; await video.play(); watchFrames();
     $("stage").classList.toggle("mirror", true);
     loadSet("Загружаю тренера…", 45); loadCreep(45, 92);
     await initModel();
-    await loadDone(); setHint(EX[S.ex].tip);
+    await loadDone(); setHint(EX[S.ex].tip, false, true);
     sess.startedAt = performance.now(); Coach.say(sess.p50 ? "proto_go" : "start", true);
     loop();
   } catch (e) {

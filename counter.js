@@ -149,18 +149,22 @@ export const EX = {
   // считаем, насколько опустилось плечо от верхней точки (rel), в длинах руки (устойчивая длина за 2 с): так одинаково
   // и с прижатыми локтями, и с локтями в стороны (угол в локте сбоку тогда почти не меняется).
   // Грудь у пола ≈ 0,45 руки; вниз ≥ 0,3 (≈ 70–80%), вверх ≤ 0,12; полуотжимание (0,2) — нет
-  pushup: { name: "Отжимания", ico: "💪", skill: "str", kind: "reps", dir: 1, down: .3, up: .12, rel: true, relArm: true, drift: .02, driftMax: .1, torso: [0, 40],
+  pushup: { name: "Отжимания", ico: "💪", skill: "str", kind: "reps", dir: 1, down: .3, up: .12, rel: true, relArm: true, drift: .02, driftMax: .1, torso: [0, 40], lockAngle: 140, lockBend: 110,
             pts: [[11, 13, 15], [12, 14, 16]], say: /отжим/,
             metric: lm => { const a = sideAngle(lm, ARMS), [s, el, w] = ARMS[a.side].map(i => lm[i]);
                             return { value: s.y, vis: a.vis, side: a.side }; },
             // корпус и бёдра одной линией; кисти ниже плеч (лёжа на спине жать вверх, двигать руками по полу — нет)
-            pose: lm => { const a = sideAngle(lm, ARMS), [s, el, w] = ARMS[a.side].map(i => lm[i]);
-                          return sideAngle(lm, [[11, 23, 25], [12, 24, 26]]).value >= 130 && w.y - s.y > .2 * (dist(s, el) + dist(el, w)); },
+            // внизу (грудь у пола) кисть почти на уровне плеча (у стокового видео 0,07 руки) — в нижней фазе допуск до −0,1:
+            // раньше поза «ломалась» на паузе внизу, и начатое отжимание сбрасывалось (0 из 6 на глубоких отжиманиях)
+            pose: (lm, c) => { const a = sideAngle(lm, ARMS), [s, el, w] = ARMS[a.side].map(i => lm[i]);
+                          return sideAngle(lm, [[11, 23, 25], [12, 24, 26]]).value >= 130 && w.y - s.y > (c?.state === "down" ? -.1 : .2) * (dist(s, el) + dist(el, w)); },
             // таз над линией «кисть — стопа» хотя бы на 0,25 длины руки (в упоре ≈ 0,4): лёжа на животе с тазом на полу
-            // поднимать грудь («ленивые») — нет. Проверяем при уходе вниз
-            downOk: (lm, c) => { const a = sideAngle(lm, ARMS), w = lm[15 + a.side], L = sideAngle(lm, LEGS), hp = lm[23 + L.side], an = lm[27 + L.side];
-                                 const k = (hp.x - w.x) / ((an.x - w.x) || 1e-3), lineY = w.y + (an.y - w.y) * k;
-                                 return lineY - hp.y >= .25 * c.armRef; },
+            // поднимать грудь («ленивые») — нет. Проверяем каждый кадр (each) и при уходе вниз требуем, чтобы так было
+            // в последние 1,5 с: в глубоком отжимании таз опускается вместе с грудью, и к порогу «вниз» проверка уже не проходила
+            each: (lm, c, now) => { const a = sideAngle(lm, ARMS), w = lm[15 + a.side], L = sideAngle(lm, LEGS), hp = lm[23 + L.side], an = lm[27 + L.side];
+                                    const k = (hp.x - w.x) / ((an.x - w.x) || 1e-3), lineY = w.y + (an.y - w.y) * k;
+                                    if (lineY - hp.y >= .25 * c.armRef) c.hipOkAt = now; },
+            downOk: (lm, c) => c.lastT - (c.hipOkAt ?? -1e9) <= 1500,
             tip: "Телефон на пол сбоку, в 1,5–2 м",
             hints: { start: "Опустись ниже — согни руки", pose: "Упор лёжа, боком к камере" } },
   // выпад: сгибается переднее колено — берём самый согнутый из видимых коленей
@@ -189,14 +193,16 @@ export const EX = {
   // и уверенность в точках ниже — порог видимости vis для планки снижен
   // допуск по углу шире на 20%: тело одной линией ≥ 144° (было 150°). Опора — на локтях или прямых руках:
   // локоть ниже плеча хотя бы на полплеча (лёжа на полу руки на уровне плеч — это не планка)
-  plank: { name: "Планка", ico: "🧱", skill: "end", kind: "hold", torso: [0, 40], hold: [144, 180], vis: .4, label: "В ПЛАНКЕ", word: "в планке",
-           // колени прямые (≥ 150°: с колен — нет) и таз над линией опор (локоть/кисть — стопа) не ниже 0,35 высоты плеч над опорой: в ровной планке ≈ 0,6,
+  plank: { name: "Планка", ico: "🧱", skill: "end", kind: "hold", torso: [0, 40], hold: [144, 180], vis: .4, label: "В ПЛАНКЕ", word: "в планке", confirmMs: 500, holdGrace: 1000,
+           // колени прямые (≥ 150°: с колен — нет) и таз над линией опор (локоть/кисть — стопа) не ниже 0,45 высоты плеч над опорой: в ровной планке ≈ 0,6,
            // в «сфинксе» ≈ 0,2, провисший таз — тоже не планка. Отношение не зависит от того, как высоко стоит камера
            pose: lm => { const a = sideAngle(lm, ARMS), [sh, el, w] = ARMS[a.side].map(i => lm[i]);
                          const L = sideAngle(lm, LEGS), [hp, kn, an] = LEGS[L.side].map(i => lm[i]);
                          const sup = el.y > w.y ? el : w;                                        // что ниже в кадре — то на полу
                          const k = (hp.x - sup.x) / ((an.x - sup.x) || 1e-3), lineY = sup.y + (an.y - sup.y) * k;
-                         return el.y - sh.y > dist(sh, el) * .5 && angle(hp, kn, an) >= 150 && lineY - hp.y > .35 * (sup.y - sh.y); },
+                         // провис: таз ниже линии «плечо — стопа» больше 0,1 корпуса — лежит на животе на предплечьях («сфинкс»)
+                         const k2 = (hp.x - sh.x) / ((an.x - sh.x) || 1e-3), sag = (hp.y - (sh.y + (an.y - sh.y) * k2)) / Math.max(dist(sh, hp), 1e-3);
+                         return el.y - sh.y > dist(sh, el) * .5 && angle(hp, kn, an) >= 150 && lineY - hp.y > .45 * (sup.y - sh.y) && sag <= .1; },   // .45: лёжа на животе (вид от ног) до 0,37
            maxDt: 1000,                                                                       // слабый телефон (3 к/с): время не теряем
            pts: [[11, 23, 27], [12, 24, 28]], metric: lm => sideAngle(lm, EX.plank.pts), say: /планк/,
            tip: "Телефон на пол сбоку, в 1,5–2 м",
@@ -240,13 +246,20 @@ const NEW = {
                                   && Math.abs(wr.y - lm[t[2]].y) <= .35 * (dist(sh, lm[t[0]]) + dist(lm[t[0]], lm[t[1]]) + dist(lm[t[1]], lm[t[2]])))
                              && lm[0].y >= sh.y - .15 * dist(sh, mid(lm[23], lm[24])); },          // голова не выше плеч
              metric: lm => { const m = sideAngle(lm, [[11, 23, 25], [12, 24, 26]]); return { value: m.value, vis: m.vis, side: m.side }; },
+             // в упоре на прямых руках, но прямой ноги не видно — снимают спереди или наискосок (так снято и у Паши):
+             // спереди MediaPipe ноги «складывает» (бедро 30–90°), подтягивания не отличить от упора — просим поставить телефон сбоку
+             poseHint: lm => { const a = sideAngle(lm, ARMS), [sh, el, wr] = ARMS[a.side].map(i => lm[i]);
+                               const support = a.value >= 140 && wr.y - sh.y > dist(sh, el);
+                               const leg = LEGS.some(t => vis(lm, t) >= .3 && angle(lm[t[0]], lm[t[1]], lm[t[2]]) >= 150 && angle(lm[11 + t[0] - 23], lm[t[0]], lm[t[1]]) >= 140);
+                               return support && !leg ? "Поставь телефон сбоку — ног не видно" : null; },
              tip: "Телефон на пол сбоку, в 1,5–2 м",
              hints: { start: "Колено к груди, по очереди", down: "Теперь другую!", pose: "Упор на прямых, боком к камере" } },
   // стульчик у стены: время, пока колено согнуто примерно под прямым углом, а корпус вертикален
   // допуск по углу шире на 20%: колено 43–133° (было 50–125°). Оба бедра не вертикальны (колено ниже таза меньше 0,85 голени)
   // и стопы на одной высоте —
   // в выпаде и стоя на колене заднее бедро вертикально
-  wallsit: { name: "Стульчик", ico: "🪑", skill: "end", kind: "hold", torso: [55, 90], hold: [43, 133], label: "НА СТУЛЬЧИКЕ", word: "на стульчике",
+  wallsit: { name: "Стульчик", ico: "🪑", skill: "end", kind: "hold", torso: [55, 90], hold: [43, 133], label: "НА СТУЛЬЧИКЕ", word: "на стульчике", holdGrace: 400, confirmMs: 1500, backMax: 2000,
+             // время — после 1,5 с в позе и неподвижности, сразу с начала посадки (до 2 с задним числом); пауза внизу выпада — не стульчик
              // голень почти вертикальна (≤ 35°) и таз выше стоп на ≥ 0,6 голени: сидеть на полу, по-турецки — не стульчик
              // бедро не вертикально и таз не ниже колен (глубокий присед — не стульчик)
              pose: lm => LEGS.every(t => vis(lm, t) < .3 || ((r => r < .85 && r > -.15)((lm[t[1]].y - lm[t[0]].y) / Math.max(dist(lm[t[1]], lm[t[2]]), 1e-3))))
@@ -272,7 +285,7 @@ const NEW = {
   // касания плеч в планке (видео IMG_6615): упор на прямых руках лицом к камере, ладонь по очереди касается
   // противоположного плеча. Каждая рука — свой автомат (alt): кисть ближе 0,95 ширины плеч к противоположному плечу (40% пути — нет)
   // (в упоре ≈ 1,8) — касание, отошла дальше 1,4 — повтор. Рука вверх (ротации) от плеча далеко — не касание
-  shtap: { name: "Касания плеч", ico: "🤚", skill: "str", kind: "reps", alt: true, one: true, altGrace: true, graceMs: 300, dwell: 2, noP50: true, front: true, dir: -1, down: .95, up: 1.4, torso: [0, 90], vis: .5, minRepMs: 400,
+  shtap: { name: "Касания плеч", ico: "🤚", skill: "str", kind: "reps", alt: true, one: true, altGrace: true, graceMs: 300, dwell: 2, altGap: 450, noP50: true, front: true, dir: -1, down: .95, up: 1.4, torso: [0, 90], vis: .5, minRepMs: 400,
            pts: [[11, 13, 15], [12, 14, 16]], say: /касани|к плечу|другому плечу/,
            pose: frontPlank,
            // кисть → противоположное плечо, в ширинах плеч. Засчитываем, только если кисть перешла середину корпуса
@@ -301,7 +314,9 @@ const NEW = {
             hints: { start: "Планка вверх-вниз: на локти и обратно", down: "Теперь обратно на прямые", pose: "Упор на прямых, лицом к камере" } },
   // ротация на четвереньках (домашнее видео 1:15–1:50): одна рука в опоре, другая уходит вверх с поворотом корпуса.
   // Повтор — кисть поднялась над плечом на ≥ 0,45 длины руки (≈ 72% пути от пола до «рука вверх»; вершина часто приходится на кадры сбоя при повороте) и вернулась ниже плеча
-  quad: { name: "Ротация в упоре", ico: "🔄", skill: "end", kind: "reps", noP50: true, dir: 1, down: .45, up: -.4, graceMs: 1000, torso: [0, 50], minRepMs: 1200,
+  // torso до 70° и graceMs 1,6 с: при повороте корпуса рукой вверх линия плеч встаёт почти вертикально (наклон 50–75°) дольше 1 с —
+  // начатый повтор сбрасывался (зеркальный кадр: 2 из 5)
+  quad: { name: "Ротация в упоре", ico: "🔄", skill: "end", kind: "reps", noP50: true, dir: 1, down: .45, up: -.4, graceMs: 1600, torso: [0, 70], minRepMs: 1200,
           pts: [[11, 13, 15], [12, 14, 16]], say: /четвереньк|рук[аиу] вверх/,
           // на коленях (бедро вертикально — лёжа на животе нет), одна рука в опоре
           pose: lm => minAngle(lm, LEGS).value < 130 && [0, 1].some(i => lm[15 + i].y > lm[11 + i].y)
@@ -316,7 +331,7 @@ const NEW = {
           hints: { start: "Рука вверх — смотри на ладонь", down: "Возвращай руку вниз", pose: "Встань на четвереньки, всё тело в кадре" } },
   // ротация стоя на одном колене (1:50–2:25): руки перед собой, одна уходит через верх в сторону — и обратно.
   // Повтор — кисти разошлись (≥ 1,5 длины корпуса; полностью — 2,2–2,5) и сошлись (≤ 0,8)
-  kneel: { name: "Ротация с колена", ico: "🧘", skill: "end", kind: "reps", noP50: true, dir: 1, down: 1.5, up: .8, torso: [55, 90], minRepMs: 1200,
+  kneel: { name: "Ротация с колена", ico: "🧘", skill: "end", kind: "reps", noP50: true, dir: 1, down: 1.5, up: .8, torso: [55, 90], minRepMs: 1200, tempo: .35, upHoldMs: 250,
            pts: [[11, 13, 15], [12, 14, 16]], say: /на колен|с колен/,
            // стоишь на колене: бедро опорной ноги вертикально, а таз низко — от таза до нижней стопы не больше 1,85 бедра
            // (стоя ≈ 2). На стуле (оба бедра горизонтальны), стоя, на одной ноге — нет
@@ -332,13 +347,17 @@ const NEW = {
   // на другой — кисть верхней руки, поэтому два признака (subs), у каждого свой счёт от «нуля» (rel); повторы стороны —
   // наибольший из двух. Проверено на видео: 6 из 6 на каждой стороне
   // в плитке коротко «Отведение бедра», полное имя — в подсказке (tip). 🐚 — «ракушка» (clamshell), международное имя упражнения
-  hipabd: { name: "Отведение бедра", ico: "🐚", skill: "end", kind: "reps", multi: true, perSide: 30, noP50: true, torso: [0, 45], vis: .3, minRepMs: 2500,
+  hipabd: { name: "Отведение бедра", ico: "🐚", skill: "end", kind: "reps", multi: true, perSide: 30, noP50: true, torso: [0, 60], vis: .3, minRepMs: 2500,
           pts: [[11, 23, 25], [12, 24, 26]], say: /отведени/,
-          // лёжа на боку: не в упоре (локоть не под плечом), не на четвереньках (бёдра не вертикальны)
-          // и не на спине с коленями вверх: здесь нижнее колено примерно на уровне таза (медиана −0,08 бедра),
-          // в скручиваниях оба колена выше таза (−0,78)
+          // лёжа: не в упоре (локоть не под плечом; у Паши 0,35–0,48 плеча — запас до 0,6), одна рука в сторону (кисть от плеча
+          // по горизонтали ≥ 0,7 длины руки: у Паши 0,83–1,0 в любых условиях, в отжиманиях и планке 0,05–0,6 — там кисти под плечами)
+          // и не на спине с коленями вверх: здесь нижнее колено примерно на уровне таза
+          // (медиана −0,08 бедра), в скручиваниях оба колена выше таза (−0,78).
+          // QA 21.10: убрано «бедро не вертикально» — камера за головой видит бёдра «вертикальными» в кадре (full: 35–50% кадров
+          // мимо позы, 0 повторов «темнее» и «ближе»); четвереньки и так отсекает локоть под плечом. Наклон корпуса — до 60° (сбоку 10°)
           pose: lm => { const a = sideAngle(lm, ARMS), [sh, el] = ARMS[a.side].map(i => lm[i]);
-                        return !(el.y - sh.y > dist(sh, el) * .5) && LEGS.some(t => (lm[t[1]].y - lm[t[0]].y) < .6 * dist(lm[t[0]], lm[t[1]]))   // на четвереньках вертикальны оба бедра
+                        return !(el.y - sh.y > dist(sh, el) * .6)
+                          && [0, 1].some(i => Math.abs(lm[15 + i].x - lm[11 + i].x) >= .7 * (dist(lm[11 + i], lm[13 + i]) + dist(lm[13 + i], lm[15 + i])))
                           && Math.max(lm[25].y - lm[23].y, lm[26].y - lm[24].y) > -.6 * Math.max(dist(lm[23], lm[25]), dist(lm[24], lm[26])); },
           metric: lm => ({ value: 0, vis: vis(lm, [11, 12, 23, 24]), side: 0 }),
           subs: [
@@ -347,8 +366,8 @@ const NEW = {
             // кисть верхней руки поднимается над плечом, в длинах корпуса
             { value: lm => Math.max(lm[11].y - lm[15].y, lm[12].y - lm[16].y) / torsoLen(lm), down: .17, up: .06, drift: .075 },
           ],
-          tip: "Отведение бедра лёжа: телефон сбоку в 2 м",
-          hints: { start: "Отведение бедра лёжа: раскрывайся медленно", down: "Плавно закрывайся", pose: "Ляг на бок, колени согнуты", side: "Смени сторону!" } },
+          tip: "Телефон за головой, чуть сбоку",            // как в 3D-показе (demo3d.js): лёжа на спине, колено через корпус к полу
+          hints: { start: "Колено через корпус к полу, медленно", down: "Плавно возвращай", pose: "Ляг на спину, руки в стороны", side: "Смени сторону!" } },
 };
 for (const [k, e] of Object.entries(NEW)) Object.defineProperty(EX, k, { value: e, enumerable: false });
 /** Порядок упражнений на экране выбора. Скручивания (crunch) скрыты: на видео Паши (сверху и наискосок) счёт ненадёжный,
@@ -425,10 +444,14 @@ export class RepCounter {
       // одиночный кадр не в той позе (наклон в глубоком приседе, сбой) не сбрасывает начатое повторение
       // graceMs — сколько поза может «ломаться», не сбрасывая начатое (поворот корпуса в ротации, касание плеча)
       this.offSince = this.offSince ?? now; ++this.offPose;
-      if (e.graceMs ? now - this.offSince > e.graceMs : this.offPose >= POSE_GRACE) { this.state = "up"; this.smooth = null; this.base = null; this.holding = false; for (const g of this.legs) { g.s = "up"; g.v = null; } }
-      else if (e.altGrace) return this.alternate(lm, now); // касание плеча на миг ломает позу упора — эти кадры тоже считаем
-      else if (e.kind === "hold" && this.holding) { this.holdMs += dt; return { status: "ok", side: m.side, holding: true, holdMs: this.holdMs, depth: 1 }; }  // шум — время не теряем
-      return { status: "pose", side: m.side, tilt, holdMs: e.kind === "hold" ? this.holdMs : undefined };
+      const over = e.graceMs ? now - this.offSince > e.graceMs : this.offPose >= POSE_GRACE;
+      if (over) { this.state = "up"; this.smooth = null; this.base = null; for (const g of this.legs) { g.s = "up"; g.v = null; } }
+      // poseHint — что подсказать именно в этой «не той» позе (скалолаз спереди: «поставь телефон сбоку»)
+      const poseHint = e.poseHint?.(lm, this) || null;
+      // удержания: короткий сбой позы (≤ holdGrace) время не останавливает — см. holdStep
+      if (e.kind === "hold") return { ...this.holdStep(false, false, now, dt, m.side, 0), tilt, poseHint };
+      if (!over && e.altGrace) return this.alternate(lm, now); // касание плеча на миг ломает позу упора — эти кадры тоже считаем
+      return { status: "pose", side: m.side, tilt, poseHint };
     }
     this.offPose = 0; this.offSince = null;
     if (e.alt) return this.alternate(lm, now);
@@ -437,7 +460,9 @@ export class RepCounter {
     // и следующее засчитаем только после возврата в исходное положение (state "wait")
     if (e.max && m.value > e.max) { this.state = "wait"; return { status: "pose", side: m.side, tilt }; }
     // угол не может скакнуть на 70° за кадр — это сбой распознавания; верим, только если держится 3 кадра
-    if (e.dir < 0 && this.smooth != null && Math.abs(m.value - this.smooth) > 70 && ++this.spike < 3)
+    // порог — на кадр 33 мс: на редких кадрах (камера 10 к/с) настоящий быстрый присед меняет угол больше 70° за кадр,
+    // и низ приседа отбрасывался как сбой (QA 21.10: быстрые приседы 9 из 16 при 10 к/с)
+    if (e.dir < 0 && this.smooth != null && Math.abs(m.value - this.smooth) > 70 * Math.max(1, dt / 33) && ++this.spike < 3)
       return { status: "ok", side: m.side, angle: this.smooth, raw: m.value, depth: null, rep: false, state: this.state };
     this.spike = 0;
     const kNew = dt > 0 ? 1 - Math.exp(-dt / 45) : .5;                  // сглаживание по времени: при 10 к/с — почти без задержки
@@ -454,12 +479,21 @@ export class RepCounter {
       const back = this.stillV != null && now - this.hist[0][0] < 800 && Math.abs(this.slow - this.stillV) < 12;
       const still = !e.still || steady || back;
       if (steady) this.stillV = this.slow;
-      const ok = this.smooth >= e.hold[0] && this.smooth <= e.hold[1] && still;
-      if (ok) this.holdMs += dt;
-      this.holding = ok;
-      return { status: ok ? "ok" : "pose", side: m.side, holding: ok, holdMs: this.holdMs, depth: ok ? 1 : 0 };
+      const cand = this.smooth >= e.hold[0] && this.smooth <= e.hold[1];
+      // задним числом — с начала позы, но не больше backMax (стульчик: поза держится confirmMs и уже неподвижна)
+      return this.holdStep(cand, cand && still, now, dt, m.side, e.backMax ?? e.confirmMs ?? 0);
     }
     if (e.multi) return this.multi(lm, now, dt);
+    // lockAngle (отжимания): рука выпрямлена (локоть ≥ lockAngle) 0,3 с подряд — это верх: начатое отжимание засчитываем,
+    // если внизу локоть сгибался до lockBend, и «ноль» (base) после такого повтора переучиваем. Раньше «ноль» ловился, пока человек
+    // вставал в упор (плечи выше, чем в планке), и верх больше не «достигался» — счёт вставал навсегда
+    if (e.lockAngle) {
+      const raw = sideAngle(lm, ARMS).value, k = dt > 0 ? 1 - Math.exp(-dt / 100) : 1;     // угол в локте сглаживаем (τ 100 мс): шум ±10°
+      const el = this.elS = this.elS == null ? raw : this.elS + (raw - this.elS) * k;
+      if (this.state === "down") this.minEl = Math.min(this.minEl ?? 180, el);
+      this.lockSince = el >= e.lockAngle ? (this.lockSince ?? now) : null;
+    }
+    const locked = !!e.lockAngle && this.lockSince != null && now - this.lockSince >= 300;
     // rel: пороги — отступ от «нуля» (base); ноль — самое низкое значение, медленно ползёт вверх (drift в секунду, по умолчанию 2°/с),
     // чтобы подстроиться, если человек лёг иначе или сдвинул телефон
     let val = this.smooth;
@@ -471,8 +505,16 @@ export class RepCounter {
     // приводим к виду «меньше — глубже»: для подъёма на носки и махов знак показателя меняем
     const v = e.dir < 0 ? val : -val, down = e.dir < 0 ? e.down : -e.down, up = e.dir < 0 ? e.up : -e.up;
     const depth = Math.max(0, Math.min(1, (up - v) / (up - down)));
-    const minMs = e.minRepMs || MIN_REP_MS;
+    // tempo — минимальный интервал по реальному темпу: доля медианы прошлых интервалов (не больше 2 с). Ротация с колена
+    // повторяется раз в 4–5 с, а «рука прошла у другой руки» посреди повтора давала второй засчёт через 1,2 с
+    const ints = this.ints || [], medInt = ints.length >= 2 ? [...ints].sort((a, b) => a - b)[ints.length >> 1] : 0;
+    const minMs = Math.max(e.minRepMs || MIN_REP_MS, e.tempo && medInt ? Math.min(2000, e.tempo * medInt) : 0);
     let rep = false;
+    if (e.track) this.upright(lm, now);                                    // выпрямился — стойку переучиваем (см. upright)
+    if (this.state === "down") this.minV = Math.min(this.minV ?? 180, m.value);      // насколько сгибались колени внизу
+    if (this.state === "down") this.upAt = v > up ? (this.upAt ?? now) : null;     // upHoldMs: вернулся в исходное и задержался
+    const lockRep = locked && this.state === "down" && (this.minEl ?? 180) <= (e.lockBend ?? 110);
+    e.each?.(lm, this, now);                                               // покадровые проверки упражнения (отжимания: таз над опорой)
     e.track?.(lm, this, this.state === "up" && v > up);                 // стойка: высота таза, длина ноги
     if (e.track && v > up) this.seenStand = true;
     // начал сразу внизу (выпад, присед) — стойки ещё не было: первый повтор засчитаем, если таз потом поднимется ≥ 0,2 ноги
@@ -489,19 +531,64 @@ export class RepCounter {
     // depth — второй показатель глубины (присед анфас: опускание таза), только для ухода вниз
     else if (this.state === "up" && (v < down || (e.depth && e.depth(lm, this) < e.down)) && (!e.downOk || e.downOk(lm, this))
              && !(e.baseMax != null && this.base > e.baseMax)) {   // downOk — защита от обмана; baseMax — «ноль» должен быть лёжа
-      this.state = "down"; this.downAt = now; this.peak = val;
+      this.state = "down"; this.downAt = now; this.peak = val; this.minEl = 180; this.upAt = null; this.minV = m.value;
     } else if (this.state === "down" && e.swing && (this.peak = Math.max(this.peak ?? val, val), this.peak - val >= e.swing)
                && now - this.downAt > minMs * .5 && now - this.lastRepAt > minMs) {
       // swing (rel): повтор — вернулся от нижней точки на swing; «ноль» после повтора — текущее положение
       // (у человека верхняя точка от повтора к повтору плавает: вернуться к самой первой не обязательно)
       this.state = "up"; this.lastRepAt = now; this.reps++; rep = true; this.base = this.smooth;
-    } else if (this.state === "down" && v > up && now - this.downAt > minMs * .5 && now - this.lastRepAt > minMs
-               && (!e.top || e.top(lm)) && (!e.upOk || e.upOk(lm, this))
+    } else if (this.state === "down" && (v > up || lockRep) && now - this.downAt > minMs * .5 && now - this.lastRepAt > minMs
+               && (!e.upHoldMs || lockRep || now - (this.upAt ?? now) >= e.upHoldMs)
+               // uprightOk — выпрямился, хоть таз в кадре и «ниже» старой стойки; но только если колени внизу правда сгибались
+               // (≤ 130°): камера «наехала» на стоящего — таз в кадре опустился, а колени прямые — это не присед
+               && (!e.top || e.top(lm)) && (!e.upOk || e.upOk(lm, this) || (this.uprightOk && this.minV <= 130))
                && (this.bottomHip == null || (this.bottomHip - mid(lm[23], lm[24]).y) >= .2 * (Math.max(lm[27].y, lm[28].y) - mid(lm[23], lm[24]).y))) {
       this.bottomHip = null;
+      if (this.lastRepAt > 0 && now - this.lastRepAt < 20000) this.ints = [...ints, now - this.lastRepAt].slice(-5);
       this.state = "up"; this.lastRepAt = now; this.reps++; rep = true;
+      if (lockRep) this.base = this.smooth;
+      // засчитали по выпрямлению, а не по высоте таза — стойка устарела (шаг к камере, сдвиг телефона): запоминаем новую
+      if (e.upOk && this.top && this.upTop && this.uprightOk && !e.upOk(lm, this)) Object.assign(this.top, this.upTop);
+    } else if (this.state === "down" && e.upOk && this.uprightOk && this.minV > 130 && now - this.downAt > 1000 && !e.upOk(lm, this)) {
+      // «ушёл вниз» без сгиба колен (камера сдвинулась) и стоит прямо — не повтор: стойку переучиваем, начатое сбрасываем
+      if (this.top && this.upTop) Object.assign(this.top, this.upTop);
+      this.state = "up";
     }
     return { status: "ok", side: m.side, angle: this.smooth, raw: m.value, depth, rep, state: this.state };
+  }
+  /** Выпрямился (присед, выпад): колено и бедро ≥ 160°, ноги в кадре не короче 0,8 обычной стойки — в длинах корпуса,
+   *  поэтому от расстояния до камеры не зависит (анфас в глубоком приседе колено в кадре бывает «прямым», а ноги — короткие).
+   *  0,25 с подряд → начатый присед засчитываем, даже если таз «ниже» старой стойки, и стойку (высоту таза и плеч, длину ноги)
+   *  запоминаем заново по самой высокой точке выпрямления. Раньше после шага к камере или сдвига телефона таз «стоя»
+   *  оказывался ниже старой стойки, hipUp не проходил — и счёт вставал до конца подхода */
+  upright(lm, now) {
+    const hp = mid(lm[23], lm[24]), sh = mid(lm[11], lm[12]), ay = Math.max(lm[27].y, lm[28].y);
+    const ang = ts => { const ok = ts.filter(t => vis(lm, t) >= VIS); return ok.length ? Math.min(...ok.map(t => angle(lm[t[0]], lm[t[1]], lm[t[2]]))) : 0; };
+    const knee = ang(LEGS), hip = ang([[11, 23, 25], [12, 24, 26]]), ratio = (ay - hp.y) / torsoLen(lm), str = knee >= 160 && hip >= 160;
+    if (str) this.stdR = Math.max(ratio, (this.stdR ?? ratio) - .002);
+    const ok = str && ratio >= .8 * this.stdR;
+    // один «кривой» кадр выпрямление не прерывает (шум точек); 0,25 с подряд — быстрый присед стоит наверху ≈ 0,3 с
+    this.upBad = ok ? 0 : (this.upBad || 0) + 1;
+    if (ok) { if (this.upSince == null) { this.upSince = now; this.upTop = null; } } else if (this.upBad >= 2) this.upSince = null;
+    // за выпрямление берём самую высокую точку таза и плеч (начало спуска — ещё «прямо», но таз уже ниже)
+    if (ok) { const u = this.upTop; this.upTop = u ? { hy: Math.min(u.hy, hp.y), sy: Math.min(u.sy, sh.y), L: Math.max(u.L, ay - hp.y) } : { hy: hp.y, sy: sh.y, L: ay - hp.y }; }
+    this.uprightOk = this.upSince != null && this.upBad === 0 && now - this.upSince >= 250;
+  }
+  /** Удержание (планка, стульчик). cand — поза и угол в норме; good — ещё и неподвижно (стульчик).
+   *  Время пошло — после подтверждения (good, и поза держится confirmMs), и сразу добавляется задним числом с начала позы,
+   *  но не больше back (окно, на котором неподвижность уже проверена). Короткий сбой (≤ holdGrace) время не останавливает:
+   *  раньше сбой дольше 8 кадров останавливал счёт, а одиночные «правильные» кадры лёжа на животе — запускали */
+  holdStep(cand, good, now, dt, side, back) {
+    const e = this.e;
+    this.candSince = cand ? (this.candSince ?? now) : null;
+    if (this.holding) {
+      if (good) this.badSince = null; else this.badSince = this.badSince ?? now;
+      if (good || now - this.badSince <= (e.holdGrace ?? 300)) this.holdMs += dt;
+      else { this.holding = false; this.badSince = null; }
+    } else if (good && now - this.candSince >= (e.confirmMs ?? 0)) {
+      this.holding = true; this.badSince = null; this.holdMs += Math.min(now - this.candSince, back);
+    }
+    return { status: this.holding ? "ok" : "pose", side, holding: this.holding, holdMs: this.holdMs, depth: this.holding ? 1 : 0 };
   }
   /** Несколько признаков одного движения (отведение бедра лёжа): у каждого свой счёт от «нуля»; повторы — наибольший.
    *  perSide — повторов на сторону: потом подсказка «Смени сторону» (hint) и счёт стороны заново. */
@@ -519,7 +606,11 @@ export class RepCounter {
     e.subs.forEach((sub, i) => {
       const g = this.subs[i], raw = sub.value(lm), k = dt > 0 ? 1 - Math.exp(-dt / 45) : .5;
       g.v = g.v == null ? raw : g.v * (1 - k) + raw * k;
-      if (g.base == null || g.v < g.base) g.base = g.v; else if (g.s === "up") g.base += dt * sub.drift / 1000;
+      // «ноль» — минимум за последние baseWin мс (повтор ≈ 6 с — в окно попадает исходное положение прошлого повтора).
+      // Раньше — минимум за всё время с медленным подъёмом только «наверху»: один выброс точки вниз (темно, далеко)
+      // оставлял признак «внизу» до конца стороны — 0 повторов
+      g.hist = (g.hist || []).filter(h => now - h[0] <= (e.baseWin ?? 8000)); g.hist.push([now, g.v]);
+      g.base = Math.min(...g.hist.map(h => h[1]));
       const d = g.v - g.base;
       depth = Math.max(depth, Math.max(0, Math.min(1, d / sub.down)));
       if (g.s === "up" && d > sub.down) { g.s = "down"; g.downAt = now; g.f0 = this.frames; g.ok0 = this.okFrames; }
@@ -562,8 +653,9 @@ export class RepCounter {
       if (g.s === "wait") { if (g.v > e.up && !g.cancelN) g.s = "up"; continue; }
       // вниз — по сырому значению: короткий пик (быстрое подтягивание, 10 к/с) сглаживание срезает
       g.okN = Math.min(g.v, a) < e.down && ok ? (g.okN || 0) + 1 : 0;      // dwell — сколько кадров подряд в нижней точке
-      if (g.s === "up" && g.okN >= (e.dwell || 1) && !(e.one && this.legs[1 - i].s === "down")) { g.s = "down"; g.downAt = now; }
-      else if (g.s === "down" && g.v > e.up && now - g.at > minMs && now - this.lastRepAt > 250) {
+      // dwell — в кадрах при ≥ 12 к/с; на редких кадрах (камера 10 к/с, слабый телефон) касание успевает попасть в 1 кадр
+      if (g.s === "up" && g.okN >= (this.dtLast >= 80 ? 1 : (e.dwell || 1)) && !(e.one && this.legs[1 - i].s === "down")) { g.s = "down"; g.downAt = now; }
+      else if (g.s === "down" && g.v > e.up && now - g.at > minMs && now - this.lastRepAt > (e.altGap ?? 250)) {   // altGap — между руками/ногами
         g.s = "up"; g.at = now; this.lastRepAt = now; this.reps++; rep = true;
       }
     }
