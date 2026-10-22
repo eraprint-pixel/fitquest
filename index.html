@@ -3546,6 +3546,21 @@ $("mnRoast").onclick = () => { haptic("select"); rsOpen(); };
 // Фото уходит на наш сервер (ключ нейросети там, а не в приложении); кто прислал — сервер проверяет по подписи Telegram.
 // Игра: тарелка засчитывается через хуки gOnPlate() / gSyncPlates(m) — за то, что зафиксирована, а не за калории и оценку.
 const RS_API = "https://kodtela.era-print.com/api/roast";
+// запасной путь к тому же серверу: у части мобильных сетей kodtela.era-print.com недоступен (22.10, Юлия) — тогда era-print.com/ktapi
+const KT_API_BASES = ["https://kodtela.era-print.com/api", "https://era-print.com/ktapi"];
+let ktApiI = (() => { try { return +localStorage.getItem("kt_api_i") === 1 ? 1 : 0; } catch (e) { return 0; } })();
+async function ktFetch(path, opt) {        // path — «/roast/me», «/app/diag»…; сеть упала или ждали дольше 8 с — пробуем другой адрес
+  for (let k = 0; k < KT_API_BASES.length; k++) {
+    const i = (ktApiI + k) % KT_API_BASES.length, ac = typeof AbortController === "function" ? new AbortController() : null;
+    const t = ac && setTimeout(() => ac.abort(), path === "/roast" ? 60000 : 8000);
+    try {
+      const r = await fetch(KT_API_BASES[i] + path, ac ? { ...opt, signal: ac.signal } : opt);
+      clearTimeout(t);
+      if (i !== ktApiI) { ktApiI = i; try { localStorage.setItem("kt_api_i", String(i)); } catch (e) {} }
+      return r;
+    } catch (e) { clearTimeout(t); if (k === KT_API_BASES.length - 1) throw e; }
+  }
+}
 const RS = { tone: null, allowed: false, blob: null, url: null, last: null, tick: 0, m: null, tab: "day", wd: null, open: 0, fixOpen: 0, mission: null,
              hideK: (() => { try { return localStorage.getItem("rs_hidek") === "1"; } catch (e) { return false; } })() };
 const RS_V = { ok: ["var(--gold)", "#15120d"], meh: ["#ffb547", "#15120d"], off: ["#ff6a3d", "#fff"] };
@@ -3575,7 +3590,7 @@ async function rsApi(path, body, form = false) {
   const opt = { method: "POST" };
   if (form) { body.append("initData", tg.initData); body.append("day", rsDayKey()); opt.body = body; }
   else { opt.headers = { "Content-Type": "application/json" }; opt.body = JSON.stringify({ ...body, day: rsDayKey(), initData: tg.initData }); }
-  const r = await fetch(RS_API + path, opt);
+  const r = await ktFetch("/roast" + path, opt);
   return r.json();
 }
 function rsShow(id) { ["rsTone", "rsPickBox", "rsLoad", "rsRes"].forEach(b => $(b).classList.toggle("on", b === id)); }
@@ -3625,7 +3640,7 @@ async function rsInit() {
 function ktDiag(event, detail = "") {
   if (!inTG) return;
   try {
-    fetch("https://kodtela.era-print.com/api/app/diag", { method: "POST", headers: { "Content-Type": "application/json" },
+    ktFetch("/app/diag", { method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ initData: tg.initData, event, detail: String(detail).slice(0, 300), platform: tg.platform || "", tgv: tg.version || "" }) }).catch(() => {});
   } catch (e) {}
 }
