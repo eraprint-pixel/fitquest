@@ -379,6 +379,56 @@ export const EX_ORDER = ["squat", "pushup", "lunge", "calf", "plank", "raise", "
 // скрытые не видны и через Object.keys(EX) (значки игры «все упражнения недели» и т. п.)
 for (const k of Object.keys(EX)) if (EX[k].hidden) Object.defineProperty(EX, k, { enumerable: false });
 
+// ================= поворот кадра =================
+// Android WebView в ландшафтном Telegram (случай 21.10, Xiaomi) отдаёт кадры камеры в ориентации датчика, не поворачивая
+// их вслед за экраном: человек в кадре «лежит на боку», скелет находится, а счёт — 0. Поворот определяем по позе:
+// для упражнений стоя — плечи над тазом, для упора и пола — кисти ниже плеч (опора) и наклон корпуса как у упражнения.
+/** Точки кадра, повёрнутого на rot (90 — по часовой, −90 — против, 180): x, y — доли ширины и высоты нового кадра. */
+export function rotateLm(lm, rot) {
+  if (!rot || !lm) return lm;
+  return lm.map(p => rot === 90 ? { ...p, x: 1 - p.y, y: p.x } : rot === -90 ? { ...p, x: p.y, y: 1 - p.x } : { ...p, x: 1 - p.x, y: 1 - p.y });
+}
+const STANDING = new Set(["squat", "lunge", "wallsit", "kneel", "calf", "raise", "thruster"]);
+/** Правдоподобна ли ориентация кадра для упражнения: true / false, null — тело видно плохо, не судим. */
+export function orientOk(lm, ex, aspect = 1) {
+  if (!lm || vis(lm, [11, 12, 23, 24]) < .4) return null;
+  const L = fitAspect(lm, aspect), sh = mid(L[11], L[12]), hp = mid(L[23], L[24]), T = torsoLen(L), tilt = torsoTilt(L);
+  if (STANDING.has(ex)) return hp.y - sh.y > .5 * T && tilt >= 50;               // стоя (и на колене, и на стульчике): плечи над тазом
+  if (ex === "hipabd") return tilt <= 60;                                          // лёжа: корпус ближе к горизонтали
+  // упор: видимые кисти — обе под плечами (спереди руки расставлены: при неверном повороте одна кисть оказывается выше плеча)
+  const e = EX[ex], seen = [0, 1].filter(i => L[15 + i].visibility >= .3), sup = seen.length && seen.every(i => L[15 + i].y - L[11 + i].y > .3 * T);
+  return !!sup && tilt >= e.torso[0] && tilt <= e.torso[1];
+}
+/** Выбор поворота на подход: держим текущий, пока он правдоподобен; если ~1 с он не проходит, а другой проходит
+ *  уверенно (≥ 75% кадров) — переключаемся. Поворот, который уже подтвердился (≥ 2 с в позе), меняем только после 4 с
+ *  без позы: смена стороны в ротации (на четвереньки), вставание после отжиманий — не повод крутить картинку.
+ *  prefer — поворот, найденный раньше на этом телефоне (для отведения бедра лёжа ±90 по позе не отличить).
+ *  unsure — ни один поворот не подходит (подсказать повернуть телефон). */
+export class Orienter {
+  constructor(ex, rot = 0, prefer = null) { this.ex = ex; this.rot = rot; this.prefer = prefer; this.h = { 0: [], 90: [], "-90": [] }; this.unsure = false; this.changed = false; this.good = 0; this.badSince = null; this.last = null; }
+  update(lm, now, aspect = 1) {
+    this.changed = false;
+    const dt = this.last == null ? 0 : Math.min(250, now - this.last); this.last = now;
+    if (!lm) return this.rot;
+    for (const r of [0, 90, -90]) {
+      const ok = orientOk(rotateLm(lm, r), this.ex, r ? 1 / aspect : aspect);
+      const h = this.h[r] = this.h[r].filter(q => now - q[0] <= 1200);
+      if (ok != null) h.push([now, ok ? 1 : 0]);
+    }
+    const f = r => { const h = this.h[r]; return h.length >= 6 && now - h[0][0] >= 800 ? h.reduce((s, q) => s + q[1], 0) / h.length : null; };
+    const cur = f(this.rot);
+    if (cur == null || cur >= .4) { if (cur != null && cur >= .6) this.good += dt; this.badSince = null; this.unsure = false; return this.rot; }
+    this.badSince = this.badSince ?? now;
+    let best = null;
+    for (const r of [0, 90, -90]) { const v = f(r); if (r !== this.rot && v != null && v >= .75 && (!best || v > best.v || (v === best.v && r === this.prefer))) best = { r, v }; }
+    if (best && now - this.badSince >= (this.good >= 2000 ? 4000 : 0)) {
+      this.rot = best.r; this.changed = true; this.good = 0; this.badSince = null; for (const k in this.h) this.h[k] = [];
+    }
+    this.unsure = !best && cur < .2;
+    return this.rot;
+  }
+}
+
 /** Автомат «вверх → вниз → вверх»: повторение засчитывается при возврате наверх.
  *  Для удержаний (планка, стульчик) — копит время, пока поза правильная. */
 export class RepCounter {
