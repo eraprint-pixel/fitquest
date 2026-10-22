@@ -3602,6 +3602,9 @@ function ktGate(m) {
   const K = "kt_access_ok";
   if (m && m.app === true) { try { localStorage.setItem(K, String(Date.now())); } catch (e) {} return; }
   if (m && m.app === undefined && m.ok) return;
+  // нет связи с нашим сервером (у части мобильных сетей он недоступен), а приложение открыто из Telegram —
+  // пускаем: кнопку бот даёт только участникам, тренировка работает без сервера (не будет только прожарки)
+  if (m === undefined && inTG) return;
   if (m === undefined) { let t = 0; try { t = +localStorage.getItem(K) || 0; } catch (e) {} if (Date.now() - t < 7 * 864e5) return; }
   const retry = m === undefined && inTG;
   const ov = document.createElement("div"); ov.id = "ktLock";
