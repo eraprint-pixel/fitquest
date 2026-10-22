@@ -122,9 +122,11 @@ body.in-tg #homeMenu, body.in-tg #rsBack { display: none; }
 #ktLock .btn { margin-top: 22px; text-decoration: none; text-align: center; }
 .tr-brand .app { font-size: 18px; letter-spacing: .38em; padding-left: .38em; margin-top: 8px; }
 /* искры идут ВВЕРХ ПО ШТРИХАМ логотипа (позиции штрихов — из файлов logo.png / logo-mark.png), а не где попало */
-.kt-spark { position: absolute; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--gold3); opacity: 0; pointer-events: none;
-  box-shadow: 0 0 8px 2px rgba(243,220,170,.8); animation: ktSpark var(--dur, 2.4s) linear infinite; animation-delay: var(--delay, 0s); }
-@keyframes ktSpark { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: 1; } 85% { opacity: .9; } 100% { opacity: 0; transform: translateY(calc(-1 * var(--len))); } }
+/* пузырьки: разного размера (2–5 px), медленно и плавно, мягкое свечение по размеру — без «вспышек» */
+.kt-spark { position: absolute; width: var(--s, 4px); height: var(--s, 4px); margin-left: calc(var(--s, 4px) / -2); border-radius: 50%; background: var(--gold3); opacity: 0; pointer-events: none;
+  box-shadow: 0 0 calc(var(--s, 4px) * 1.2) calc(var(--s, 4px) * .25) rgba(243,220,170,.55);
+  animation: ktSpark var(--dur, 4s) cubic-bezier(.45,.05,.55,.95) infinite; animation-delay: var(--delay, 0s); will-change: transform, opacity; }
+@keyframes ktSpark { 0% { opacity: 0; transform: translateY(0); } 30% { opacity: var(--op, .85); } 70% { opacity: var(--op, .85); } 100% { opacity: 0; transform: translateY(calc(-1 * var(--len))); } }
 @media (prefers-reduced-motion: reduce) { .kt-spark, .rs-spark { display: none; } }
 #home .rank, #home .q-sub { font-size: 13px; }
 #home .stat span, #home .skill-row span { font-size: 13px; white-space: nowrap; }
@@ -1651,9 +1653,16 @@ function ktSparks(box, n = 5) {         // box — обёртка с <img> ло�
       const i = document.createElement("i");
       i.className = "kt-spark";
       aim(i, pick());
-      i.style.setProperty("--dur", (1.7 + Math.random() * 0.9).toFixed(2) + "s");
-      i.style.setProperty("--delay", (k * 0.45 + Math.random() * 0.3).toFixed(2) + "s");
-      i.addEventListener("animationiteration", () => { aim(i, pick()); i.style.setProperty("--dur", (1.7 + Math.random() * 0.9).toFixed(2) + "s"); });
+      const look = () => {                 // размер 2–5 px (5 — самый большой), мелкие чуть прозрачнее; подъём 3,5–5,5 с
+        const sz = 2 + Math.random() * 3;
+        i.style.setProperty("--s", sz.toFixed(1) + "px");
+        i.style.setProperty("--op", (0.55 + (sz - 2) / 3 * 0.35).toFixed(2));
+      };
+      look();
+      // длительность задаём один раз: если менять её на лету, браузер пересчитывает фазу и пузырёк «вспыхивает» посреди пути
+      i.style.setProperty("--dur", (3.5 + Math.random() * 2).toFixed(2) + "s");
+      i.style.setProperty("--delay", (k * 0.9 + Math.random() * 0.6).toFixed(2) + "s");
+      i.addEventListener("animationiteration", () => { aim(i, pick()); look(); });
       box.appendChild(i);
     }
   };
