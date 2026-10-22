@@ -1638,14 +1638,22 @@ function ktSparks(box, n = 5) {         // box — обёртка с <img> ло�
     const contain = getComputedStyle(img).objectFit === "contain";
     const w = contain ? Math.min(iw, ih * nw / nh) : iw, h = contain ? Math.min(ih, iw * nh / nw) : ih;
     const ox = img.offsetLeft + (iw - w) / 2, oy = img.offsetTop + (ih - h) / 2;
-    for (let k = 0; k < n; k++) {
-      const [x, top, bot] = st[(k * 5 + 2) % st.length], i = document.createElement("i");
-      i.className = "kt-spark";
+    // каждая искра после пролёта прыгает на СЛУЧАЙНЫЙ штрих (слева, справа, посередине) — не повторяя соседний подряд
+    let last = -1;
+    const pick = () => { let j; do { j = Math.floor(Math.random() * st.length); } while (j === last && st.length > 1); last = j; return j; };
+    const aim = (i, j) => {
+      const [x, top, bot] = st[j];
       i.style.left = (ox + w * x / 100).toFixed(1) + "px";
       i.style.top = (oy + h * bot / 100 - 3).toFixed(1) + "px";
       i.style.setProperty("--len", (h * (bot - top) / 100).toFixed(1) + "px");
-      i.style.setProperty("--dur", (1.9 + (k % 3) * 0.35).toFixed(2) + "s");
-      i.style.setProperty("--delay", (k * 0.55).toFixed(2) + "s");
+    };
+    for (let k = 0; k < n; k++) {
+      const i = document.createElement("i");
+      i.className = "kt-spark";
+      aim(i, pick());
+      i.style.setProperty("--dur", (1.7 + Math.random() * 0.9).toFixed(2) + "s");
+      i.style.setProperty("--delay", (k * 0.45 + Math.random() * 0.3).toFixed(2) + "s");
+      i.addEventListener("animationiteration", () => { aim(i, pick()); i.style.setProperty("--dur", (1.7 + Math.random() * 0.9).toFixed(2) + "s"); });
       box.appendChild(i);
     }
   };
