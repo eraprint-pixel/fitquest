@@ -98,7 +98,10 @@ h2 { font-family: var(--disp); font-size: 13px; letter-spacing: .18em; text-tran
 #homeMenu { min-height: 44px; }
 /* в Telegram «назад» — только системная кнопка (дизайн-стандарты); своя «‹ Меню» — вне Telegram */
 body.in-tg #homeMenu, body.in-tg #rsBack { display: none; }
-#modeSeg button, #voiceSeg button { min-height: 44px; font-size: 13px; color: #b3ada4; }
+#modeSeg button, #voiceSeg button { min-height: 44px; font-size: 13px; color: #b3ada4; display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap; }
+/* значки режима и голоса — фирменные золотые линии (как в прожарке), не эмодзи; подпись в одну строку */
+.si { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+#modeSeg button:not(.on) .si, #voiceSeg button:not(.on) .si { color: var(--gold); }
 #modeSeg button.on, #voiceSeg button.on { color: #1a140b; }
 #modeNote, #voiceNote { font-size: 13px; color: #b3ada4; }
 #exTip, #demoBtn, #howBtn, #homeMenu { color: #b3ada4; }
@@ -120,7 +123,7 @@ body.in-tg #homeMenu, body.in-tg #rsBack { display: none; }
 #ktLock .tr-logo img { position: relative; display: block; width: 100%; height: auto; }
 #ktLock .kl-t { font-family: var(--disp); font-size: 17px; white-space: nowrap; color: var(--gold2); } #ktLock .kl-s { font-size: 15px; color: #b3ada4; margin-top: 8px; }
 #ktLock .btn { margin-top: 22px; text-decoration: none; text-align: center; }
-.tr-brand .app { font-size: 18px; letter-spacing: .38em; padding-left: .38em; margin-top: 8px; }
+.tr-brand .app { font-size: 15px; letter-spacing: .26em; padding-left: .26em; white-space: nowrap; margin-top: 8px; }
 /* искры идут ВВЕРХ ПО ШТРИХАМ логотипа (позиции штрихов — из файлов logo.png / logo-mark.png), а не где попало */
 /* пузырьки: разного размера (2–5 px), медленно и плавно, мягкое свечение по размеру — без «вспышек» */
 .kt-spark { position: absolute; width: var(--s, 4px); height: var(--s, 4px); margin-left: calc(var(--s, 4px) / -2); border-radius: 50%; background: var(--gold3); opacity: 0; pointer-events: none;
@@ -1249,8 +1252,8 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
 
 <!-- СТАРТОВОЕ МЕНЮ -->
 <section class="screen on" id="menu">
-  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div></div>
-  <div class="mn-hi" id="mnHi">Боец, в строй.<span></span></div>
+  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div><div class="app goldtext">ТВОЙ ЛИЧНЫЙ ТРЕНЕР</div></div>
+  <div class="mn-hi" id="mnHi">Привет!<span></span></div>   <!-- в боте скрыто; в игре — приветствие и подпись -->
   <div class="gm-strip" id="mnStrip"></div>
   <!-- ХАБ ИГРЫ: приказ дня из трёх задач — через него человек находит тренировку, прожарку и вес -->
   <button class="gm-new" id="hubNew" hidden></button>   <!-- неоткрытые достижения (pfUnopened от «Профиля») — первым делом, наверху → «Призы» -->
@@ -1382,7 +1385,7 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
 <!-- ТРЕНИРОВКА: главный экран -->
 <section class="screen" id="home">
   <div class="rs-head" style="margin-bottom:0"><button id="homeMenu">‹ Меню</button></div>
-  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div><div class="app goldtext">ТРЕНИРОВКА</div></div>
+  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div><div class="app goldtext">ТРЕНИРОВКА С КАМЕРОЙ</div></div>
 
   <div class="hero">
     <div class="hero-top">
@@ -1421,17 +1424,17 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
   <div id="modeBox">
     <h2>Режим</h2>
     <div class="seg seg2" id="modeSeg">
-      <button data-m="free">🎯 Свободный</button>
-      <button data-m="p50">🏆 Протокол 50</button>
+      <button data-m="free"><svg class="si" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7.5a4.5 4.5 0 1 0 0 9 4.5 4.5 0 0 0 0-9zM12 11.2a.8.8 0 1 0 0 1.6.8.8 0 0 0 0-1.6z"/></svg>Свободный</button>
+      <button data-m="p50"><svg class="si" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 4h9v4.5a4.5 4.5 0 0 1-9 0zM7.5 6H4.5c0 3 1.5 4.5 3.3 4.8M16.5 6h3c0 3-1.5 4.5-3.3 4.8M12 13v4M8.5 20.5h7M9.5 17h5"/></svg>Протокол 50</button>
     </div>
     <div class="seg-note" id="modeNote"></div>
   </div>
 
   <h2>Голос тренера</h2>
   <div class="seg" id="voiceSeg">
-    <button data-v="hard">🔥 Жёсткий 18+</button>
-    <button data-v="count">🔢 Только счёт</button>
-    <button data-v="off">🔇 Без звука</button>
+    <button data-v="hard"><svg class="si" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.6 2.5c.6 3.2 4.9 5.6 4.9 10.4a5.5 5.5 0 0 1-11 0c0-2.4 1.2-4.1 2.5-5.2.1 2 1 3.2 2.3 3.6-.4-3.2.1-6.2 1.3-8.8z"/></svg>18+</button>
+    <button data-v="count"><svg class="si" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9.5 7.5 8v8M11 9.2a2 2 0 0 1 3.5 1.3c0 1.8-3.5 3.3-3.5 5.5h3.8M17 8.3a2 2 0 1 1 1.6 3.4 2 2 0 1 1-1.6 3.5"/></svg>Счёт</button>
+    <button data-v="off"><svg class="si" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4zM16 9.5l4.5 5M20.5 9.5l-4.5 5"/></svg>Без звука</button>
   </div>
   <div class="seg-note" id="voiceNote"></div>
 
@@ -3692,7 +3695,7 @@ function openTrain() { show("home"); render(); tg?.BackButton?.show(); }
 function mnRender() {
   const L = heroLvl(), name = tg?.initDataUnsafe?.user?.first_name;
   $("mnLvl").textContent = `Уровень ${L.l} · ${fmt(S.xp)}\u00a0XP`;
-  if (!GAME_ON) { $("mnHi").firstChild.textContent = name ? `${name}, в строй.` : "Боец, в строй."; return; }   // меню бота: коротко, по-боевому (решение Эрнеста 22.10)
+  if (!GAME_ON) { $("mnHi").style.display = "none"; return; }   // меню бота: под логотипом только «ТВОЙ ЛИЧНЫЙ ТРЕНЕР» (решение Эрнеста 22.10)
   $("mnHi").firstChild.textContent = name ? `Привет, ${name}!` : "Привет, боец!";
   if (!G.day) return;
   const n = gDone(), T = TONE[gTone()];
