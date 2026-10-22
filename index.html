@@ -2244,6 +2244,7 @@ function poseSpeed(dt) {                 // первые 10 кадров — п�
   const v = m.slice(10).sort((a, b) => a - b), med = v[v.length >> 1];
   if (med <= 75) return;
   poseModel = "lite";
+  ktDiag("pose_lite", `медиана ${Math.round(med)} мс`);
   try { localStorage.setItem("kt_pose_model", "lite"); } catch (e) {}
   const old = landmarker; landmarker = null;
   try { old.close(); } catch (e) {}
@@ -2306,15 +2307,16 @@ async function start(demo = false) {
     loadSet("Загружаю тренера…", 45); loadCreep(45, 92);
     await initModel();
     await loadDone(); setHint(EX[S.ex].tip, false, true);
+    ktDiag("camera_ok", `${video.videoWidth}x${video.videoHeight} ${poseModel} ${S.ex}`);
     sess.startedAt = performance.now(); Coach.say(sess.p50 ? "proto_go" : "start", true);
     loop();
   } catch (e) {
     console.error(e); stop(false);
+    ktDiag("camera_fail", `${e && e.name || ""}: ${String(e && e.message || e).slice(0, 200)}`);
+    // «Открыть в браузере» убрано: вне Telegram приложение закрыто для посторонних (ktGate) — человек упрётся в заглушку
     $("camErr").innerHTML = `<div class="err"><b>Камера не включилась.</b><br>${
-      e && e.name === "NotAllowedError" ? "Разрешите доступ к камере и попробуйте ещё раз." :
-      "Не удалось запустить камеру или распознавание."}<br><small style="color:#9a958d">${String(e && e.message || e).slice(0, 160)}</small>${inTG ? "<br>Если не получается в Telegram — откройте в браузере:" : ""}
-      ${inTG ? '<button class="btn btn-ghost" id="openBrowser">Открыть в браузере</button>' : ""}</div>`;
-    $("openBrowser")?.addEventListener("click", () => tg.openLink(location.href));
+      e && e.name === "NotAllowedError" ? "Разреши Telegram доступ к камере в настройках телефона и открой приложение заново." :
+      "Закрой приложение и открой заново через бота. Не помогло — напиши в чат «Код тела»."}<br><small style="color:#9a958d">${String(e && e.message || e).slice(0, 160)}</small></div>`;
   }
 }
 function stop(showResult = true) {
@@ -3586,6 +3588,14 @@ async function rsInit() {
 // Доступ к приложению (решение Эрнеста 20.10): только тем, кому бот даёт кнопку — сейчас Эрнест, Лена, Паша; потом участники.
 // Сервер отвечает app: true/false по подписи Telegram. Вне Telegram — заглушка (кроме localhost и *.test для проверок).
 // Сервер недоступен — пускаем, если доступ подтверждался за последние 7 дней. Старый сервер без поля app — не мешаем.
+// Диагностика для нас: что за телефон и включилась ли камера (без фото/видео, только событие и строка) — /api/app/diag
+function ktDiag(event, detail = "") {
+  if (!inTG) return;
+  try {
+    fetch("https://kodtela.era-print.com/api/app/diag", { method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ initData: tg.initData, event, detail: String(detail).slice(0, 300), platform: tg.platform || "", tgv: tg.version || "" }) }).catch(() => {});
+  } catch (e) {}
+}
 function ktGate(m) {
   const h = location.hostname;
   if (h === "localhost" || h === "127.0.0.1" || h.endsWith(".test")) return;
@@ -3597,11 +3607,12 @@ function ktGate(m) {
   const ov = document.createElement("div"); ov.id = "ktLock";
   ov.innerHTML = `<div class="kl-box"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div>
     <div class="kl-t">Для участников «Кода тела»</div>
-    <div class="kl-s">${retry ? "Нет связи с сервером. Проверь интернет" : "Открой приложение через бота"}</div>
-    ${retry ? `<button class="btn btn-gold" id="klRetry">ПОВТОРИТЬ</button>` : `<a class="btn btn-gold" href="https://t.me/project_kod_tela_bot">ОТКРЫТЬ БОТА</a>`}</div>`;
+    <div class="kl-s">${retry ? "Нет связи с сервером. Проверь интернет" : inTG ? "Ты участник? Напиши Паше — добавит" : "Открой приложение через бота"}</div>
+    ${retry ? `<button class="btn btn-gold" id="klRetry">ПОВТОРИТЬ</button>` : inTG ? `<button class="btn btn-gold" id="klClose">ЗАКРЫТЬ</button>` : `<a class="btn btn-gold" href="https://t.me/project_kod_tela_bot">ОТКРЫТЬ БОТА</a>`}</div>`;
   document.body.appendChild(ov);
   if (retry) $("klRetry").onclick = () => location.reload();
-  else if (inTG) ov.querySelector("a").onclick = e => { e.preventDefault(); tg.close(); };
+  else if (inTG) $("klClose").onclick = () => tg.close();
+  if (!retry && inTG) ktDiag("gate_closed", "приложение открыто, но человек не участник");
 }
 function rsMe(m, quiet = false) {           // свежие данные с сервера: история, неделя, значки → экран, меню и игра
   if (!m || m.allowed === false) return;
