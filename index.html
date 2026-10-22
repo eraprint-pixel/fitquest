@@ -108,20 +108,24 @@ body.in-tg #homeMenu, body.in-tg #rsBack { display: none; }
 #home { padding-bottom: calc(96px + var(--safe-bot)); }
 .ex-act .btn { margin: 0; min-height: 50px; white-space: nowrap; } .ex-act #startBtn { padding: 12px 8px; font-size: 15px; letter-spacing: .01em; } .ex-act #howBtn { width: auto; padding: 11px 12px; font-size: 14px; color: var(--gold2); border-color: #3a3530; background: #17161a; }
 /* шапка тренировки: крупный логотип с круглым свечением и искрами вверх — как заставка и прожарка */
-#home .tr-brand { margin: 0 0 14px; }
-#home .tr-logo { position: relative; width: 112px; margin: 2px auto 0; }
-#home .tr-logo::before { content: ""; position: absolute; left: -46px; right: -46px; top: -30px; bottom: -30px; border-radius: 50%; pointer-events: none;
+/* логотип «Код тела» — ОДИН размер на всех экранах (меню, тренировка, заглушка): 112 px по ширине, пропорции файла */
+.tr-brand { margin: 0 0 14px; }
+.tr-logo { position: relative; width: 112px; margin: 2px auto 0; }
+.tr-logo::before { content: ""; position: absolute; left: -46px; right: -46px; top: -30px; bottom: -30px; border-radius: 50%; pointer-events: none;
   background: radial-gradient(closest-side, rgba(212,180,122,.30), rgba(212,180,122,.08) 60%, transparent); }
-#home .tr-logo img { position: relative; display: block; width: 100%; height: auto; filter: drop-shadow(0 0 14px rgba(243,220,170,.35)); }
-#home .tr-logo .rs-spark { bottom: 46px; }
+.tr-logo img { position: relative; display: block; width: 100%; height: auto; filter: drop-shadow(0 0 14px rgba(243,220,170,.35)); }
 #ktLock { position: fixed; inset: 0; z-index: 9500; display: flex; align-items: center; justify-content: center; padding: 24px 16px; background: var(--bg); text-align: center; }
-#ktLock .kl-box { width: 100%; max-width: 360px; } #ktLock .tr-logo { position: relative; width: 112px; margin: 0 auto 22px; }
+#ktLock .kl-box { width: 100%; max-width: 360px; } #ktLock .tr-logo { margin: 0 auto 22px; }
 #ktLock .tr-logo::before { content: ""; position: absolute; left: -46px; right: -46px; top: -30px; bottom: -30px; border-radius: 50%; background: radial-gradient(closest-side, rgba(212,180,122,.30), rgba(212,180,122,.08) 60%, transparent); }
 #ktLock .tr-logo img { position: relative; display: block; width: 100%; height: auto; }
 #ktLock .kl-t { font-family: var(--disp); font-size: 17px; white-space: nowrap; color: var(--gold2); } #ktLock .kl-s { font-size: 15px; color: #b3ada4; margin-top: 8px; }
 #ktLock .btn { margin-top: 22px; text-decoration: none; text-align: center; }
-#home .brand .app { font-size: 18px; letter-spacing: .38em; padding-left: .38em; margin-top: 8px; }
-@media (prefers-reduced-motion: reduce) { #home .tr-logo .rs-spark { display: none; } }
+.tr-brand .app { font-size: 18px; letter-spacing: .38em; padding-left: .38em; margin-top: 8px; }
+/* искры идут ВВЕРХ ПО ШТРИХАМ логотипа (позиции штрихов — из файлов logo.png / logo-mark.png), а не где попало */
+.kt-spark { position: absolute; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--gold3); opacity: 0; pointer-events: none;
+  box-shadow: 0 0 8px 2px rgba(243,220,170,.8); animation: ktSpark var(--dur, 2.4s) linear infinite; animation-delay: var(--delay, 0s); }
+@keyframes ktSpark { 0% { opacity: 0; transform: translateY(0); } 15% { opacity: 1; } 85% { opacity: .9; } 100% { opacity: 0; transform: translateY(calc(-1 * var(--len))); } }
+@media (prefers-reduced-motion: reduce) { .kt-spark, .rs-spark { display: none; } }
 #home .rank, #home .q-sub { font-size: 13px; }
 #home .stat span, #home .skill-row span { font-size: 13px; white-space: nowrap; }
 #home .stat span, #home .q-sub, #hNext { color: #b3ada4; }
@@ -244,6 +248,7 @@ canvas#fx { pointer-events: none; }
   box-shadow: 0 8px 28px #0006; transition: transform .15s; }
 .mn-tile:active { transform: scale(.98); }
 .mn-tile .ic { font-size: 40px; width: 56px; text-align: center; filter: drop-shadow(0 0 10px rgba(243,220,170,.35)); }
+.mn-tile .ic img { width: 56px; height: 56px; display: block; }   /* значки меню — медали в стиле иконок упражнений */
 .mn-tile b { display: block; font-family: var(--disp); font-size: 17px; letter-spacing: .02em; }
 .mn-tile small { display: block; font-size: 12px; color: var(--muted); margin-top: 3px; line-height: 1.3; }
 .mn-tile em { display: inline-block; margin-top: 6px; padding: 2px 9px; border-radius: 10px; font-style: normal; font-size: 11px; font-weight: 700;
@@ -1186,7 +1191,7 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
 
 <!-- СТАРТОВОЕ МЕНЮ -->
 <section class="screen on" id="menu">
-  <div class="brand"><img src="logo.png" alt="Код тела"><div class="app goldtext">ЛИЧНЫЙ ТРЕНЕР</div></div>
+  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div><div class="app goldtext">ЛИЧНЫЙ ТРЕНЕР</div></div>
   <div class="mn-hi" id="mnHi">Привет! Что сегодня?<span>Выбирай — тренер уже ждёт</span></div>
   <div class="gm-strip" id="mnStrip"></div>
   <!-- ХАБ ИГРЫ: приказ дня из трёх задач — через него человек находит тренировку, прожарку и вес -->
@@ -1200,9 +1205,9 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
   <div class="hub-links"><button class="hub-help" id="hubStory">📖 Сюжет</button><button class="hub-help" id="hubHelp">❔ Как играть</button></div>
   <!-- прежнее меню (тренировка, прожарка, «Скоро»): видно, когда игра выключена (GAME_ON = false — всё, что не localhost) -->
   <div hidden id="mnLegacy">
-  <button class="mn-tile main" id="mnTrain"><div class="ic">🏋️</div><div><b>ТРЕНИРОВКА С КАМЕРОЙ</b>
+  <button class="mn-tile main" id="mnTrain"><div class="ic"><img src="ex-icons/menu_train.webp?v=1" alt="" onerror="this.replaceWith('🏋️')"></div><div><b>ТРЕНИРОВКА С КАМЕРОЙ</b>
     <small>Камера считает повторения, за каждое — опыт и уровни</small><em id="mnLvl">Уровень 1</em></div><div class="go">›</div></button>
-  <button class="mn-tile" id="mnRoast" style="display:none"><div class="ic">🍽</div><div><b>ПРОЖАРКА ТАРЕЛКИ</b>
+  <button class="mn-tile" id="mnRoast" style="display:none"><div class="ic"><img src="ex-icons/menu_roast.webp?v=1" alt="" onerror="this.replaceWith('🍽')"></div><div><b>ПРОЖАРКА ТАРЕЛКИ</b>
     <small>Сфоткай еду — тренер оценит тарелку, калории и даст совет</small><em id="mnPlates">Сегодня 0 тарелок</em></div><div class="go">›</div></button>
     <div class="mn-tile off"><div class="ic">⚔️</div><div><b>СКОРО</b><small>Дуэли, испытания и новые фишки</small></div></div>
   </div>
@@ -1319,7 +1324,7 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
 <!-- ТРЕНИРОВКА: главный экран -->
 <section class="screen" id="home">
   <div class="rs-head" style="margin-bottom:0"><button id="homeMenu">‹ Меню</button></div>
-  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"><i class="rs-spark" style="left:18%"></i><i class="rs-spark" style="left:44%;animation-delay:.6s"></i><i class="rs-spark" style="left:70%;animation-delay:1.2s"></i><i class="rs-spark" style="left:30%;animation-delay:1.8s"></i></div><div class="app goldtext">ТРЕНИРОВКА</div></div>
+  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div><div class="app goldtext">ТРЕНИРОВКА</div></div>
 
   <div class="hero">
     <div class="hero-top">
@@ -1556,6 +1561,34 @@ const fresh = () => ({ xp: 0, skills: { str: 0, legs: 0, end: 0 }, reps: 0, best
                        ex: "squat", voice: "hard", mode: "free" });     // серия и задачи дня — в игровом слое (G)
 let S = fresh();
 const tg = window.Telegram?.WebApp;
+// штрихи логотипа: [x %, верх %, низ %] от размеров картинки (замерены по файлам)
+const KT_STROKES = {
+  "logo.png": [[25,5.8,76.3],[29.3,12.5,69.6],[33.6,10.5,72.8],[41.7,9.7,63],[45.5,15.6,77],[49.3,1.6,54.1],[53.1,16.3,76.7],[56.4,9.7,63],[66.9,10.9,76.3],[70.7,5.8,70.4],[75,12.5,74.3]],
+  "logo-mark.png": [[9.6,7.2,94.9],[16.7,15.7,87],[23.8,12.8,90.6],[36.9,12,78.3],[42.9,19.5,95.9],[49,1.9,67.2],[55,20,95.4],[60.8,12,78.3],[77.7,13.7,94.9],[83.8,7.2,87.5],[90.4,15.7,92.3]] };
+function ktSparks(box, n = 5) {         // box — обёртка с <img> логотипа; искры бегут снизу вверх строго по штрихам
+  const img = box?.querySelector("img"); if (!img) return;
+  const st = KT_STROKES[/logo-mark/.test(img.getAttribute("src")) ? "logo-mark.png" : "logo.png"];
+  const place = () => {
+    box.querySelectorAll(".rs-spark, .kt-spark").forEach(e => e.remove());
+    const iw = img.clientWidth, ih = img.clientHeight, nw = img.naturalWidth, nh = img.naturalHeight;
+    if (!iw || !ih || !nw) return;
+    const contain = getComputedStyle(img).objectFit === "contain";
+    const w = contain ? Math.min(iw, ih * nw / nh) : iw, h = contain ? Math.min(ih, iw * nh / nw) : ih;
+    const ox = img.offsetLeft + (iw - w) / 2, oy = img.offsetTop + (ih - h) / 2;
+    for (let k = 0; k < n; k++) {
+      const [x, top, bot] = st[(k * 5 + 2) % st.length], i = document.createElement("i");
+      i.className = "kt-spark";
+      i.style.left = (ox + w * x / 100).toFixed(1) + "px";
+      i.style.top = (oy + h * bot / 100 - 3).toFixed(1) + "px";
+      i.style.setProperty("--len", (h * (bot - top) / 100).toFixed(1) + "px");
+      i.style.setProperty("--dur", (1.9 + (k % 3) * 0.35).toFixed(2) + "s");
+      i.style.setProperty("--delay", (k * 0.55).toFixed(2) + "s");
+      box.appendChild(i);
+    }
+  };
+  if (img.complete && img.naturalWidth) place(); else img.addEventListener("load", place, { once: true });
+  try { new ResizeObserver(() => place()).observe(box); } catch (e) {}
+}
 const inTG = !!(tg && tg.initData);
 if (inTG) document.body.classList.add("in-tg");
 
@@ -3861,6 +3894,7 @@ document.querySelectorAll("#rsTone [data-tone]").forEach(b => b.onclick = async 
 });
 load();
 rsInit();
+document.querySelectorAll(".tr-logo, #roast .rs-logo, #loading .rs-logo").forEach(b => { if (!b.closest("#ktLock")) ktSparks(b, b.classList.contains("rs-logo") ? 6 : 5); });
 // бонус-миссия из «Прожарки тарелки»: бот открывает приложение с ?ex=squat — сразу нужное упражнение
 { const ex = new URLSearchParams(location.search).get("ex"); if (ex && EX[ex]) { S.ex = ex; if (EX[ex].kind !== "hold") S.mode = "free"; } }
 gRoll(); render(); mnRender();
