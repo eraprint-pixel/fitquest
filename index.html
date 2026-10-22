@@ -243,7 +243,8 @@ canvas#fx { pointer-events: none; }
 
 
 /* ---------- стартовое меню ---------- */
-.mn-hi { font-family: var(--disp); font-size: 20px; text-align: center; margin: 4px 0 16px; }
+.mn-hi { font-family: var(--disp); font-size: 22px; letter-spacing: .02em; text-align: center; margin: 6px 0 18px; }
+.mn-hi span:empty { display: none; }
 .mn-hi span { display: block; font-family: inherit; font-size: 13px; color: var(--muted); margin-top: 4px; font-weight: 400; }
 .mn-tile { display: flex; align-items: center; gap: 14px; width: 100%; text-align: left; margin-top: 12px; padding: 18px 16px;
   border-radius: 22px; background: linear-gradient(135deg, #241d14, var(--card) 60%); border: 1.5px solid var(--gold-dim); color: var(--text);
@@ -1248,8 +1249,8 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
 
 <!-- СТАРТОВОЕ МЕНЮ -->
 <section class="screen on" id="menu">
-  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div><div class="app goldtext">ЛИЧНЫЙ ТРЕНЕР</div></div>
-  <div class="mn-hi" id="mnHi">Привет! Что сегодня?<span>Выбирай — тренер уже ждёт</span></div>
+  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div></div>
+  <div class="mn-hi" id="mnHi">Боец, в строй.<span></span></div>
   <div class="gm-strip" id="mnStrip"></div>
   <!-- ХАБ ИГРЫ: приказ дня из трёх задач — через него человек находит тренировку, прожарку и вес -->
   <button class="gm-new" id="hubNew" hidden></button>   <!-- неоткрытые достижения (pfUnopened от «Профиля») — первым делом, наверху → «Призы» -->
@@ -3691,7 +3692,7 @@ function openTrain() { show("home"); render(); tg?.BackButton?.show(); }
 function mnRender() {
   const L = heroLvl(), name = tg?.initDataUnsafe?.user?.first_name;
   $("mnLvl").textContent = `Уровень ${L.l} · ${fmt(S.xp)}\u00a0XP`;
-  if (!GAME_ON) { $("mnHi").firstChild.textContent = name ? `Привет, ${name}! Что сегодня?` : "Привет! Что сегодня?"; return; }   // прежнее меню
+  if (!GAME_ON) { $("mnHi").firstChild.textContent = name ? `${name}, в строй.` : "Боец, в строй."; return; }   // меню бота: коротко, по-боевому (решение Эрнеста 22.10)
   $("mnHi").firstChild.textContent = name ? `Привет, ${name}!` : "Привет, боец!";
   if (!G.day) return;
   const n = gDone(), T = TONE[gTone()];
