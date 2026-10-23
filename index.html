@@ -1477,6 +1477,7 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
         <i class="rs-spark" style="left:75%;animation-delay:1s"></i><i class="rs-spark" style="left:35%;animation-delay:1.3s"></i><i class="rs-spark" style="left:62%;animation-delay:.8s"></i><i class="rs-spark" style="left:10%;animation-delay:1.5s"></i><i class="rs-spark" style="left:88%;animation-delay:.3s"></i></div>
       <div class="rs-stage" id="loadTxt">Загружаю тренера…</div>
       <div class="rs-bar"><i id="loadBar"></i></div>
+      <button class="btn btn-gold" id="camTap" style="display:none;margin:22px 20px 0;width:calc(100% - 40px)">ВКЛЮЧИТЬ КАМЕРУ</button>
     </div></div>
   </div>
 </section>
@@ -2393,8 +2394,33 @@ function reviveCamera(t) {
   sess.reviveAt = t;
   if (stream.getVideoTracks().every(tr => tr.readyState === "ended")) {
     navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false })
-      .then(s => { stream = s; video.srcObject = s; return video.play(); }).catch(() => {});
-  } else if (video.paused) video.play().catch(() => {});
+      .then(s => { stream = s; video.srcObject = s; return video.play(); }).catch(reviveTap);
+  } else if (video.paused) video.play().catch(reviveTap);
+}
+// Telegram на Android (Xiaomi, 23.10) не даёт запустить видео камеры без нажатия: play() → NotAllowedError
+// «can only be initiated by a user gesture». Тогда просим одно нажатие — из него play() разрешён.
+function tapToPlay(text) {
+  return new Promise((res, rej) => {
+    const b = $("camTap"); $("loading").style.display = ""; loadSet(text, +$("loadBar").style.width.replace("%", "") || 40);
+    b.style.display = "";
+    b.onclick = () => video.play().then(() => { b.style.display = "none"; b.onclick = null; res(); }, rej);
+  });
+}
+function reviveTap(e) {
+  if (e?.name !== "NotAllowedError" || !sess || sess.demo || $("camTap").style.display === "") return;
+  ktDiag("camera_tap", "revive");
+  tapToPlay("Нажми — продолжим").then(() => { $("loading").style.display = "none"; }, () => {});
+}
+async function playVideo() {
+  video.muted = true;
+  for (let i = 0; ; i++) {
+    try { return await video.play(); }
+    catch (e) {
+      if (e?.name === "AbortError" && i < 2) { await new Promise(r => setTimeout(r, 300)); continue; }   // прошлый play() перебит новой загрузкой
+      if (e?.name === "NotAllowedError") { ktDiag("camera_tap", "start"); return tapToPlay("Камера готова — нажми кнопку"); }
+      throw e;
+    }
+  }
 }
 function loop() {
   raf = requestAnimationFrame(loop);
@@ -2504,7 +2530,10 @@ async function start(demo = false) {
     if (!stream) {         // камеру берём один раз — на Android Telegram иначе спрашивает разрешение заново
       stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } }, audio: false });
     }
-    video.srcObject = stream; await video.play(); watchFrames();
+    const my = sess;
+    if (video.srcObject !== stream) video.srcObject = stream;
+    await playVideo(); watchFrames();
+    if (sess !== my || my.demo === "stopped") return;     // вышли, пока ждали нажатия
     $("stage").classList.toggle("mirror", true);
     loadSet("Загружаю тренера…", 45); loadCreep(45, 92);
     await initModel();
@@ -2527,6 +2556,7 @@ function stop(showResult = true) {
   if (sess) sess.demo = "stopped";
   try { wake?.release(); } catch (e) {}
   tg?.BackButton?.hide(); tg?.unlockOrientation?.();
+  $("camTap").style.display = "none"; $("camTap").onclick = null;
   sctx.clearRect(0, 0, skel.width, skel.height); applyRot(0); turnPlate(false);
   const wasDemo = !!(sess && sess.saved);
   if (wasDemo) { S = JSON.parse(sess.saved); sess.saved = null; G = JSON.parse(sess.gSaved); }
