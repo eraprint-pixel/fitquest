@@ -1300,8 +1300,8 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
   <div class="hub-links"><button class="hub-help" id="hubStory">📖 Сюжет</button><button class="hub-help" id="hubHelp">❔ Как играть</button></div>
   <!-- прежнее меню (тренировка, прожарка, «Скоро»): видно, когда игра выключена (GAME_ON = false — всё, что не localhost) -->
   <div hidden id="mnLegacy">
-  <button class="mn-tile main" id="mnTrain"><div class="ic"><img src="ex-icons/menu_train.webp?v=1" alt="" onerror="this.replaceWith('🏋️')"></div><div><b>ТРЕНИРОВКА С КАМЕРОЙ</b>
-    <small>Камера считает повторения, за каждое — опыт и уровни</small><em id="mnLvl">Уровень 1</em></div><div class="go">›</div></button>
+  <button class="mn-tile main" id="mnTrain"><div class="ic"><img src="ex-icons/menu_train.webp?v=1" alt="" onerror="this.replaceWith('🏋️')"></div><div><b>ТРЕНИРОВКА</b>
+    <small id="mnTrainSub">Камера считает повторения, за каждое — опыт и уровни</small><em id="mnLvl">Уровень 1</em></div><div class="go">›</div></button>
   <button class="mn-tile" id="mnRoast" style="display:none"><div class="ic"><img src="ex-icons/menu_roast.webp?v=1" alt="" onerror="this.replaceWith('🍽')"></div><div><b>ПРОЖАРКА ТАРЕЛКИ</b>
     <small>Сфоткай еду — тренер оценит тарелку, калории и даст совет</small><em id="mnPlates">Сегодня 0 тарелок</em></div><div class="go">›</div></button>
     <div class="mn-tile off"><div class="ic">⚔️</div><div><b>СКОРО</b><small>Дуэли, испытания и новые фишки</small></div></div>
@@ -3805,6 +3805,7 @@ const GYM = [
     { t: "time", clip: "ropes", name: "Канаты", gear: "канаты или эллипс 15 минут", sets: 3, secs: [120, 180, 240], rest: 240, cue: "Волны попеременно до отказа, потом двумя руками вместе, из полуприседа. Паузы до 15 с. Нет канатов — эллипс 15 минут в быстром тяжёлом темпе.", alt: "ellipse" }] }];
 // 24.10 Эрнест: зал пока только на проверку — Эрнест, Лена, Паша (в обычном браузере видно для проверки)
 const GYM_ON = !(window.Telegram?.WebApp?.initData) || [606925290, 492197290, 7867293515].includes(window.Telegram.WebApp.initDataUnsafe?.user?.id);
+if (GYM_ON) $("mnTrainSub").textContent = "Дома — камера считает повторения, в зале — программы Паши";
 const GY = { place: (() => { try { return GYM_ON && localStorage.getItem("kt_place") || "home"; } catch (e) { return "home"; } })(), prog: null, i: 0, st: null, open: -1, t0: 0, timer: 0, wake: null };
 const gyClip = c => `gym/${c}.mp4?v=1`, gyPoster = c => `gym/${c}.jpg?v=1`;
 const gyFmt = s => `${Math.floor(s / 60)}:${String(Math.max(0, Math.floor(s % 60))).padStart(2, "0")}`;
