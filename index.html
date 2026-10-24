@@ -302,7 +302,8 @@ canvas#fx { pointer-events: none; }
   animation: rsPop .6s .25s cubic-bezier(.2,1.6,.4,1) both; }
 .rs-score small { position: absolute; right: 14px; bottom: 16px; font-size: 13px; }
 .rs-verdict { position: absolute; left: 12px; bottom: 14px; padding: 7px 14px; border-radius: 20px; background: var(--vc); color: var(--vi);
-  font-family: var(--disp); font-size: 14px; animation: rsSlide .5s .45s ease both; }
+  font-family: var(--disp); font-size: 14px; animation: rsSlide .5s .45s ease both;
+  max-width: calc(100% - 130px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }   /* звание тарелки не наезжает на оценку */
 @keyframes rsIn { from { opacity: 0; transform: translateY(18px) scale(.97); } }
 @keyframes rsPop { from { transform: scale(0) rotate(-20deg); } }
 @keyframes rsSlide { from { opacity: 0; transform: translateX(-30px); } }
@@ -3970,7 +3971,7 @@ function rsResult(r) {
     const honest = game && r.verdict === "off" && !(r.me?.badges || []).find(b => b.id === "honest" && b.done);
     box.innerHTML = (game ? rsGot(c, fresh) : "") + `
       <div class="rs-card" style="--vc:${vc};--vi:${vi}"><img src="${RS.url}" alt="">
-        <div class="rs-verdict">${esc(r.verdict_label)}</div><div class="rs-score">${r.score}<small>/10</small></div></div>
+        <div class="rs-verdict">${esc(r.title || r.verdict_label)}</div><div class="rs-score">${r.score}<small>/10</small></div></div>
       <div class="card rs-kcal" id="rsKcal">${rsKcalHtml(r)}</div>
       <div class="rs-quote">${esc(r.roast)}<i>— тренер Паша · <span id="rsDish">${esc(r.dish || "")}</span></i></div>
       <div class="rs-tip">${rsIco("tip")}<span>${esc(r.tip)}</span></div>
@@ -4044,7 +4045,7 @@ function rsItem(x) {
   return `<button class="rs-it ${open ? "on" : ""}" data-id="${x.id}" style="--vc:${vc};--vi:${vi}"><span class="tm">${esc(x.at)}</span>
       <span class="nm">${esc(x.dish || "Тарелка")}${x.veg ? rsIco("veg") : ""}${x.prot ? rsIco("prot") : ""}</span>
       ${RS.hideK ? "" : `<span class="k">≈${x.kcal_min}–${x.kcal_max}</span>`}<span class="sc" title="${RS_VL[x.v] || ""}">${x.score}/10</span></button>` +
-    (open ? `<div class="rs-more">${x.roast ? `«${esc(x.roast)}»` : ""}${x.tip ? `<div class="rs-tip">${rsIco("tip")}<span>${esc(x.tip)}</span></div>` : ""}
+    (open ? `<div class="rs-more">${x.title ? `<b style="color:var(--gold)">${esc(x.title)}.</b> ` : ""}${x.roast ? `«${esc(x.roast)}»` : ""}${x.tip ? `<div class="rs-tip">${rsIco("tip")}<span>${esc(x.tip)}</span></div>` : ""}
       ${rsMisOk(x.mission_ex) && x.d === rsDayKey() ? `<button data-go="${x.id}">${rsIco("goal")}Миссия: ${x.mission_amount} ${RS_EX[x.mission_ex]}</button>` : ""}
       ${(x.fixes || 0) < 3 ? `<button data-fix="${x.id}">${rsIco("edit")}Уточнить</button>` : ""}<button data-del="${x.id}">${rsGame() ? "Убрать из рапорта" : "Удалить"}</button>
       ${RS.fixOpen === x.id ? rsFixForm(x) : ""}</div>` : "");
