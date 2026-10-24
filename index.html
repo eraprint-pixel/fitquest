@@ -1977,7 +1977,7 @@ function haptic(kind) {
 
 // ================= голос тренера =================
 // Реплики записаны заранее (sounds/*.mp3): синтез речи в браузере на Android в Telegram часто не работает.
-const VOICE_VER = "pasha-9";   // меняется при перезаписи озвучки — чтобы Cloudflare и телефон не отдавали старые файлы; 24.10 — клон выключен (sounds/hold.json)
+const VOICE_VER = "pasha-10";   // меняется при перезаписи озвучки — чтобы Cloudflare и телефон не отдавали старые файлы; 24.10 — клон выключен (sounds/hold.json)
 const Coach = {
   idx: null, phr: null, hold: new Set(), bufs: new Map(), src: null, busyUntil: 0, last: {}, subTimer: 0,
   async init() {
@@ -2047,6 +2047,13 @@ const Coach = {
     s.onended = () => { if (this.src === s && this.q.length) this.flush(); };   // договорил — следующая реплика из очереди
     if (text) subtitle(text, b.duration);
     return true;
+  },
+  has(cat) { return !!this.idx?.[cat] && this.pick(cat) >= 0; },
+  // фраза упражнения (exs_ старт, exl_ последние, exr_ рекорд/финиш, exh_ удержание), если записана; иначе общий раздел fb
+  sayEx(kind, fb, p = 1, force = true) {
+    const c = `${kind}_${sess?.ex}`;
+    if (sess && this.has(c) && Math.random() < p) return this.say(c, force);
+    if (fb) this.say(fb, force);
   },
   say(cat, force = false) {
     if (S.voice !== "hard" || !this.idx?.[cat]) return;
@@ -2217,6 +2224,7 @@ function startRest() {
 function protoRep() {               // после засчитанного повторения в режиме «Протокол 50»
   const p = sess.p50; if (!p || p.finished) return;
   p.done++;
+  if (P50.sets[p.set] - p.done === 3 && p.set === P50.sets.length - 1) Coach.after(() => Coach.sayEx("exl", "", 1));   // последние три протокола
   if (p.done >= P50.sets[p.set]) {
     p.set++; p.done = 0;
     if (p.set >= P50.sets.length) {
@@ -2295,7 +2303,7 @@ function onHold(r) {                // планка, стульчик: кажд�
     animateSess(sess.xp); hud(true);
     if (ups.length) setTimeout(() => { levelUpFx(ups[0]); Coach.say("level", true); }, 250);
     else if (cd) {}                                             // уже звучит отсчёт планки
-    else if (sess.holdSteps % 2 === 0) Coach.say(Math.random() < .7 && Coach.idx?.[`ex_${sess.ex}`] ? `ex_${sess.ex}` : "five");
+    else if (sess.holdSteps % 2 === 0) Coach.has(`exh_${sess.ex}`) && Math.random() < .5 ? Coach.sayEx("exh", "", 1, false) : Coach.say(Math.random() < .7 && Coach.idx?.[`ex_${sess.ex}`] ? `ex_${sess.ex}` : "five");
     else Coach.count(sess.holdSteps * 5 <= 60 ? sess.holdSteps * 5 : 60);
   }
 }
@@ -2565,7 +2573,7 @@ async function start(demo = false) {
     if (!sess || sess.demo !== true) return;          // вышли, пока шла заставка
     await loadDone();
     setHint("Демо: повторы идут сами, без камеры", false, true);
-    Coach.say(sess.p50 ? "proto_go" : "start", true);
+    sess.p50 ? Coach.say("proto_go", true) : Coach.sayEx("exs", "start", .6);
     let n = 0; const iv = setInterval(() => {
       if (!sess || sess.demo !== true || n >= (hold ? 30 : sess.p50 ? 18 : 14)) return clearInterval(iv);
       if (hold) { n++; onHold({ holdMs: n * 1000 }); return; }
@@ -2588,7 +2596,7 @@ async function start(demo = false) {
     await initModel();
     await loadDone(); setHint(EX[S.ex].tip, false, true);
     ktDiag("camera_ok", `${video.videoWidth}x${video.videoHeight} ${poseModel} ${S.ex}`);
-    sess.startedAt = performance.now(); Coach.say(sess.p50 ? "proto_go" : "start", true);
+    sess.startedAt = performance.now(); sess.p50 ? Coach.say("proto_go", true) : Coach.sayEx("exs", "start", .6);
     loop();
   } catch (e) {
     console.error(e); stop(false);
@@ -2615,7 +2623,8 @@ function stop(showResult = true) {
   save();
   if (!showResult || !sess) { Coach.stop(); openTrain(); return; }
   const holdRes = EX[sess.ex].kind === "hold";
-  Coach.say(rec ? "record" : (holdRes ? sess.reps >= 30 : sess.reps >= 15) || sess.p50?.finished ? "finish_good" : "finish_weak", true);
+  const good = (holdRes ? sess.reps >= 30 : sess.reps >= 15) || sess.p50?.finished;
+  if (rec || good) Coach.sayEx("exr", rec ? "record" : "finish_good", .5); else Coach.say("finish_weak", true);
   $("rReps").textContent = holdRes ? `${Math.floor(sess.reps / 60)}:${String(sess.reps % 60).padStart(2, "0")}` : sess.reps;
   $("rReps").nextElementSibling.textContent = holdRes ? EX[sess.ex].word : "повторений";
   $("rCombo").textContent = holdRes ? `${sess.holdSteps || 0}` : `x${sess.bestCombo || 0}`;
@@ -4018,13 +4027,12 @@ const RS_VL = { ok: "В СТРОЮ", meh: "НА ДОРАБОТКУ", off: "ВН�
 const RS_EX = { squat: "приседаний", pushup: "отжиманий", lunge: "выпадов", plank: "сек. планки", wallsit: "сек. на стульчике" };
 // миссия — только из этого списка и только если упражнение есть в приложении (скрытые — «на носки» и др. — не предлагаем)
 const rsMisOk = ex => rsGame() && !!(RS_EX[ex] && EX[ex] && !EX[ex].hidden);   // в боте (без игры) миссий нет совсем
-const RS_VOICE = { ok: 20, meh: 19, off: 18, notfood: 12, wait: 6, bonus: 6, soft: 4 };   // rv_<вид>_<1..n>.mp3 в sounds/
+const RS_VOICE = {"ok": 50, "meh": 50, "off": 50, "notfood": 30, "wait": 18, "bonus": 6, "soft": 10};   // rv_<вид>_<1..n>.mp3 в sounds/
 // мат — только если человек сам выбрал «жёстко 18+». Ожидание и поддержка записаны без мата целиком (сценарий 353–358, 393–396);
 // в остальных наборах в тоне «без мата» звучат только номера из RS_CLEAN (нет набора в списке — он молчит)
 const RS_CLEAN_ALL = new Set(["wait", "soft"]);
-const RS_CLEAN = { ok: [1, 2, 3, 6, 7, 8, 10, 12, 14, 15, 17, 19, 20], meh: [1, 2, 3, 5, 6, 9, 11, 13, 15, 16, 17, 18, 19],
-                   off: [1, 2, 5, 6, 7, 10, 11, 12, 13, 14, 17, 18], notfood: [1, 2, 3, 5, 6, 9, 10, 12] };   // без мата — разметка «Озвучки» 20.10
-const RS_LIVE = { ok: 8, meh: 7, off: 6, notfood: 6 };   // rv_<вид>_1..N — живые записи Паши; остальное — клон, с 24.10 не звучит
+const RS_CLEAN = {"ok": [1, 2, 3, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 22, 23, 24, 26, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 39, 40, 42, 47, 48, 49, 50], "meh": [1, 2, 3, 5, 6, 8, 9, 10, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40], "off": [1, 2, 5, 6, 7, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42], "notfood": [1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25], "wait": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18], "bonus": [1, 2, 3, 4, 5], "soft": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]};   // без мата — разметка «Озвучки» 20.10
+const RS_LIVE = {"ok": [1, 2, 3, 4, 5, 6, 7, 8, 9, 12, 13, 14, 15, 16, 17, 18, 19, 22, 23, 24, 26, 27, 28, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 42, 43, 44, 45, 46, 47, 48, 49, 50], "meh": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50], "off": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50], "notfood": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30], "wait": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 13, 14, 15, 16, 17, 18], "bonus": [1, 2, 3, 4, 5, 6], "soft": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]};   // записанные живым голосом номера rv_<вид>_N (клон не звучит)
 const RS_LAST = {};
 const RS_BI = { scout: "🔭", green: "🥦", protein: "🎯", kitchen: "🍲", honest: "📋" };
 // коротко, в одну строку на 360 px (полное условие — в RS.m.badges[].cond с сервера)
@@ -4157,7 +4165,7 @@ function rsProgress(stage, pct) { $("rsStage").textContent = stage; $("rsBar").s
 function rsVoice(kind) {                    // голос Паши по выбору человека: «без звука» — тишина, «без мата» — только чистые фразы
   if (S.voice === "off") return Promise.resolve(false);
   let pool = [...Array(RS_VOICE[kind] || 0).keys()].map(i => i + 1);
-  if (RS_LIVE[kind]) pool = pool.filter(n => n <= RS_LIVE[kind]);           // 24.10: только живые записи Паши, клон выключен
+  if (RS_LIVE[kind]) pool = pool.filter(n => RS_LIVE[kind].includes(n));           // 24.10: только живые записи Паши, клон выключен
   if (RS.tone !== "hard" && !RS_CLEAN_ALL.has(kind)) pool = RS_CLEAN[kind] || [];
   if (pool.length > 1) pool = pool.filter(n => n !== RS_LAST[kind]);           // одна и та же фраза два раза подряд не звучит
   if (!pool.length) return Promise.resolve(false);
