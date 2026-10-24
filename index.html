@@ -1977,7 +1977,7 @@ function haptic(kind) {
 
 // ================= голос тренера =================
 // Реплики записаны заранее (sounds/*.mp3): синтез речи в браузере на Android в Telegram часто не работает.
-const VOICE_VER = "pasha-8";   // меняется при перезаписи озвучки — чтобы Cloudflare и телефон не отдавали старые файлы
+const VOICE_VER = "pasha-9";   // меняется при перезаписи озвучки — чтобы Cloudflare и телефон не отдавали старые файлы; 24.10 — клон выключен (sounds/hold.json)
 const Coach = {
   idx: null, phr: null, hold: new Set(), bufs: new Map(), src: null, busyUntil: 0, last: {}, subTimer: 0,
   async init() {
@@ -2016,7 +2016,7 @@ const Coach = {
     if (S.voice === "off" || !this.idx) return;
     for (let n = 1; n <= 30; n++) this.buf(`n${n}`);
     if (S.voice !== "hard") return;
-    for (const k of Object.keys(this.idx)) if (k !== "numbers") for (let j = 0; j < 4; j++) this.buf(`${k}_${this.pick(k)}`);
+    for (const k of Object.keys(this.idx)) if (k !== "numbers") for (let j = 0; j < 4; j++) { const i = this.pick(k); if (i >= 0) this.buf(`${k}_${i}`); }
   },
   // реплика подходит упражнению: про приседания — только на приседаниях, про планку — только в планке и т. д.
   fits(cat, k) {
@@ -2025,9 +2025,10 @@ const Coach = {
     if (EX[ex].front && /боком/.test(t)) return false;          // махи и присед с жимом снимают лицом к камере
     return EX_ORDER.every(e => e === ex || EX[ex].also?.includes(e) || !EX[e].say.test(t));
   },
-  pick(cat) {
-    const n = this.idx?.[cat] || 0, ok = [...Array(n).keys()].filter(k => this.fits(cat, k) && k !== this.last[cat] && !this.hold.has(`${cat}_${k}`));
-    return ok.length ? ok[Math.floor(Math.random() * ok.length)] : Math.floor(Math.random() * n);
+  pick(cat) {          // −1 — в разделе нет живых записей: молчим (клон выключен 24.10)
+    const n = this.idx?.[cat] || 0, free = [...Array(n).keys()].filter(k => !this.hold.has(`${cat}_${k}`));
+    const ok = free.filter(k => this.fits(cat, k) && k !== this.last[cat]), from = ok.length ? ok : free;
+    return from.length ? from[Math.floor(Math.random() * from.length)] : -1;
   },
   async play(name, force = false, text = null) {
     if (S.voice === "off") return false;
@@ -2050,9 +2051,10 @@ const Coach = {
   say(cat, force = false) {
     if (S.voice !== "hard" || !this.idx?.[cat]) return;
     const i = this.pick(cat);
+    if (i < 0) return;
     this.last[cat] = i;
     this.play(`${cat}_${i}`, force, this.phr?.[cat]?.[i]);
-    this.buf(`${cat}_${this.pick(cat)}`);          // следующую реплику этого раздела — заранее
+    const nx = this.pick(cat); if (nx >= 0) this.buf(`${cat}_${nx}`);          // следующую реплику этого раздела — заранее
   },
   // конкретная реплика раздела (cue, plank_cd — у каждой свой смысл); i — номер или список, из которого берём случайный
   sayAt(cat, i, force = false) {
@@ -2061,7 +2063,7 @@ const Coach = {
     this.last[cat] = i; this.play(`${cat}_${i}`, force, this.phr?.[cat]?.[i]); return true;
   },
   count(n, force = false) {
-    const p = (S.voice !== "off" && n <= (this.idx?.numbers || 60) ? this.play(`n${n}`, force) : Promise.resolve(false))
+    const p = (S.voice !== "off" && n <= (this.idx?.numbers || 60) && !this.hold.has(`n${n}`) ? this.play(`n${n}`, force) : Promise.resolve(false))
       .then(ok => { if (ok === null && force) this.speakNum(n); return ok; });
     if (force) this.numP = p;
     return p;
@@ -4015,7 +4017,7 @@ const RS_VOICE = { ok: 20, meh: 19, off: 18, notfood: 12, wait: 6, bonus: 6, sof
 const RS_CLEAN_ALL = new Set(["wait", "soft"]);
 const RS_CLEAN = { ok: [1, 2, 3, 6, 7, 8, 10, 12, 14, 15, 17, 19, 20], meh: [1, 2, 3, 5, 6, 9, 11, 13, 15, 16, 17, 18, 19],
                    off: [1, 2, 5, 6, 7, 10, 11, 12, 13, 14, 17, 18], notfood: [1, 2, 3, 5, 6, 9, 10, 12] };   // без мата — разметка «Озвучки» 20.10
-const RS_LIVE = { ok: 8, meh: 7, off: 6, notfood: 6 };   // rv_<вид>_1..N — живые записи Паши: звучат чаще (3 из 4), остальное — дообученный голос
+const RS_LIVE = { ok: 8, meh: 7, off: 6, notfood: 6 };   // rv_<вид>_1..N — живые записи Паши; остальное — клон, с 24.10 не звучит
 const RS_LAST = {};
 const RS_BI = { scout: "🔭", green: "🥦", protein: "🎯", kitchen: "🍲", honest: "📋" };
 // коротко, в одну строку на 360 px (полное условие — в RS.m.badges[].cond с сервера)
@@ -4148,6 +4150,7 @@ function rsProgress(stage, pct) { $("rsStage").textContent = stage; $("rsBar").s
 function rsVoice(kind) {                    // голос Паши по выбору человека: «без звука» — тишина, «без мата» — только чистые фразы
   if (S.voice === "off") return Promise.resolve(false);
   let pool = [...Array(RS_VOICE[kind] || 0).keys()].map(i => i + 1);
+  if (RS_LIVE[kind]) pool = pool.filter(n => n <= RS_LIVE[kind]);           // 24.10: только живые записи Паши, клон выключен
   if (RS.tone !== "hard" && !RS_CLEAN_ALL.has(kind)) pool = RS_CLEAN[kind] || [];
   if (pool.length > 1) pool = pool.filter(n => n !== RS_LAST[kind]);           // одна и та же фраза два раза подряд не звучит
   if (!pool.length) return Promise.resolve(false);
