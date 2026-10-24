@@ -3803,7 +3803,9 @@ const GYM = [
     { t: "s50", clip: "raise_plates", name: "Отведение рук в стороны с блинами", gear: "2 блина по 2,5 кг или гантели", cue: "Темп ровный, умеренный." },
     { t: "reps", clip: "ballsquat", name: "Присед с мячом и жимом вверх", gear: "медбол 6–8 кг или гантель", sets: 3, txt: "20–30 повторений", rest: 180, cue: "Ноги на ширине плеч, колени по стопам." },
     { t: "time", clip: "ropes", name: "Канаты", gear: "канаты или эллипс 15 минут", sets: 3, secs: [120, 180, 240], rest: 240, cue: "Волны попеременно до отказа, потом двумя руками вместе, из полуприседа. Паузы до 15 с. Нет канатов — эллипс 15 минут в быстром тяжёлом темпе.", alt: "ellipse" }] }];
-const GY = { place: (() => { try { return localStorage.getItem("kt_place") || "home"; } catch (e) { return "home"; } })(), prog: null, i: 0, st: null, open: -1, t0: 0, timer: 0, wake: null };
+// 24.10 Эрнест: зал пока только на проверку — Эрнест, Лена, Паша (в обычном браузере видно для проверки)
+const GYM_ON = !(window.Telegram?.WebApp?.initData) || [606925290, 492197290, 7867293515].includes(window.Telegram.WebApp.initDataUnsafe?.user?.id);
+const GY = { place: (() => { try { return GYM_ON && localStorage.getItem("kt_place") || "home"; } catch (e) { return "home"; } })(), prog: null, i: 0, st: null, open: -1, t0: 0, timer: 0, wake: null };
 const gyClip = c => `gym/${c}.mp4?v=1`, gyPoster = c => `gym/${c}.jpg?v=1`;
 const gyFmt = s => `${Math.floor(s / 60)}:${String(Math.max(0, Math.floor(s % 60))).padStart(2, "0")}`;
 function gyProto(x) {
@@ -3815,6 +3817,7 @@ function gyProto(x) {
 }
 function gyLast(id) { try { return JSON.parse(localStorage.getItem("kt_gym") || "{}")[id]; } catch (e) { return null; } }
 function placeSet(p) {
+  $("placeSeg").style.display = GYM_ON ? "" : "none"; if (!GYM_ON) p = "home";
   GY.place = p; try { localStorage.setItem("kt_place", p); } catch (e) {}
   document.querySelectorAll("#placeSeg button").forEach(b => b.classList.toggle("on", b.dataset.p === p));
   $("homePane").style.display = p === "gym" ? "none" : ""; $("gymPane").style.display = p === "gym" ? "" : "none";
