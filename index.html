@@ -109,6 +109,39 @@ body.in-tg #homeMenu, body.in-tg #rsBack { display: none; }
 /* «Начать» и «Как делать» всегда под пальцем — прилипают к низу экрана, листать до конца не нужно */
 .ex-act { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 18px 16px calc(12px + var(--safe-bot)); background: linear-gradient(180deg, rgba(11,11,11,0), var(--bg) 30%); }   /* fixed, не sticky: html и body с overflow-x — sticky не держится */
 #home { padding-bottom: calc(96px + var(--safe-bot)); }
+#home.gym-on { padding-bottom: calc(20px + var(--safe-bot)); }
+.place-seg { margin: 4px 0 2px; } .place-seg button { font-family: var(--disp); font-size: 13px; letter-spacing: .06em; padding: 11px 4px; }
+body.in-tg #gymBack { display: none; } #gymBack { min-height: 44px; color: #b3ada4; }
+.gy-note { margin: 10px 4px 0; }
+.gy-prog { display: flex; gap: 12px; align-items: center; width: 100%; text-align: left; color: inherit; margin-bottom: 8px; padding: 10px; }
+.gy-prog img, .gy-ex img { width: 58px; height: 76px; object-fit: cover; border-radius: 10px; flex: none; background: #000; }
+.gy-prog b { font-family: var(--disp); font-size: 16px; font-weight: 400; color: var(--gold2); display: block; }
+.gy-prog small, .gy-ex small { display: block; color: var(--muted); font-size: 12px; line-height: 1.3; margin-top: 3px; }
+.gy-prog .go { margin-left: auto; font-size: 22px; color: var(--gold); }
+.gy-h { font-family: var(--disp); font-size: 22px; color: var(--gold2); margin: 6px 4px 2px; } .gy-sub { color: var(--muted); font-size: 13px; margin: 0 4px 8px; }
+.gy-ex { display: flex; gap: 10px; align-items: center; width: 100%; text-align: left; color: inherit; margin-bottom: 6px; padding: 8px; }
+.gy-ex .n { font-family: var(--disp); color: var(--gold); width: 18px; flex: none; text-align: center; }
+.gy-ex b { font-size: 14px; display: block; line-height: 1.25; }
+.gy-ex .pr { color: var(--gold); font-size: 12px; margin-top: 3px; display: block; }
+.gy-open { margin: -2px 0 10px; } .gy-open .gy-cue { margin-top: 8px; }
+.gy-vidw { position: relative; border-radius: 16px; overflow: hidden; background: #000; aspect-ratio: 9 / 16; max-height: 46vh; margin: 0 auto; }
+.gy-vidw video, .gy-vidw img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.gy-vidw .play { position: absolute; inset: 0; display: none; place-items: center; font-size: 46px; color: #fff; background: #0006; }
+.gy-vidw.paused .play { display: grid; }
+.gy-cue { font-size: 13px; line-height: 1.4; color: #d9d3c8; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.gy-cue i { color: var(--gold-dim); font-style: normal; display: block; font-size: 11px; letter-spacing: .12em; margin-bottom: 3px; }
+.gy-step { color: var(--gold-dim); font-family: var(--disp); font-size: 12px; letter-spacing: .14em; text-align: center; margin: 6px 0 8px; }
+.gy-name { font-family: var(--disp); font-size: 20px; text-align: center; margin: 10px 0 6px; line-height: 1.2; }
+.gy-big { text-align: center; font-family: var(--disp); font-size: 54px; line-height: 1; margin: 12px 0 2px; } .gy-big small { font-size: 22px; color: var(--muted); }
+.gy-lbl { text-align: center; color: var(--muted); font-size: 13px; }
+.gy-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 10px; }
+.gy-chips button { padding: 13px 0; border-radius: 14px; background: #1e1c1a; border: 1px solid #3a3530; color: var(--gold2); font-family: var(--disp); font-size: 17px; }
+.gy-chips button:active { transform: scale(.96); }
+.gy-dots { display: flex; gap: 6px; justify-content: center; margin: 8px 0 0; } .gy-dots i { width: 26px; height: 6px; border-radius: 3px; background: #2a2826; } .gy-dots i.done { background: var(--gold); } .gy-dots i.cur { background: var(--gold-dim); }
+.gy-rest { position: fixed; inset: 0; z-index: 30; background: rgba(8,8,8,.94); display: none; place-items: center; text-align: center; padding: 30px; }
+.gy-rest.on { display: grid; } .gy-rest .t { font-family: var(--disp); font-size: 86px; color: var(--gold2); line-height: 1; } .gy-rest .l { color: var(--muted); margin: 8px 0 18px; font-size: 14px; }
+.gy-act { position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; padding: 18px 16px calc(12px + var(--safe-bot)); background: linear-gradient(180deg, rgba(11,11,11,0), var(--bg) 30%); }
+.gy-act .btn { margin: 0; } #gym { padding-bottom: calc(160px + var(--safe-bot)); }
 .ex-act .btn { margin: 0; min-height: 50px; white-space: nowrap; } .ex-act #startBtn { padding: 12px 8px; font-size: 15px; letter-spacing: .01em; } .ex-act #howBtn { width: auto; padding: 11px 12px; font-size: 14px; color: var(--gold2); border-color: #3a3530; background: #17161a; }
 /* шапка тренировки: крупный логотип с круглым свечением и искрами вверх — как заставка и прожарка */
 /* логотип «Код тела» — ОДИН размер на всех экранах (меню, тренировка, заглушка): 112 px по ширине, пропорции файла */
@@ -1386,7 +1419,9 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
 <!-- ТРЕНИРОВКА: главный экран -->
 <section class="screen" id="home">
   <div class="rs-head" style="margin-bottom:0"><button id="homeMenu">‹ Меню</button></div>
-  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div><div class="app goldtext">ТРЕНИРОВКА С КАМЕРОЙ</div></div>
+  <div class="brand tr-brand"><div class="tr-logo"><img src="logo.png" alt="Код тела"></div><div class="app goldtext" id="trTitle">ТРЕНИРОВКА С КАМЕРОЙ</div></div>
+  <div class="seg seg2 place-seg" id="placeSeg"><button data-p="home" class="on">ДОМАШНИЕ</button><button data-p="gym">В СПОРТЗАЛЕ</button></div>
+  <div id="homePane">
 
   <div class="hero">
     <div class="hero-top">
@@ -1446,6 +1481,17 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
     <button class="btn btn-gold" id="startBtn">НАЧАТЬ ТРЕНИРОВКУ</button>
     <button class="btn btn-ghost" id="howBtn">▶&#xFE0E; Как делать</button>
   </div>
+  </div>
+  <div id="gymPane" style="display:none">
+    <h2>Программы Паши для зала</h2>
+    <div id="gymList"></div>
+    <div class="seg-note gy-note">Перед каждой — 20 минут кардио на любом тренажёре. Подходы и отдых считает приложение, камера не нужна.</div>
+  </div>
+</section>
+
+<section class="screen" id="gym">
+  <div class="rs-head" style="margin-bottom:0"><button id="gymBack">‹ Назад</button></div>
+  <div id="gymBody"></div>
 </section>
 
 <!-- ТРЕНИРОВКА -->
@@ -2594,7 +2640,7 @@ $("againBtn").onclick = startSet;
 $("homeBtn").onclick = () => { Coach.stop(); openTrain(); };
 const onScreen = id => $(id).classList.contains("on");
 // «Назад» при открытом 3D-демо — только закрыть демо
-tg?.BackButton?.onClick(() => d3Open() ? D3().close() : onScreen("workout") ? stop(true) : goMenu());
+tg?.BackButton?.onClick(() => d3Open() ? D3().close() : onScreen("workout") ? stop(true) : onScreen("gym") ? gyBack() : goMenu());
 
 // ================= Telegram =================
 if (tg) {
@@ -3721,7 +3767,195 @@ async function gInit() {
 
 // ================= меню =================
 function goMenu() { Coach.stop(); show("menu"); mnRender(); tg?.BackButton?.hide(); }
-function openTrain() { show("home"); render(); tg?.BackButton?.show(); }
+function openTrain() { show("home"); render(); placeSet(GY.place); tg?.BackButton?.show(); }
+
+// ================= тренировка в спортзале =================
+// Программы — из видео Паши (Документы/упражнения_из_видео_паши.md). В зале камера не считает (тренажёры, блоки),
+// поэтому приложение ведёт по шагам: упражнение и ролик с Пашей, подходы по протоколу, таймеры отдыха.
+// t: s50 — 50 повторений сессиями (отдых между сессиями 30 с), reps — подходы «готово», time — подходы на время,
+//    pair — связка двух упражнений по минуте, warm — кардио-разминка.
+const GYM = [
+  { id: "back", name: "Спина, плечи, бицепс", sub: "Задняя цепь: трапеция, дельты, бицепс, икры", img: "row_low", items: [
+    { t: "warm", name: "Кардио-разминка", sec: 1200, gear: "любой кардиотренажёр", cue: "20 минут в спокойном темпе: дорожка, эллипс или велосипед." },
+    { t: "s50", clip: "row_low", name: "Тяга нижнего блока к груди", gear: "блок, любая рукоятка", cue: "Своди лопатки, локти разводи в стороны, руки к телу не прижимай." },
+    { t: "reps", clip: "halo", name: "Вращение блина вокруг головы", gear: "блин", sets: 3, txt: "25 в одну сторону и 25 в другую", rest: 240, cue: "Стопы вплотную, хват открытый." },
+    { t: "s50", clip: "raise", name: "Махи гантелями в стороны", gear: "гантели", cue: "Руки до уровня плеч, вверху пауза не больше секунды." },
+    { t: "s50", clip: "curl", name: "Подъём штанги на бицепс", gear: "штанга или EZ-гриф", cue: "Без раскачки. Кисть вверху — как будто на ней стакан с водой." },
+    { t: "s50", clip: "calf", name: "Подъём на носки в тренажёре", gear: "тренажёр для икр или жим ногами", cue: "Любой вариант: стоя или носками в жиме ногами. Максимальная амплитуда, умеренный темп.", alt: "calfpress" }] },
+  { id: "front", name: "Ноги, грудь, трицепс", sub: "Передняя цепь: ноги и ягодицы, широчайшие, грудь, трицепс", img: "pulldown", items: [
+    { t: "warm", name: "Кардио-разминка", sec: 1200, gear: "любой кардиотренажёр", cue: "20 минут в спокойном темпе: дорожка, эллипс или велосипед." },
+    { t: "s50", clip: "walklunge", name: "Выпады в ходьбе с гантелями", gear: "гантели", side: true, cue: "Каждый шаг — из положения «ноги вместе». Болят колени — делай обратные выпады, шаг назад.", alt: "revlunge" },
+    { t: "s50", clip: "pulldown", name: "Тяга верхнего блока к груди", gear: "блочный тренажёр", cue: "Упор ног на носок, без прогиба в пояснице, таз подкрути. Локоть под кулаком, руки до конца не выпрямляй." },
+    { t: "s50", clip: "chest", name: "Жим от груди в тренажёре", gear: "любой жимовой тренажёр или Смит", cue: "Кисть на одной линии с предплечьем, локоть под кулаком." },
+    { t: "s50", clip: "dips", name: "Трицепс: брусья в тренажёре или разгибание на блоке", gear: "тренажёр-брусья или кроссовер", cue: "Выбери одно из двух. На блоке кисть — как со стаканом воды.", alt: "pushdown" }] },
+  { id: "allA", name: "Всё тело · А", sub: "Для всех: пресс, ноги, спина, трастер, прогулка фермера", img: "thruster", items: [
+    { t: "warm", name: "Кардио-разминка", sec: 1200, gear: "любой кардиотренажёр", cue: "20 минут в спокойном темпе: дорожка, эллипс или велосипед." },
+    { t: "pair", clip: "climber", name: "Скалолаз + скручивания", gear: "коврик, блин 5 кг по желанию", rounds: 3, steps: [["Скалолаз", 60], ["Скручивания", 60]], rest: 180, cue: "Скалолаз: руки широко не ставь, минуту без остановки. Скручивания: прижми поясницу, лопатки отрывай от пола. Тяжело с блином — руки у висков.", alt: "crunch" },
+    { t: "reps", clip: "lunge_plate", name: "Выпады в ходьбе с блином над головой", gear: "блин 10 кг", sets: 3, txt: "30 на каждую ногу, паузы по 15 с — блин опусти", rest: 300, cue: "Каждый шаг — из положения «ноги вместе»." },
+    { t: "s50", clip: "pulldown", name: "Тяга верхнего блока к груди", gear: "блочный тренажёр", cue: "Упор ног на носок, без прогиба в пояснице. Локоть под кулаком, руки до конца не выпрямляй." },
+    { t: "reps", clip: "thruster", name: "Присед со штангой и жимом вверх", gear: "штанга, можно пустой гриф", sets: 3, txt: "20–30 повторений", rest: 180, cue: "Ноги на ширине плеч, носки чуть в стороны, колени по стопам. Спину не прогибай." },
+    { t: "time", clip: "farmer", name: "Прогулка фермера", gear: "гири или гантели от 15 кг", sets: 3, sec: 180, rest: 180, cue: "Трусцой или быстрым шагом. Тяжело — пауза 15 секунд, и дальше." }] },
+  { id: "allB", name: "Всё тело · Б", sub: "Для всех: пресс, тумба, плечи, присед с жимом, канаты", img: "ropes", items: [
+    { t: "warm", name: "Кардио-разминка", sec: 1200, gear: "любой кардиотренажёр", cue: "20 минут в спокойном темпе: дорожка, эллипс или велосипед." },
+    { t: "pair", clip: "climber", name: "Скалолаз + скручивания", gear: "коврик, блин 5 кг по желанию", rounds: 3, steps: [["Скалолаз", 60], ["Скручивания", 60]], rest: 180, cue: "Скалолаз: руки широко не ставь, минуту без остановки. Скручивания: прижми поясницу, лопатки отрывай от пола.", alt: "crunch" },
+    { t: "reps", clip: "stepup", name: "Зашагивания на тумбу с гирей", gear: "тумба или степ, гиря от 12 кг", sets: 3, txt: "20–25 на каждую ногу", rest: 240, cue: "Подойдёт любой устойчивый предмет, на который можно встать." },
+    { t: "reps", clip: "halo", name: "Вращение блина вокруг головы", gear: "блин", sets: 3, txt: "25 в одну сторону и 25 в другую", rest: 240, cue: "Стопы вплотную, хват открытый." },
+    { t: "s50", clip: "raise_plates", name: "Отведение рук в стороны с блинами", gear: "2 блина по 2,5 кг или гантели", cue: "Темп ровный, умеренный." },
+    { t: "reps", clip: "ballsquat", name: "Присед с мячом и жимом вверх", gear: "медбол 6–8 кг или гантель", sets: 3, txt: "20–30 повторений", rest: 180, cue: "Ноги на ширине плеч, колени по стопам." },
+    { t: "time", clip: "ropes", name: "Канаты", gear: "канаты или эллипс 15 минут", sets: 3, secs: [120, 180, 240], rest: 240, cue: "Волны попеременно до отказа, потом двумя руками вместе, из полуприседа. Паузы до 15 с. Нет канатов — эллипс 15 минут в быстром тяжёлом темпе.", alt: "ellipse" }] }];
+const GY = { place: (() => { try { return localStorage.getItem("kt_place") || "home"; } catch (e) { return "home"; } })(), prog: null, i: 0, st: null, open: -1, t0: 0, timer: 0, wake: null };
+const gyClip = c => `gym/${c}.mp4?v=1`, gyPoster = c => `gym/${c}.jpg?v=1`;
+const gyFmt = s => `${Math.floor(s / 60)}:${String(Math.max(0, Math.floor(s % 60))).padStart(2, "0")}`;
+function gyProto(x) {
+  if (x.t === "s50") return x.side ? "3 подхода по 50 на каждую ногу" : "3 подхода по 50 · сессиями, отдых 30 с";
+  if (x.t === "reps") return `${x.sets} подхода: ${x.txt}`;
+  if (x.t === "time") return x.secs ? `подходы ${x.secs.map(v => v / 60).join(", ")} мин` : `${x.sets} подхода по ${x.sec / 60} мин`;
+  if (x.t === "pair") return `${x.rounds} круга: по минуте каждое, отдых 3 мин`;
+  return `${x.sec / 60} минут`;
+}
+function gyLast(id) { try { return JSON.parse(localStorage.getItem("kt_gym") || "{}")[id]; } catch (e) { return null; } }
+function placeSet(p) {
+  GY.place = p; try { localStorage.setItem("kt_place", p); } catch (e) {}
+  document.querySelectorAll("#placeSeg button").forEach(b => b.classList.toggle("on", b.dataset.p === p));
+  $("homePane").style.display = p === "gym" ? "none" : ""; $("gymPane").style.display = p === "gym" ? "" : "none";
+  $("home").classList.toggle("gym-on", p === "gym");
+  $("trTitle").textContent = p === "gym" ? "ТРЕНИРОВКА В СПОРТЗАЛЕ" : "ТРЕНИРОВКА С КАМЕРОЙ";
+  if (p === "gym") $("gymList").innerHTML = GYM.map(g => {
+    const last = gyLast(g.id), n = g.items.filter(x => x.t !== "warm").length;
+    return `<button class="card gy-prog" data-g="${g.id}"><img src="${gyPoster(g.img)}" alt="" loading="lazy"><div style="min-width:0"><b>${esc(g.name)}</b>
+      <small>${esc(g.sub)}</small><small style="color:var(--gold)">${n} упражнений · ~1 ч${last ? ` · была ${last}` : ""}</small></div><span class="go">›</span></button>`;
+  }).join("");
+}
+$("placeSeg").onclick = e => { const b = e.target.closest("button"); if (!b) return; haptic("select"); placeSet(b.dataset.p); };
+$("gymList").onclick = e => { const b = e.target.closest("[data-g]"); if (!b) return; haptic("select"); gyOpen(b.dataset.g); };
+$("gymBack").onclick = () => { haptic("select"); gyBack(); };
+function gyVideo(c) {
+  return `<div class="gy-vidw" data-c="${c}"><video src="${gyClip(c)}" poster="${gyPoster(c)}" muted loop playsinline autoplay preload="metadata"></video><div class="play">▶&#xFE0E;</div></div>`;
+}
+function gyPlay(root) {           // Android Telegram может не дать запустить видео без нажатия — тогда ▶, нажал — играет
+  root.querySelectorAll(".gy-vidw").forEach(w => {
+    const v = w.querySelector("video"); v.muted = true;
+    const go = () => v.play().then(() => w.classList.remove("paused"), () => w.classList.add("paused"));
+    w.onclick = () => (v.paused ? go() : (v.pause(), w.classList.add("paused"))); go();
+  });
+}
+function gyOpen(id) {
+  GY.prog = GYM.find(g => g.id === id); GY.open = -1; gyStop(); show("gym"); tg?.BackButton?.show(); gyList();
+  ktDiag("gym_open", id);
+}
+function gyList() {
+  const g = GY.prog;
+  $("gymBody").innerHTML = `<div class="gy-h">${esc(g.name)}</div><div class="gy-sub">${esc(g.sub)}</div>` + g.items.map((x, i) => `
+    <button class="card gy-ex" data-i="${i}">${x.clip ? `<img src="${gyPoster(x.clip)}" alt="" loading="lazy">` : `<span class="n">${i + 1}</span>`}
+      <div style="min-width:0"><b>${esc(x.name)}</b><span class="pr">${esc(gyProto(x))}</span><small>${esc(x.gear)}</small></div></button>
+    ${GY.open === i ? `<div class="gy-open">${x.clip ? gyVideo(x.clip) : ""}<div class="gy-cue"><i>ТРЕНЕР ПАША</i>${esc(x.cue)}</div>
+      ${x.alt ? `<div style="margin-top:8px">${gyVideo(x.alt)}</div>` : ""}</div>` : ""}`).join("") +
+    `<div class="gy-act"><button class="btn btn-gold" id="gyGo">НАЧАТЬ ТРЕНИРОВКУ</button></div>`;
+  $("gymBody").querySelectorAll(".gy-ex").forEach(b => b.onclick = () => { haptic("select"); GY.open = GY.open === +b.dataset.i ? -1 : +b.dataset.i; gyList(); });
+  gyPlay($("gymBody"));
+  $("gyGo").onclick = () => { haptic("select"); gyStart(); };
+}
+async function gyStart() {
+  unlockAudio(); Coach.init?.();
+  GY.i = 0; GY.t0 = Date.now(); GY.st = null;
+  try { GY.wake = await navigator.wakeLock?.request("screen"); } catch (e) {}
+  ktDiag("gym_start", GY.prog.id); gyStep();
+}
+function gyStop() {
+  clearTimeout(GY.timer); GY.timer = 0; $("gyRest")?.remove();
+  try { GY.wake?.release(); } catch (e) {} GY.wake = null;
+}
+function gyBack() {
+  if (GY.st) { gyStop(); GY.st = null; gyList(); scrollTo(0, 0); return; }        // из тренировки — к программе
+  gyStop(); GY.prog = null; show("home"); placeSet("gym"); tg?.BackButton?.show();
+}
+function gyStep() {          // показать текущее упражнение
+  const g = GY.prog, x = g.items[GY.i];
+  if (!x) return gyDone();
+  GY.st = GY.st && GY.st.i === GY.i ? GY.st : { i: GY.i, set: 0, done: 0, step: 0, left: 0, run: false };
+  const st = GY.st, total = x.t === "s50" ? (x.side ? 100 : 50) : 0;
+  const sets = x.t === "s50" ? 3 : x.t === "pair" ? x.rounds : x.t === "warm" ? 1 : (x.secs ? x.secs.length : x.sets);
+  let w = "";
+  if (x.t === "s50") w = `<div class="gy-big">${st.done}<small> / ${total}</small></div><div class="gy-lbl">${x.side ? "50 на каждую ногу · " : ""}сколько повторений в этой сессии?</div>
+    <div class="gy-chips">${[5, 8, 10, 15].map(n => `<button data-n="${n}">+${n}</button>`).join("")}</div>
+    <div class="gy-chips" style="grid-template-columns:1fr 1fr">${`<button data-n="-1">−1</button><button data-n="1">+1</button>`}</div>`;
+  else if (x.t === "reps") w = `<div class="gy-big" style="font-size:30px;margin-top:16px">${esc(x.txt)}</div><div class="gy-lbl">Подход готов — жми кнопку, запущу отдых</div>`;
+  else {
+    const sec = x.t === "warm" ? x.sec : x.t === "pair" ? x.steps[st.step][1] : (x.secs ? x.secs[st.set] : x.sec);
+    if (!st.run && !st.left) st.left = sec;
+    w = `<div class="gy-big" id="gyT">${gyFmt(st.left)}</div><div class="gy-lbl">${x.t === "pair" ? esc(x.steps[st.step][0]) + " · " : ""}${st.run ? "идёт время" : "жми «Старт»"}</div>`;
+  }
+  const btn = x.t === "s50" ? "" : x.t === "reps" ? "ПОДХОД ГОТОВ" : st.run ? "ПАУЗА" : "СТАРТ";
+  $("gymBody").innerHTML = `<div class="gy-step">УПРАЖНЕНИЕ ${GY.i + 1} ИЗ ${g.items.length}${x.t !== "warm" ? ` · ${x.t === "pair" ? "КРУГ" : "ПОДХОД"} ${Math.min(st.set + 1, sets)} ИЗ ${sets}` : ""}</div>
+    ${x.clip ? gyVideo(x.clip) : ""}<div class="gy-name">${esc(x.name)}</div><div class="gy-cue"><i>ТРЕНЕР ПАША</i>${esc(x.cue)}</div>
+    ${w}<div class="gy-dots">${Array.from({ length: sets }, (_, k) => `<i class="${k < st.set ? "done" : k === st.set ? "cur" : ""}"></i>`).join("")}</div>
+    <div class="gy-act">${btn ? `<button class="btn btn-gold" id="gyMain">${btn}</button>` : ""}<button class="btn btn-ghost" id="gySkip">${x.t === "warm" ? "Пропустить разминку" : "Следующее упражнение ›"}</button></div>`;
+  gyPlay($("gymBody"));
+  $("gymBody").querySelectorAll("[data-n]").forEach(b => b.onclick = () => gyAdd(+b.dataset.n));
+  if ($("gyMain")) $("gyMain").onclick = () => { haptic("select"); x.t === "reps" ? gySetDone() : gyTimer(); };
+  $("gySkip").onclick = () => { haptic("select"); gyStop(); gyNext(); };
+  if (st.run) gyTick();
+}
+function gyNext() { GY.i++; GY.st = null; scrollTo(0, 0); gyStep(); }
+function gyAdd(n) {
+  const x = GY.prog.items[GY.i], st = GY.st, total = x.side ? 100 : 50;
+  if (n < 0) { st.done = Math.max(0, st.done + n); return gyStep(); }
+  haptic("rep"); st.done = Math.min(total, st.done + n);
+  if (st.done >= total) return gySetDone();
+  gyStep(); gyRest(30, `сессия засчитана · ещё ${total - st.done}`, false);
+}
+function gySetDone() {
+  const x = GY.prog.items[GY.i], st = GY.st, sets = x.t === "s50" ? 3 : x.t === "pair" ? x.rounds : (x.secs ? x.secs.length : x.sets);
+  st.set++; st.done = 0; st.step = 0; st.left = 0; st.run = false; haptic("level");
+  if (x.t === "warm" || st.set >= sets) { tone(990, .25); return gyNext(); }
+  gyStep(); gyRest(x.rest || 180, `подход ${st.set} из ${sets} готов`, true);
+}
+function gyTimer() {               // старт/пауза подхода на время
+  const st = GY.st; st.run = !st.run; st.end = Date.now() + st.left * 1000;
+  if (!st.run) clearTimeout(GY.timer);
+  gyStep();
+}
+function gyTick() {
+  const x = GY.prog.items[GY.i], st = GY.st; if (!st || !st.run) return;
+  st.left = Math.max(0, Math.ceil((st.end - Date.now()) / 1000));
+  if ($("gyT")) $("gyT").textContent = gyFmt(st.left);
+  if (st.left <= 3 && st.left > 0 && st.beeped !== st.left) { st.beeped = st.left; tone(660, .12); }
+  if (st.left > 0) { GY.timer = setTimeout(gyTick, 250); return; }
+  st.run = false; tone(990, .25); haptic("level");
+  if (x.t === "pair" && st.step < x.steps.length - 1) { st.step++; st.left = 0; st.run = true; st.end = Date.now() + x.steps[st.step][1] * 1000; return gyStep(); }
+  gySetDone();
+}
+function gyRest(sec, label, big) {
+  $("gyRest")?.remove(); clearTimeout(GY.timer);
+  const end = Date.now() + sec * 1000, d = document.createElement("div");
+  d.className = "gy-rest on"; d.id = "gyRest";
+  d.innerHTML = `<div><div class="gy-step">ОТДЫХ</div><div class="t" id="gyRT">${gyFmt(sec)}</div><div class="l">${esc(label)}</div>
+    <button class="btn btn-ghost" id="gyRSkip" style="min-width:220px">Пропустить отдых</button></div>`;
+  document.body.appendChild(d);
+  if (big) Coach.say?.("rest", true);
+  let beep = 0;
+  const end_ = () => { clearTimeout(GY.timer); d.remove(); };
+  $("gyRSkip").onclick = () => { haptic("select"); end_(); };
+  const tick = () => {
+    const left = Math.ceil((end - Date.now()) / 1000);
+    if (!document.body.contains(d)) return;
+    $("gyRT").textContent = gyFmt(Math.max(0, left));
+    if (left <= 3 && left > 0 && beep !== left) { beep = left; tone(660, .12); }
+    if (left <= 0) { end_(); tone(990, .25); haptic("level"); if (big) Coach.say?.("rest_end", true); return; }
+    GY.timer = setTimeout(tick, 250);
+  };
+  tick();
+}
+function gyDone() {
+  const g = GY.prog, min = Math.max(1, Math.round((Date.now() - GY.t0) / 60000));
+  gyStop(); GY.st = null;
+  try { const h = JSON.parse(localStorage.getItem("kt_gym") || "{}"); h[g.id] = new Date().toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" }); localStorage.setItem("kt_gym", JSON.stringify(h)); } catch (e) {}
+  ktDiag("gym_done", `${g.id} ${min} мин`); Coach.say?.("proto_done", true);
+  $("gymBody").innerHTML = `<div style="text-align:center;margin-top:40px"><div class="gy-step">ТРЕНИРОВКА ВЫПОЛНЕНА</div>
+    <div class="gy-h" style="font-size:28px">${esc(g.name)}</div><div class="gy-big">${min}<small> мин</small></div><div class="gy-lbl">Красиво отработано. Теперь — нормальная еда и сон.</div></div>
+    <div class="gy-act"><button class="btn btn-gold" id="gyFin">К ПРОГРАММАМ</button></div>`;
+  $("gyFin").onclick = () => { haptic("select"); GY.prog = null; show("home"); placeSet("gym"); };
+}
 function mnRender() {
   const L = heroLvl(), name = tg?.initDataUnsafe?.user?.first_name;
   $("mnLvl").textContent = `Уровень ${L.l} · ${fmt(S.xp)}\u00a0XP`;
