@@ -3809,8 +3809,13 @@ const GYM = [
 const GYM_ON = !(window.Telegram?.WebApp?.initData) || [606925290, 492197290, 7867293515].includes(window.Telegram.WebApp.initDataUnsafe?.user?.id);
 if (GYM_ON) $("mnTrainSub").textContent = "Дома — камера считает повторения, в зале — программы Паши";
 const GY = { place: (() => { try { return GYM_ON && localStorage.getItem("kt_place") || "home"; } catch (e) { return "home"; } })(), prog: null, i: 0, st: null, open: -1, t0: 0, timer: 0, wake: null };
-const gyClip = c => `gym/${c}.mp4?v=1`, gyPoster = c => `gym/${c}.jpg?v=1`;
+const gyClip = c => `gym/${c}.mp4?v=2`, gyPoster = c => `gym/${c}.jpg?v=2`;   // v=2: 24.10 переснята тяга блока и выпады с блином (замечания Паши)
 const gyFmt = s => `${Math.floor(s / 60)}:${String(Math.max(0, Math.floor(s % 60))).padStart(2, "0")}`;
+// голос в зале: фразы gym_* и gx_<ролик> (сценарий записи 24.10); пока их нет — молчим или берём живой раздел fb
+function gySay(cat, fb) {
+  if (Coach.idx?.[cat] && Coach.pick(cat) >= 0) return Coach.say(cat, true);
+  if (fb) Coach.say(fb, true);
+}
 function gyProto(x) {
   if (x.t === "s50") return x.side ? "3 подхода по 50 на каждую ногу" : "3 подхода по 50 · сессиями, отдых 30 с";
   if (x.t === "reps") return `${x.sets} подхода: ${x.txt}`;
@@ -3865,7 +3870,7 @@ async function gyStart() {
   unlockAudio(); Coach.init?.();
   GY.i = 0; GY.t0 = Date.now(); GY.st = null;
   try { GY.wake = await navigator.wakeLock?.request("screen"); } catch (e) {}
-  ktDiag("gym_start", GY.prog.id); gyStep();
+  ktDiag("gym_start", GY.prog.id); gySay("gym_start"); gyStep();
 }
 function gyStop() {
   clearTimeout(GY.timer); GY.timer = 0; $("gyRest")?.remove();
@@ -3878,7 +3883,9 @@ function gyBack() {
 function gyStep() {          // показать текущее упражнение
   const g = GY.prog, x = g.items[GY.i];
   if (!x) return gyDone();
-  GY.st = GY.st && GY.st.i === GY.i ? GY.st : { i: GY.i, set: 0, done: 0, step: 0, left: 0, run: false };
+  const fresh = !(GY.st && GY.st.i === GY.i);
+  GY.st = fresh ? { i: GY.i, set: 0, done: 0, step: 0, left: 0, run: false } : GY.st;
+  if (fresh && x.clip && GY.i > 0) setTimeout(() => gySay(`gx_${x.clip}`), 900);   // название и главное по технике
   const st = GY.st, total = x.t === "s50" ? (x.side ? 100 : 50) : 0;
   const sets = x.t === "s50" ? 3 : x.t === "pair" ? x.rounds : x.t === "warm" ? 1 : (x.secs ? x.secs.length : x.sets);
   let w = "";
@@ -3908,17 +3915,17 @@ function gyAdd(n) {
   if (n < 0) { st.done = Math.max(0, st.done + n); return gyStep(); }
   haptic("rep"); st.done = Math.min(total, st.done + n);
   if (st.done >= total) return gySetDone();
-  gyStep(); gyRest(30, `сессия засчитана · ещё ${total - st.done}`, false);
+  gyStep(); gyRest(30, `сессия засчитана · ещё ${total - st.done}`, false); gySay("gym_session");
 }
 function gySetDone() {
   const x = GY.prog.items[GY.i], st = GY.st, sets = x.t === "s50" ? 3 : x.t === "pair" ? x.rounds : (x.secs ? x.secs.length : x.sets);
   st.set++; st.done = 0; st.step = 0; st.left = 0; st.run = false; haptic("level");
-  if (x.t === "warm" || st.set >= sets) { tone(990, .25); return gyNext(); }
-  gyStep(); gyRest(x.rest || 180, `подход ${st.set} из ${sets} готов`, true);
+  if (x.t === "warm" || st.set >= sets) { tone(990, .25); if (x.t === "warm") gySay("gym_warm_end"); return gyNext(); }
+  gyStep(); gyRest(x.rest || 180, `подход ${st.set} из ${sets} готов`, true, st.set === sets - 1 ? "gym_last" : x.t === "time" || x.t === "pair" ? "gym_time_end" : "gym_set");
 }
 function gyTimer() {               // старт/пауза подхода на время
   const st = GY.st; st.run = !st.run; st.end = Date.now() + st.left * 1000;
-  if (!st.run) clearTimeout(GY.timer);
+  if (!st.run) clearTimeout(GY.timer); else gySay("gym_go");
   gyStep();
 }
 function gyTick() {
@@ -3928,17 +3935,17 @@ function gyTick() {
   if (st.left <= 3 && st.left > 0 && st.beeped !== st.left) { st.beeped = st.left; tone(660, .12); }
   if (st.left > 0) { GY.timer = setTimeout(gyTick, 250); return; }
   st.run = false; tone(990, .25); haptic("level");
-  if (x.t === "pair" && st.step < x.steps.length - 1) { st.step++; st.left = 0; st.run = true; st.end = Date.now() + x.steps[st.step][1] * 1000; return gyStep(); }
+  if (x.t === "pair" && st.step < x.steps.length - 1) { gySay("gym_swap"); st.step++; st.left = 0; st.run = true; st.end = Date.now() + x.steps[st.step][1] * 1000; return gyStep(); }
   gySetDone();
 }
-function gyRest(sec, label, big) {
+function gyRest(sec, label, big, cat) {
   $("gyRest")?.remove(); clearTimeout(GY.timer);
   const end = Date.now() + sec * 1000, d = document.createElement("div");
   d.className = "gy-rest on"; d.id = "gyRest";
   d.innerHTML = `<div><div class="gy-step">ОТДЫХ</div><div class="t" id="gyRT">${gyFmt(sec)}</div><div class="l">${esc(label)}</div>
     <button class="btn btn-ghost" id="gyRSkip" style="min-width:220px">Пропустить отдых</button></div>`;
   document.body.appendChild(d);
-  if (big) Coach.say?.("rest", true);
+  if (big) gySay(cat || "gym_set", "rest");
   let beep = 0;
   const end_ = () => { clearTimeout(GY.timer); d.remove(); };
   $("gyRSkip").onclick = () => { haptic("select"); end_(); };
@@ -3956,7 +3963,7 @@ function gyDone() {
   const g = GY.prog, min = Math.max(1, Math.round((Date.now() - GY.t0) / 60000));
   gyStop(); GY.st = null;
   try { const h = JSON.parse(localStorage.getItem("kt_gym") || "{}"); h[g.id] = new Date().toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" }); localStorage.setItem("kt_gym", JSON.stringify(h)); } catch (e) {}
-  ktDiag("gym_done", `${g.id} ${min} мин`); Coach.say?.("proto_done", true);
+  ktDiag("gym_done", `${g.id} ${min} мин`); gySay("gym_done", "proto_done");
   $("gymBody").innerHTML = `<div style="text-align:center;margin-top:40px"><div class="gy-step">ТРЕНИРОВКА ВЫПОЛНЕНА</div>
     <div class="gy-h" style="font-size:28px">${esc(g.name)}</div><div class="gy-big">${min}<small> мин</small></div><div class="gy-lbl">Красиво отработано. Теперь — нормальная еда и сон.</div></div>
     <div class="gy-act"><button class="btn btn-gold" id="gyFin">К ПРОГРАММАМ</button></div>`;
