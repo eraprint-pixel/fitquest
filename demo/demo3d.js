@@ -17,6 +17,10 @@
   try { if (document.currentScript && document.currentScript.src) BASE = new URL(".", document.currentScript.src).href; } catch (e) {}
 
   var GOLD = "#d4b47a", GOLD2 = "#f3dcaa", HI = "#fff4da", DEEP = "#5e4a2a", BG = "#0f0f12";
+  // скин «Закат» (11.11): фигура оранжевая, цифры жёлтые, бирюза — акцент; классика — золото, как было
+  function ZK() { return document.documentElement.classList.contains("skin-zakat"); }
+  function AC(a) { return (ZK() ? "rgba(255,143,58," : "rgba(212,180,122,") + a + ")"; }
+  function BGc() { return ZK() ? "#0f0e13" : BG; }
   var J = ["head", "lsh", "rsh", "lel", "rel", "lwr", "rwr", "lhp", "rhp", "lkn", "rkn", "lan", "ran", "lft", "rft"];
   var JI = {}; J.forEach(function (n, i) { JI[n] = i; });
   // кости: [от, до, группа]; 15 — середина плеч («шея»), 16 — середина таза (считаются на лету)
@@ -147,7 +151,17 @@
       "font:300 26px/44px -apple-system,sans-serif;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}",
       ".d3-x:active{background:#211f24;color:" + GOLD2 + "}",
       ".d3-done .d3-ok{animation:d3pulse 1.6s ease-in-out 2}",
-      "@keyframes d3pulse{50%{box-shadow:0 0 0 6px rgba(243,220,170,.18)}}"
+      "@keyframes d3pulse{50%{box-shadow:0 0 0 6px rgba(243,220,170,.18)}}",
+      // скин «Закат»: оранжевый — главное, жёлтый — заголовок, бирюза — мелкие акценты (подпись, кружки, «Ещё раз», полоса)
+      "html.skin-zakat .d3-card,html.skin-zakat .d3-stage{background:#0f0e13}html.skin-zakat .d3-card{border-color:#302b34}",
+      "html.skin-zakat .d3-kick{color:#2de2c8}html.skin-zakat .d3-title{color:#ffd447}",
+      "html.skin-zakat .d3-bar{background:rgba(45,226,200,.16)}html.skin-zakat .d3-bar i{background:linear-gradient(90deg,#2de2c8,#ffd447)}",
+      "html.skin-zakat .d3-tips b{border-color:#2de2c8;color:#2de2c8}html.skin-zakat .d3-phone{background:#18161d}",
+      "html.skin-zakat .d3-phone svg [stroke]{stroke:#ff8f3a}html.skin-zakat .d3-phone svg [fill]:not([fill=none]){fill:#ff8f3a}",
+      "html.skin-zakat .d3-again{background:#18161d;color:#2de2c8;box-shadow:inset 0 0 0 1px rgba(45,226,200,.45)}",
+      "html.skin-zakat .d3-ok{background:linear-gradient(90deg,#ff5a1f,#ff8f3a);color:#141218}",
+      "html.skin-zakat .d3-x:active{background:#18161d;color:#ffd447}html.skin-zakat .d3-done .d3-ok{animation-name:d3pulseZ}",
+      "@keyframes d3pulseZ{50%{box-shadow:0 0 0 6px rgba(255,90,31,.25)}}"
     ].join("");
     (document.head || document.documentElement).appendChild(s);
   }
@@ -384,7 +398,7 @@
       logo = new Image();
       logo.onload = function () { logoOk = !!logo.naturalWidth; var a = logoCbs.splice(0); if (logoOk) a.forEach(function (f) { try { f(); } catch (e) {} }); };
       logo.onerror = function () { logoCbs.length = 0; };
-      logo.src = BASE + "../logo-mark.png?v=" + VER;
+      logo.src = BASE + (ZK() ? "../logo-mark-zakat.png?v=" : "../logo-mark.png?v=") + VER;
     } catch (e) { logo = {}; }
   }
 
@@ -416,9 +430,9 @@
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.globalAlpha = 1;
-    ctx.fillStyle = BG; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = BGc(); ctx.fillRect(0, 0, W, H);
     var g = ctx.createRadialGradient(cx, cy * 0.9, 0, cx, cy * 0.9, Math.max(W, H) * 0.6);
-    g.addColorStop(0, "rgba(212,180,122,0.10)"); g.addColorStop(1, "rgba(212,180,122,0)");
+    g.addColorStop(0, AC(0.10)); g.addColorStop(1, AC(0));
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     // логотип «Кода тела» — блёкло, по центру за фигурой
     if (logoOk) {
@@ -438,7 +452,7 @@
           var al = 0.22 * (1 - rr) * (1 - rr);
           var A = axis ? [gx0 + a, 0, gz0 + b0] : [gx0 + b0, 0, gz0 + a], B = axis ? [gx0 + a, 0, gz0 + b1] : [gx0 + b1, 0, gz0 + a];
           var pa = P(A), pb = P(B);
-          ctx.strokeStyle = "rgba(212,180,122," + al.toFixed(3) + ")";
+          ctx.strokeStyle = AC(al.toFixed(3));
           ctx.beginPath(); ctx.moveTo(pa[0], pa[1]); ctx.lineTo(pb[0], pb[1]); ctx.stroke();
         }
       }
@@ -490,7 +504,7 @@
     var dx = b[0] - a[0], dy = b[1] - a[1], L = Math.sqrt(dx * dx + dy * dy);
     if (L < 0.5) return;
     var an = Math.atan2(dy, dx);
-    ctx.fillStyle = shade(BONE_C, tone == null ? 1 : tone);
+    ctx.fillStyle = shade(ZK() ? "#ff8f3a" : BONE_C, tone == null ? 1 : tone);
     ctx.beginPath();
     ctx.arc(a[0], a[1], Math.max(0.5, ra), an + Math.PI / 2, an + Math.PI * 1.5);
     ctx.arc(b[0], b[1], Math.max(0.5, rb), an - Math.PI / 2, an + Math.PI / 2);
@@ -498,7 +512,7 @@
   }
   /* сустав / голова — плоский кругляшок одного цвета */
   function ball(ctx, x, y, r, tone) {
-    ctx.fillStyle = shade(JOINT_C, tone == null ? 1 : tone); ctx.beginPath(); ctx.arc(x, y, Math.max(0.8, r), 0, 6.2832); ctx.fill();
+    ctx.fillStyle = shade(ZK() ? "#ffd447" : JOINT_C, tone == null ? 1 : tone); ctx.beginPath(); ctx.arc(x, y, Math.max(0.8, r), 0, 6.2832); ctx.fill();
   }
   /* счётчик удержания: тихо, золотом, в правом верхнем углу сцены */
   function holdClock(c, ctx, s) {
@@ -511,13 +525,13 @@
     ctx.textAlign = "right"; ctx.textBaseline = "top";
     ctx.fillStyle = "rgba(179,173,164,0.9)"; ctx.font = "500 " + (12 * dpr) + "px -apple-system,'SF Pro Text','Segoe UI',Roboto,sans-serif";
     ctx.fillText("держим", x, y);
-    ctx.fillStyle = GOLD2; ctx.font = (22 * dpr) + "px 'Russo One',-apple-system,'SF Pro Display',sans-serif";
+    ctx.fillStyle = ZK() ? "#ffd447" : GOLD2; ctx.font = (22 * dpr) + "px 'Russo One',-apple-system,'SF Pro Display',sans-serif";
     ctx.fillText(txt, x, y + 16 * dpr);
     // тонкое кольцо секунды слева от цифр
     var w = ctx.measureText(txt).width, rr = 7 * dpr, ccx = x - w - 12 * dpr, ccy = y + 16 * dpr + 11 * dpr, fr = s - sec;
-    ctx.lineWidth = 1.6 * dpr; ctx.strokeStyle = "rgba(212,180,122,0.25)";
+    ctx.lineWidth = 1.6 * dpr; ctx.strokeStyle = AC(0.25);
     ctx.beginPath(); ctx.arc(ccx, ccy, rr, 0, 6.2832); ctx.stroke();
-    ctx.strokeStyle = GOLD; ctx.beginPath(); ctx.arc(ccx, ccy, rr, -Math.PI / 2, -Math.PI / 2 + 6.2832 * fr); ctx.stroke();
+    ctx.strokeStyle = ZK() ? "#2de2c8" : GOLD; ctx.beginPath(); ctx.arc(ccx, ccy, rr, -Math.PI / 2, -Math.PI / 2 + 6.2832 * fr); ctx.stroke();
     ctx.restore();
   }
   function norm3(v) { var l = Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]) || 1; return [v[0] / l, v[1] / l, v[2] / l]; }
@@ -530,18 +544,18 @@
   function drawWall(ctx, P, z, dpr) {
     var x0 = -0.75, x1 = 0.75, h = 1.7;
     var c1 = P([x0, 0, z]), c2 = P([x1, 0, z]), c3 = P([x1, h, z]), c4 = P([x0, h, z]);
-    ctx.fillStyle = "rgba(212,180,122,0.05)";
+    ctx.fillStyle = AC(0.05);
     ctx.beginPath(); ctx.moveTo(c1[0], c1[1]); ctx.lineTo(c2[0], c2[1]); ctx.lineTo(c3[0], c3[1]); ctx.lineTo(c4[0], c4[1]); ctx.closePath(); ctx.fill();
     ctx.lineWidth = Math.max(1, dpr * 0.75);
     for (var y = 0.25; y < h; y += 0.25) {
       var a = P([x0, y, z]), b = P([x1, y, z]);
-      ctx.strokeStyle = "rgba(212,180,122," + (0.16 * (1 - y / h * 0.6)).toFixed(3) + ")"; line(ctx, a, b);
+      ctx.strokeStyle = AC((0.16 * (1 - y / h * 0.6)).toFixed(3)); line(ctx, a, b);
     }
     for (var x = x0; x <= x1 + 1e-6; x += 0.25) {
       var a2 = P([x, 0, z]), b2 = P([x, h, z]);
-      ctx.strokeStyle = "rgba(212,180,122,0.12)"; line(ctx, a2, b2);
+      ctx.strokeStyle = AC(0.12); line(ctx, a2, b2);
     }
-    ctx.strokeStyle = "rgba(212,180,122,0.35)"; line(ctx, c1, c2);
+    ctx.strokeStyle = AC(0.35); line(ctx, c1, c2);
   }
 
   function preload(id) { return load(id).then(function () { return true; }, function () { return false; }); }
