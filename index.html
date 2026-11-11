@@ -6,6 +6,8 @@
 <title>Код тела · Личный тренер</title>
 <meta name="theme-color" content="#0b0b0b">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>/* скин «Закат» (по умолчанию с 11.11); «Классика» — переключатель внизу главного экрана. Класс ставим до отрисовки, чтобы не мигало */
+try { if (localStorage.getItem("kt_skin") !== "classic") document.documentElement.classList.add("skin-zakat"); } catch (e) { document.documentElement.classList.add("skin-zakat"); }</script>
 <style>
 @font-face { font-family: "Russo One"; src: url(fonts/russo-one-cyrillic.woff2) format("woff2");
   unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; font-display: swap; }
@@ -732,6 +734,24 @@ body.sc-dark::after { content: ""; position: fixed; inset: 0; pointer-events: no
 .st-week .sc-dos { margin-top: 10px; font-size: 13px; }
 /* ===== читаемость на телефоне (360–390 px): основной ≥15 px, вторичный ≥13, ничего мельче 12; кнопки ≥44 px; светлее подписи ===== */
 :root { --gold-txt: #c2ab7f; }
+/* Скин «Закат» (11.11, ок Паши): тёмный асфальт, оранжевый закат, наш логотип в закатных цветах. Всё — поверх переменных классики */
+html.skin-zakat {
+  --bg: #0f0e13; --card: #18161d; --card2: #221f27; --line: #302b34;
+  --gold: #ff8f3a; --gold2: #ffb066; --gold3: #ffe0b8; --gold-dim: #8a4a24; --amber: #ffd447; --fire: #ff5a1f;
+  --text: #f3ede4; --muted: #a39a90; --gold-txt: #ff9a52;
+}
+html.skin-zakat .goldtext, html.skin-zakat .cel h2 { background: linear-gradient(180deg, #ffd447, #ff8f3a 55%, #ff5a1f); -webkit-background-clip: text; background-clip: text; color: transparent; }
+html.skin-zakat .btn-gold, html.skin-zakat .cel button, html.skin-zakat .pf-rv .go { background: linear-gradient(90deg, #ff5a1f, #ff8f3a); color: #141218; box-shadow: 0 0 22px rgba(255,90,31,.4); }
+html.skin-zakat .seg button.on { color: #141218; background: linear-gradient(90deg, #ff5a1f, #ff8f3a); }
+html.skin-zakat .hero, html.skin-zakat .gm-ov > div { border-color: #4a2a18; }
+html.skin-zakat .tr-logo img { filter: drop-shadow(0 0 14px rgba(255,90,31,.35)); }
+html.skin-zakat img[src^="logo.png"] { content: url(logo-zakat.png); }
+html.skin-zakat img[src^="logo-mark.png"] { content: url(logo-mark-zakat.png); }
+html.skin-zakat .pf-bgl { background-image: url(logo-mark-zakat.png); }
+html.skin-zakat img[src^="ex-icons/"], html.skin-zakat img[src^="badges/"] { filter: hue-rotate(-20deg) saturate(1.6); }
+.skin-sw { display: flex; align-items: center; gap: 12px; margin: 22px 2px 4px; font-size: 13px; color: var(--muted); }
+.skin-sw .seg { flex: 1; grid-template-columns: repeat(2, 1fr); }
+.skin-sw .seg button { min-height: 44px; font-size: 14px; }
 #menu h2, #league h2, #story h2, #order h2 { color: var(--gold-txt); }
 .gm-chip { font-size: 13px; padding: 6px 12px; }
 .hub-t b { font-size: 18px; } .hub-t small { font-size: 14px; line-height: 1.35; color: #b3ada4; } .hub-t .st { font-size: 14px; min-width: 58px; padding: 7px 9px; }
@@ -1306,6 +1326,7 @@ html:has(#fighter.on), html:has(#fighter.on) body { overflow-x: clip; }
     <small>Сфоткай еду — тренер оценит тарелку, калории и даст совет</small><em id="mnPlates">Сегодня 0 тарелок</em></div><div class="go">›</div></button>
     <div class="mn-tile off"><div class="ic">⚔️</div><div><b>СКОРО</b><small>Дуэли, испытания и новые фишки</small></div></div>
   </div>
+  <div class="skin-sw" id="skinSw"><span>Оформление</span><div class="seg"><button data-skin="zakat">Закат</button><button data-skin="classic">Классика</button></div></div>
 </section>
 
 <!-- ПРОФИЛЬ БОЙЦА: звание, серия, жетоны, значки, тон (задачи и сундук — в хабе) -->
@@ -1650,7 +1671,16 @@ import { EX, EX_ORDER, RepCounter, Orienter, rotateLm } from "./counter.js?v=23"
 // Параметры адреса её НЕ включают — в бот не утечёт. g*-хуки при выключенной игре молча ничего не делают.
 const GAME_ON = /^(localhost|127\.0\.0\.1|\[::1\]|.+\.localhost)$/.test(location.hostname);
 if (!GAME_ON) { document.body.classList.add("game-off"); document.getElementById("mnLegacy").hidden = false; }
-else document.getElementById("homeMenu").textContent = "‹ Главная";      // в игре «назад» ведёт на главный экран; без игры — «‹ Меню», как было
+// Оформление: «Закат» / «Классика» — запоминается на этом телефоне
+const skinBtns = document.querySelectorAll("#skinSw button");
+const skinPaint = () => skinBtns.forEach(b => b.classList.toggle("on", (b.dataset.skin === "zakat") === document.documentElement.classList.contains("skin-zakat")));
+skinBtns.forEach(b => b.addEventListener("click", () => {
+  document.documentElement.classList.toggle("skin-zakat", b.dataset.skin === "zakat");
+  try { localStorage.setItem("kt_skin", b.dataset.skin); } catch (e) {}
+  skinPaint();
+}));
+skinPaint();
+if (GAME_ON) document.getElementById("homeMenu").textContent = "‹ Главная";      // в игре «назад» ведёт на главный экран; без игры — «‹ Меню», как было
 // ================= настройки игры =================
 const SKILLS = { str: "Сила", legs: "Ловкость", end: "Выносливость" };
 // 12 званий «Операции Подъём» (решение Эрнеста): растут по неделям сезона — см. heroLvl(). Прапорщик — отдельная ветка, в линейке его нет.
